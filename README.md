@@ -14,6 +14,8 @@ https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/
 
 The URL uses PolyModLoader's [documented GitHub CDN format](https://wiki.polymodloader.com/sharing-your-mod/) and serves the published `main` branch. Local changes become available through it after they are pushed.
 
+PolyShade 0.1.1 fixes PML enable/disable state handling. If 0.1.0 stays in the Unloaded list, remove that entry, add the install URL again using the latest version, enable it, and reload the game.
+
 To build from source:
 
 ```sh
@@ -22,7 +24,7 @@ npm test
 npm run build
 ```
 
-The PML release entry is `0.1.0/version.json`; its generated `main.mod.js` is the browser-loadable mod entry. The repository root `manifest.json` maps PolyTrack 0.6.3 to that release. Do not edit the generated entry by hand; rebuild it from `src/`.
+The PML release entry is `0.1.1/version.json`; its generated `main.mod.js` is the browser-loadable mod entry. The repository root `manifest.json` maps PolyTrack 0.6.3 to that release. Do not edit the generated entry by hand; rebuild it from `src/`.
 
 ## Reference look
 

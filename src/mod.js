@@ -1,3 +1,4 @@
+import { PolyMod } from "https://cdn.polymodloader.com/cb/PolyTrackMods/PolyModLoader/0.6.3/PolyTypes.js";
 import { RenderController } from "./controller.js";
 import { findThreeNamespace, installRenderHook } from "./renderer.js";
 import { mountPanel, installHotkey } from "./ui.js";
@@ -114,10 +115,12 @@ function restoreAndDispose() {
   removeHotkey = undefined;
 }
 
-export const polyMod = {
+class PolyShadeMod extends PolyMod {}
+
+export const polyMod = Object.assign(new PolyShadeMod(), {
   modName: "PolyShade",
   modID: "polyshade",
-  modVersion: "0.1.0",
+  modVersion: "0.1.1",
   modAuthor: "PolyShade",
   modDescription: "<p>Lighting, shadows, material response, and atmosphere for PolyTrack's live Three.js scene. Rendering only; no physics or simulation changes.</p>",
   touchingPhysics: false,
@@ -142,4 +145,4 @@ export const polyMod = {
     globalThis.addEventListener?.("pagehide", unloadListener, { once: true });
   },
   dispose: restoreAndDispose,
-};
+});
