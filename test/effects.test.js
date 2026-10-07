@@ -125,6 +125,7 @@ function makeLight(flag, color, intensity) {
       bias: 0,
       normalBias: 0,
       radius: 1,
+      intensity: 1,
       camera: { updateProjectionMatrix() {} },
     },
   };
@@ -203,6 +204,8 @@ test("scene lifecycle applies one sun/fill pair and restores the vanilla state",
     fogEnabled: true,
     fogStrength: 0.2,
     shadowQuality: "low",
+    shadowSoftness: 3,
+    shadowStrength: 0.68,
   };
   const state = createSceneState(scene);
 
@@ -219,6 +222,8 @@ test("scene lifecycle applies one sun/fill pair and restores the vanilla state",
   assert.notEqual(scene.fog, originalFog);
   const sun = scene.children.find((child) => child.isDirectionalLight);
   assert.equal(sun.shadow.mapSize.x, 1024);
+  assert.equal(sun.shadow.radius, 3);
+  assert.equal(sun.shadow.intensity, 0.68);
   assert.equal(barrier.castShadow, true);
   assert.equal(barrier.receiveShadow, true);
   assert.equal(ghost.castShadow, false);
@@ -236,6 +241,7 @@ test("scene lifecycle applies one sun/fill pair and restores the vanilla state",
   assert.equal(barrier.receiveShadow, false);
 
   restoreScene(state);
+  assert.equal(sun.shadow.intensity, 1);
   assert.equal(scene.background, originalBackground);
   assert.equal(scene.fog, originalFog);
   assert.equal(barrier.castShadow, false);

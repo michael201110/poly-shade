@@ -36,7 +36,7 @@ export const PRESETS = Object.freeze({
     renderScale: 1,
     surfaceWarmth: 0.2,
     shadowDistance: 30,
-    shadowSoftness: 1.5,
+    shadowSoftness: 3,
   }),
   "cinematic-lite": Object.freeze({
     ...OPTION_DEFAULTS,
@@ -62,7 +62,7 @@ export const PRESETS = Object.freeze({
     postQuality: "low",
     surfaceWarmth: 0.2,
     shadowDistance: 30,
-    shadowSoftness: 1.5,
+    shadowSoftness: 3,
   }),
   cinematic: Object.freeze({
     ...OPTION_DEFAULTS,
@@ -81,7 +81,7 @@ export const PRESETS = Object.freeze({
     renderScale: 1,
     surfaceWarmth: 0.2,
     shadowDistance: 30,
-    shadowSoftness: 1.5,
+    shadowSoftness: 3,
     sunRaysEnabled: true,
     sunRayStrength: 0.14,
     lensFlareEnabled: true,
@@ -123,7 +123,7 @@ export const PRESETS = Object.freeze({
     volumetricEnabled: true,
     surfaceWarmth: 0.2,
     shadowDistance: 30,
-    shadowSoftness: 1.5,
+    shadowSoftness: 3,
   }),
 });
 

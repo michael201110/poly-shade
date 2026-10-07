@@ -1,4 +1,4 @@
-# PolyShade 0.2.2
+# PolyShade 0.2.3
 
 A rendering-only PolyModLoader mod for **PolyTrack 0.6.3**. Warm sunlight, readable cool shadows, broad soft clouds and restrained camera optics preserve the game's low-poly appearance.
 
@@ -10,9 +10,9 @@ Install [PolyModLoader](https://polymodloader.com/), then add the [PolyShade ins
 https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/
 ```
 
-Select **0.2.2 / latest**, enable PolyShade and reload. Remove duplicate older entries. If the CDN caches an old manifest, replace `main` with the full latest SHA from [commit history](https://github.com/michael201110/poly-shade/commits/main/). This follows PML's [documented sharing format](https://wiki.polymodloader.com/sharing-your-mod/).
+Select **0.2.3 / latest**, enable PolyShade and reload. Remove duplicate older entries. If the CDN caches an old manifest, replace `main` with the full latest SHA from [commit history](https://github.com/michael201110/poly-shade/commits/main/). This follows PML's [documented sharing format](https://wiki.polymodloader.com/sharing-your-mod/).
 
-The root manifest maps 0.6.3 to `0.2.2/version.json` and `0.2.2/main.mod.js`. Earlier release directories are preserved. The corrected PML base class, lifecycle and constructor-assigned renderer interception remain intact.
+The root manifest maps 0.6.3 to `0.2.3/version.json` and `0.2.3/main.mod.js`. Earlier release directories are preserved. The corrected PML base class, lifecycle and constructor-assigned renderer interception remain intact.
 
 ## Presets
 
@@ -31,7 +31,7 @@ The 0.2.0 cloud shader, broad silhouettes and sky palette are unchanged. Golden/
 
 Brake lamps emit through **real unshadowed SpotLights**, replacing spherical spill. Lamp geometry supplies local positions and averaged outward normals; cones point rearward and downward. Both light and target attach to the car and follow turns, banking and inversion. The 45-degree angle, 0.7 penumbra, short reach and adjustable power keep illumination local. Only three nearby opaque cars can own lights; distance/frustum checks suppress irrelevant cars and ghosts are excluded. F7 and track changes remove lights and targets. If SpotLight is unavailable, native emissive lamps remain and spill is disabled with a diagnostic; no spherical fallback is used.
 
-One sun azimuth/elevation drives the sky, directional shadows, cloud illumination, environment, atmosphere and optics. Local shadows follow a bounded, texel-snapped camera region. Native CSM retains its cascade counts, splits and shader hooks; Capture keeps two near maps at 4096 and distant maps at 2048.
+One sun azimuth/elevation drives the sky, directional shadows, cloud illumination, environment, atmosphere and optics. PCF soft shadows use a wider penumbra and 0.68 shadow strength to keep hard shadow-map edges and dark patches readable. Local shadows follow a bounded, texel-snapped camera region. Native CSM retains its cascade counts, splits and shader hooks; Capture keeps two near maps at 4096 and distant maps at 2048.
 
 The game's own Three.js is used. A generated equirectangular sky uses its actual UV convention and internal PMREM conversion; no runtime Three.js copy, HDRI or art download is added. Environment generation is cached by sky/sun/cloud/quality settings, excluding animated cloud time and camera movement. Paint/metal reflect more; terrain/rubber stay matte. Compatible opaque materials preserve maps, vertex colours, normals, sidedness and source updates. The Main paint shader, ghosts, translucent surfaces and arbitrary shader callbacks are protected. The inspector supports Alt-click picking and persistent `material:`, `mesh:` and `parent:` patterns with `*` wildcards.
 
@@ -43,7 +43,7 @@ Flare is composited in the existing grade shader: a localized sun halo, four sof
 
 ## Pipeline, restoration and diagnostics
 
-Optional **volumetric sunlight** uses quarter-resolution camera-ray slices, with two depth-tested sunlight probes per slice. Eight deterministic samples integrate scattering only up to the visible surface or maximum distance. Depth-aware upsampling preserves road/occluder edges. It shares the sun, depth, visibility and matching procedural cloud transmission; it adds no world fog or temporal history. Strength, density, decay, samples and max distance are adjustable. Lite/Golden default off; Capture uses more perceptible but localized scattering. Radial rays remain strongest through partial occlusion and fade to a faint contribution in open sky. Their depth mask finds sky gaps around the sun, then shafts composite over road, barriers and architecture. Debug views expose the projected sun, visibility/cloud mask, ray buffer and volumetric buffer. The scattering remains a screen-space approximation, so offscreen occluders are unknown.
+Optional **volumetric sunlight** uses half-resolution camera-ray slices, with two depth-tested sunlight probes per slice. Eight deterministic samples integrate scattering only up to the visible surface or maximum distance. Edge-aware upsampling and a light depth-aware blur smooth blocky shafts while preserving road and occluder boundaries. Sun rays also render at half resolution and use a small soft filter. Both buffers are capped at 1024 pixels wide. Effects share the sun, depth, visibility and matching procedural cloud transmission; they add no world fog or temporal history. Strength, density, decay, samples and max distance are adjustable. Lite/Golden default off; Capture uses more perceptible but localized scattering. Radial rays remain strongest through partial occlusion and fade to a faint contribution in open sky. Their depth mask finds sky gaps around the sun, then shafts composite over road, barriers and architecture. Debug views expose the projected sun, visibility/cloud mask, ray buffer and volumetric buffer. The scattering remains a screen-space approximation, so offscreen occluders are unknown.
 
 The original renderer draws the game scene once into a linear HDR target with depth. Reduced-resolution AO retains 8/12/16 samples and two bilateral blurs, with cheaper scalar depth reconstruction and byte AO storage. Bloom retains its two small blur passes. Atmosphere, AO, bloom, optics and linear grading precede one filmic tone map. Luminance-pivot contrast preserves hue. FXAA/sharpening run on an output-sized graded target; without either, grading writes directly to output and omits that target/pass. Final colour conversion occurs once. Disabled/zero-strength optional effects release targets; compatible resize reuses target objects and sample/depth changes dispose incompatible attachments.
 
@@ -51,7 +51,7 @@ The original renderer draws the game scene once into a linear HDR target with de
 
 Diagnostics report CPU submission average/p95, asynchronous GPU times, active passes, target sizes/estimated bytes, allocations/disposals/resizes, environment generations and failures. Opt-in **Per-pass profiling** reports scene, shadows, AO/blur, bloom/blur, visibility/transfer, rays, grade, finish and environment timings. Scene/shadow queries alternate to avoid nesting. CPU environment generation is separate; internal PMREM GPU work belongs to the scene. Profiling objects and shadow wrappers are absent during normal gameplay.
 
-See [0.2.1 measurements and verification](docs/0.2.1-verification.md) and [0.2.2 sun effects calibration](docs/0.2.2-sun-effects.md) for performance, effect tuning, screenshots and limitations. Screen-space effects cannot see offscreen geometry; reflections represent the sky rather than nearby track. Visibility feedback takes a few frames, while the current GPU mask immediately suppresses blocked optics. Missing capabilities gate effects or use existing direct/fog fallbacks.
+See [0.2.1 measurements and verification](docs/0.2.1-verification.md), [0.2.2 sun effects calibration](docs/0.2.2-sun-effects.md) and [0.2.3 shadow and shaft fixes](docs/0.2.3-shadow-fixes.md) for performance, effect tuning, screenshots and limitations. Screen-space effects cannot see offscreen geometry; reflections represent the sky rather than nearby track. Visibility feedback takes a few frames, while the current GPU mask immediately suppresses blocked optics. Missing capabilities gate effects or use existing direct/fog fallbacks.
 
 Physics, input handling, simulation workers, replay timing, PolyBot messages and camera transforms/FOV are unchanged. Brake lights read only the visible native lamp emissive state. Multiplayer and a separately installed PolyBot were not exercised. PML does not guarantee an unload callback: F7, explicit disposal and page exit clean up; manager-only unload can require a reload. Settings remain schema 2; valid older saves migrate without rewriting their overrides.
 
@@ -63,6 +63,6 @@ npm run check
 npm run verify:live
 ```
 
-Three.js, Playwright and PNG tooling are development-only. Tests cover lifecycle/hooks, material preservation, settings, brake direction/rotation/cleanup, target reuse, pass skipping and asynchronous visibility. Live tests need Microsoft Edge and the official PML CDN. A fresh profile serves the local built mod through a test-only origin; instrumentation is absent from the release. Presets, resize, F7, braking, cockpit switching, driving/restart, multiple tracks, CSM and repeated resource cycles are checked. Screenshots/pixel statistics/reports go to `%TEMP%/polyshade-0.2.2/`.
+Three.js, Playwright and PNG tooling are development-only. Tests cover lifecycle/hooks, material preservation, settings, brake direction/rotation/cleanup, target reuse, pass skipping and asynchronous visibility. Live tests need Microsoft Edge and the official PML CDN. A fresh profile serves the local built mod through a test-only origin; instrumentation is absent from the release. Presets, resize, F7, braking, cockpit switching, driving/restart, multiple tracks, CSM and repeated resource cycles are checked. Screenshots/pixel statistics/reports go to `%TEMP%/polyshade-0.2.3/`.
 
 Set `POLYSHADE_BENCHMARK=1` for longer matched measurements; `POLYSHADE_RELEASE=0.2.0` tests the immutable baseline. `POLYSHADE_PROFILE=1` records pass profiles, `POLYSHADE_EXPERIMENT=1` records MSAA/calibration comparisons, and `POLYSHADE_OUTPUT` chooses a separate folder. These switches affect the test harness only.

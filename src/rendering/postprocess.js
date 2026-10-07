@@ -246,6 +246,7 @@ export class PostProcess {
         raysActive = false,
         opticsActive = false,
         visibility = 0;
+      const rayTexel = (this.rayTexel ??= new this.three.Vector2(1, 1));
       const debugSun =
         s.debugView === "sun-position" ||
         s.debugView === "sun-visibility" ||
@@ -319,12 +320,13 @@ export class PostProcess {
               this.sunVisibility.partial > 0.01 ||
               this.sunVisibility.clear > 0.01)
           ) {
-            const scale = Math.min(0.25, 512 / gl.drawingBufferWidth),
+            const scale = Math.min(0.5, 1024 / gl.drawingBufferWidth),
               target = this.pool.get(
                 "sun-rays",
                 Math.round(gl.drawingBufferWidth * scale),
                 Math.round(gl.drawingBufferHeight * scale),
               );
+            rayTexel.set(1 / target.width, 1 / target.height);
             retain.add("sun-rays");
             raysActive = this.pass(
               "sun-rays",
@@ -356,9 +358,9 @@ export class PostProcess {
         (visibility > 0 || debugVolume) &&
         (this.sunVisibility.clear > 0.01 || debugVolume)
       ) {
-        const scale = Math.min(0.25, 512 / gl.drawingBufferWidth),
-          vw = Math.round(gl.drawingBufferWidth * scale),
-          vh = Math.round(gl.drawingBufferHeight * scale);
+        const scale = Math.min(0.5, 1024 / w),
+          vw = Math.round(w * scale),
+          vh = Math.round(h * scale);
         const target = this.pool.get("volumetric", vw, vh);
         volumeTexel.set(1 / vw, 1 / vh);
         volumeActive = this.pass(
@@ -401,6 +403,7 @@ export class PostProcess {
         tAO: ao,
         tBloom: bloom,
         tRays: rays,
+        rayTexel,
         tVolume: volume,
         volumeTexel,
         volumeMaxDistance: s.volumetricMaxDistance,

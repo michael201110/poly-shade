@@ -35,10 +35,15 @@ vec3 volumeComposite(vec2 uv){
  if(volumeStrength<=0.0)return vec3(0.0);
  float depth=min(length(viewPosition(uv)),volumeMaxDistance)/volumeMaxDistance;
  vec3 sum=vec3(0.0);float weights=0.0;
- for(int i=0;i<4;i++){
- vec2 offset=vec2(mod(float(i),2.0)-0.5,floor(float(i)/2.0)-0.5)*volumeTexel;
+ for(int i=0;i<5;i++){
+ vec2 offset=vec2(0.0);
+ if(i==1)offset=vec2(volumeTexel.x*0.65,0.0);
+ if(i==2)offset=vec2(-volumeTexel.x*0.65,0.0);
+ if(i==3)offset=vec2(0.0,volumeTexel.y*0.65);
+ if(i==4)offset=vec2(0.0,-volumeTexel.y*0.65);
  vec4 sampleValue=texture2D(tVolume,uv+offset);
- float w=exp(-abs(sampleValue.a-depth)*volumeMaxDistance*0.7);
+ float spatial=i==0?4.0:1.0;
+ float w=spatial*exp(-abs(sampleValue.a-depth)*volumeMaxDistance*0.7);
  sum+=sampleValue.rgb*w;weights+=w;}
  return sum/max(weights,0.0001)*volumeStrength;
 }`;

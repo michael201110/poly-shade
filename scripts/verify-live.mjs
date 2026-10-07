@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { PNG } from "pngjs";
 import { mkdir } from "node:fs/promises";
 const output =
-  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.2.2");
+  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.2.3");
 await mkdir(output, { recursive: true });
 const report = { presets: {}, comparisons: {}, screenshots: [] };
 function imageStats(buffer) {
@@ -68,7 +68,7 @@ report.environment = {
   platform: process.platform,
   architecture: process.arch,
   viewport: [1280, 720],
-  release: process.env.POLYSHADE_RELEASE ?? "0.2.2",
+  release: process.env.POLYSHADE_RELEASE ?? "0.2.3",
   date: new Date().toISOString(),
 };
 const renderingErrors = [];
@@ -303,6 +303,71 @@ try {
       report.comparisons.enhanced = difference(baseline, image);
   }
   assert.ok(report.comparisons.enhanced.meanAbsolute > 3);
+  report.shadowArtifactIsolation = {};
+  report.shadowState = await page.evaluate(() => {
+    const shadow = window.__polyShadeController.sceneState.sun.shadow;
+    return { softness: shadow.radius, strength: shadow.intensity };
+  });
+  assert.deepEqual(report.shadowState, { softness: 3, strength: 0.68 });
+  await page.evaluate(() => {
+    const c = window.__polyShadeController;
+    Object.assign(c.getSettings().overrides, { shadowQuality: "off" });
+    c.notifySettingsChanged();
+  });
+  await page.waitForTimeout(300);
+  report.shadowFilter = await page.evaluate(() => {
+    const c = window.__polyShadeController;
+    return {
+      active: c.activeRenderer.shadowMap.type,
+      softPCF: c.three.PCFSoftShadowMap,
+    };
+  });
+  assert.equal(report.shadowFilter.active, report.shadowFilter.softPCF);
+  await shot("static-shadow-off");
+  await page.evaluate(() => {
+    const c = window.__polyShadeController;
+    Object.assign(c.getSettings().overrides, {
+      shadowQuality: "high",
+      shadowBias: 0.0005,
+    });
+    c.notifySettingsChanged();
+  });
+  await page.waitForTimeout(300);
+  await shot("static-shadow-positive-bias");
+  await page.evaluate(() => {
+    const c = window.__polyShadeController;
+    Object.assign(c.getSettings().overrides, {
+      shadowBias: -0.0001,
+      shadowSoftness: 4,
+      shadowStrength: 0.68,
+    });
+    c.notifySettingsChanged();
+  });
+  await page.waitForTimeout(300);
+  await shot("static-shadow-softened");
+  await page.evaluate(() => {
+    const c = window.__polyShadeController;
+    Object.assign(c.getSettings().overrides, {
+      shadowBias: -0.0001,
+      postEnabled: false,
+    });
+    c.notifySettingsChanged();
+  });
+  await page.waitForTimeout(300);
+  await shot("static-post-off");
+  await page.evaluate(() => {
+    const c = window.__polyShadeController;
+    for (const key of [
+      "shadowQuality",
+      "shadowBias",
+      "shadowSoftness",
+      "shadowStrength",
+      "postEnabled",
+    ])
+      delete c.getSettings().overrides[key];
+    c.notifySettingsChanged();
+  });
+  await page.waitForTimeout(300);
   if (process.env.POLYSHADE_BENCHMARK) {
     report.opticsCost = {};
     if (
@@ -595,10 +660,17 @@ try {
     return {
       active: c.cinematic.post.active.sunRays,
       pass: c.cinematic.post.passOrder.includes("sun-rays"),
+      target: c.cinematic
+        .report()
+        .resources.targets.find((target) => target.name === "sun-rays"),
       failures: c.cinematic.report().failures,
     };
   });
   assert.deepEqual(report.sunRays.failures, {});
+  assert.deepEqual(
+    [report.sunRays.target.width, report.sunRays.target.height],
+    [640, 360],
+  );
   await shot("stylized-sky-sun-rays");
   await page.evaluate(() => {
     const c = window.__polyShadeController;
@@ -1014,6 +1086,15 @@ try {
     );
     await shot(name + "-volume-on");
     if (name === "arch-partial") {
+      report.volumetricTarget = await page.evaluate(() =>
+        window.__polyShadeController.cinematic
+          .report()
+          .resources.targets.find((target) => target.name === "volumetric"),
+      );
+      assert.deepEqual(
+        [report.volumetricTarget.width, report.volumetricTarget.height],
+        [640, 360],
+      );
       await page.evaluate(() => {
         const c = window.__polyShadeController;
         c.getSettings().overrides.debugView = "volumetric";

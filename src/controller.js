@@ -126,6 +126,8 @@ export class RenderController {
           light.shadow.bias = original.bias;
           light.shadow.normalBias = original.normalBias;
           light.shadow.radius = original.radius;
+          if (typeof original.intensity === "number")
+            light.shadow.intensity = original.intensity;
         }
       });
       csm.lightDirection.copy(this.cinematic.palette.direction).negate();
@@ -157,6 +159,8 @@ export class RenderController {
                 0.1,
             );
       light.shadow.radius = settings.shadowSoftness;
+      if (typeof light.shadow.intensity === "number")
+        light.shadow.intensity = settings.shadowStrength;
       light.color.copy(this.cinematic.palette.sun);
     });
     csm.update();

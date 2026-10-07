@@ -72,6 +72,7 @@ function rememberLight(sceneState, light) {
           bias: light.shadow.bias,
           normalBias: light.shadow.normalBias,
           radius: light.shadow.radius,
+          intensity: light.shadow.intensity,
           camera: light.shadow.camera
             ? {
                 left: light.shadow.camera.left,
@@ -95,6 +96,8 @@ function restoreShadowSettings(light, snapshot) {
   light.shadow.bias = snapshot.shadow.bias;
   light.shadow.normalBias = snapshot.shadow.normalBias;
   light.shadow.radius = snapshot.shadow.radius;
+  if (typeof snapshot.shadow.intensity === "number")
+    light.shadow.intensity = snapshot.shadow.intensity;
   const camera = light.shadow.camera;
   if (camera && snapshot.shadow.camera) {
     Object.assign(camera, snapshot.shadow.camera);
@@ -215,6 +218,8 @@ function configureLight(sceneState, three, light, settings, bounds) {
         light.shadow.normalBias = settings.shadowNormalBias;
       if (typeof light.shadow.radius === "number")
         light.shadow.radius = settings.shadowSoftness ?? 1.5;
+      if (typeof light.shadow.intensity === "number")
+        light.shadow.intensity = settings.shadowStrength ?? 0.68;
 
       const camera = light.shadow.camera;
       if (camera && bounds && Number.isFinite(bounds.radius)) {
@@ -578,7 +583,7 @@ export function applyRendererEffects(rendererState, three, settings) {
     }
     shadowMap.enabled = size > 0;
     if (size > 0 && typeof three.PCFSoftShadowMap === "number") {
-      shadowMap.type = three.PCFShadowMap ?? three.PCFSoftShadowMap;
+      shadowMap.type = three.PCFSoftShadowMap ?? three.PCFShadowMap;
     }
   });
 
