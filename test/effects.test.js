@@ -1,21 +1,60 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { applySceneEffects, createSceneState, restoreScene } from "../src/effects.js";
+import {
+  applySceneEffects,
+  createSceneState,
+  restoreScene,
+} from "../src/effects.js";
 
 class Color {
-  constructor(value = 0) { this.value = value; this.isColor = true; }
-  clone() { return new Color(this.value); }
-  copy(other) { this.value = other.value; return this; }
-  lerp() { return this; }
+  constructor(value = 0) {
+    this.value = value;
+    this.isColor = true;
+  }
+  setRGB(r, g, b) {
+    Object.assign(this, { r, g, b });
+    return this;
+  }
+  multiplyScalar() {
+    return this;
+  }
+  clone() {
+    return new Color(this.value);
+  }
+  copy(other) {
+    this.value = other.value;
+    return this;
+  }
+  lerp() {
+    return this;
+  }
 }
 
 class Vector3 {
-  constructor(x = 0, y = 0, z = 0) { Object.assign(this, { x, y, z }); }
-  set(x, y, z) { Object.assign(this, { x, y, z }); return this; }
-  clone() { return new Vector3(this.x, this.y, this.z); }
-  copy(other) { Object.assign(this, { x: other.x, y: other.y, z: other.z }); return this; }
+  constructor(x = 0, y = 0, z = 0) {
+    Object.assign(this, { x, y, z });
+  }
+  set(x, y, z) {
+    Object.assign(this, { x, y, z });
+    return this;
+  }
+  clone() {
+    return new Vector3(this.x, this.y, this.z);
+  }
+  copy(other) {
+    Object.assign(this, { x: other.x, y: other.y, z: other.z });
+    return this;
+  }
   addScaledVector(vector, scale) {
-    this.x += vector.x * scale; this.y += vector.y * scale; this.z += vector.z * scale;
+    this.x += vector.x * scale;
+    this.y += vector.y * scale;
+    this.z += vector.z * scale;
+    return this;
+  }
+  lerp(other, a) {
+    this.x += (other.x - this.x) * a;
+    this.y += (other.y - this.y) * a;
+    this.z += (other.z - this.z) * a;
     return this;
   }
   distanceTo(other) {
@@ -24,16 +63,27 @@ class Vector3 {
 }
 
 class Box3 {
-  setFromObject() { return this; }
-  isEmpty() { return false; }
-  getCenter(target) { return target.set?.(0, 0, 0) ?? target.copy(new Vector3()); }
-  getBoundingSphere(target) { target.radius = 12; return target; }
+  setFromObject() {
+    return this;
+  }
+  isEmpty() {
+    return false;
+  }
+  getCenter(target) {
+    return target.set?.(0, 0, 0) ?? target.copy(new Vector3());
+  }
+  getBoundingSphere(target) {
+    target.radius = 12;
+    return target;
+  }
 }
 
 class Sphere {}
 
 class Fog {
-  constructor(color, near, far) { Object.assign(this, { color, near, far }); }
+  constructor(color, near, far) {
+    Object.assign(this, { color, near, far });
+  }
 }
 
 function makeLight(flag, color, intensity) {
@@ -47,7 +97,31 @@ function makeLight(flag, color, intensity) {
     target: { position: new Vector3() },
     castShadow: false,
     shadow: {
-      mapSize: { x: 1, y: 1, clone() { return { ...this, set(x, y) { this.x = x; this.y = y; }, copy(other) { this.x = other.x; this.y = other.y; } }; }, set(x, y) { this.x = x; this.y = y; }, copy(other) { this.x = other.x; this.y = other.y; } },
+      mapSize: {
+        x: 1,
+        y: 1,
+        clone() {
+          return {
+            ...this,
+            set(x, y) {
+              this.x = x;
+              this.y = y;
+            },
+            copy(other) {
+              this.x = other.x;
+              this.y = other.y;
+            },
+          };
+        },
+        set(x, y) {
+          this.x = x;
+          this.y = y;
+        },
+        copy(other) {
+          this.x = other.x;
+          this.y = other.y;
+        },
+      },
       bias: 0,
       normalBias: 0,
       radius: 1,
@@ -58,7 +132,9 @@ function makeLight(flag, color, intensity) {
 }
 
 class DirectionalLight {
-  constructor(color, intensity) { return makeLight("isDirectionalLight", color, intensity); }
+  constructor(color, intensity) {
+    return makeLight("isDirectionalLight", color, intensity);
+  }
 }
 
 class HemisphereLight {
@@ -132,8 +208,14 @@ test("scene lifecycle applies one sun/fill pair and restores the vanilla state",
 
   applySceneEffects(state, three, settings, { far: 1000 }, 1000);
   applySceneEffects(state, three, settings, { far: 1000 }, 1001);
-  assert.equal(scene.children.filter((child) => child.isDirectionalLight).length, 1);
-  assert.equal(scene.children.filter((child) => child.isHemisphereLight).length, 1);
+  assert.equal(
+    scene.children.filter((child) => child.isDirectionalLight).length,
+    1,
+  );
+  assert.equal(
+    scene.children.filter((child) => child.isHemisphereLight).length,
+    1,
+  );
   assert.notEqual(scene.fog, originalFog);
   const sun = scene.children.find((child) => child.isDirectionalLight);
   assert.equal(sun.shadow.mapSize.x, 1024);
@@ -142,7 +224,13 @@ test("scene lifecycle applies one sun/fill pair and restores the vanilla state",
   assert.equal(ghost.castShadow, false);
   assert.equal(ghost.receiveShadow, false);
 
-  applySceneEffects(state, three, { ...settings, shadowQuality: "off" }, { far: 1000 }, 1002);
+  applySceneEffects(
+    state,
+    three,
+    { ...settings, shadowQuality: "off" },
+    { far: 1000 },
+    1002,
+  );
   assert.equal(sun.shadow.mapSize.x, 1);
   assert.equal(barrier.castShadow, false);
   assert.equal(barrier.receiveShadow, false);

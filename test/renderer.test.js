@@ -3,10 +3,26 @@ import assert from "node:assert/strict";
 import { findThreeNamespace, installRenderHook } from "../src/renderer.js";
 
 test("Three namespace is discovered through PML's scoped Webpack require", () => {
-  class WebGLRenderer { constructor() { this.isWebGLRenderer = true; } }
-  class Scene { constructor() { this.isScene = true; } }
-  class Color { constructor() { this.isColor = true; } }
-  class DirectionalLight { constructor() { this.isDirectionalLight = true; } }
+  class WebGLRenderer {
+    constructor() {
+      this.isWebGLRenderer = true;
+    }
+  }
+  class Scene {
+    constructor() {
+      this.isScene = true;
+    }
+  }
+  class Color {
+    constructor() {
+      this.isColor = true;
+    }
+  }
+  class DirectionalLight {
+    constructor() {
+      this.isDirectionalLight = true;
+    }
+  }
   const factories = {
     core: function coreModule() {
       return "this.isScene = true; this.isColor = true; this.isDirectionalLight = true;";
@@ -28,7 +44,9 @@ test("Three namespace is discovered through PML's scoped Webpack require", () =>
     return exportsById[id];
   }
   webpackRequire.m = factories;
-  const pml = { getFromPolyTrack: (path) => path === "n" ? webpackRequire : undefined };
+  const pml = {
+    getFromPolyTrack: (path) => (path === "n" ? webpackRequire : undefined),
+  };
   const discovered = findThreeNamespace(pml);
   assert.equal(discovered.WebGLRenderer, WebGLRenderer);
   assert.equal(discovered.Scene, Scene);
@@ -61,7 +79,9 @@ test("render hook forwards the original call once and restores it on detach", ()
       this.calls.push([scene, camera, extra]);
       return "frame";
     }
-    constructor() { this.calls = []; }
+    constructor() {
+      this.calls = [];
+    }
   }
 
   const three = { WebGLRenderer };
@@ -69,7 +89,9 @@ test("render hook forwards the original call once and restores it on detach", ()
   let after = 0;
   const original = WebGLRenderer.prototype.render;
   const remove = installRenderHook(three, {
-    before() { before += 1; },
+    before() {
+      before += 1;
+    },
     after(_renderer, _scene, _camera, duration) {
       assert.equal(typeof duration, "number");
       after += 1;
@@ -88,32 +110,74 @@ test("render hook forwards the original call once and restores it on detach", ()
   assert.equal(WebGLRenderer.prototype.render, original);
 });
 
-test('the PML 0.6.3 i binding is used instead of its unrelated n CSS module', () => {
-  class WebGLRenderer { constructor() { this.isWebGLRenderer = true; } }
-  class Scene { constructor() { this.isScene = true; } }
-  class Color { constructor() { this.isColor = true; } }
-  class DirectionalLight { constructor() { this.isDirectionalLight = true; } }
-  function webpackRequire() { return { WebGLRenderer, Scene, Color, DirectionalLight }; }
-  webpackRequire.m = { core: () => 'this.isWebGLRenderer = true; this.isScene = true; this.isColor = true; this.isDirectionalLight = true;' };
-  assert.equal(findThreeNamespace({ getFromPolyTrack(name) {
-    return name === 'i' ? webpackRequire : {};
-  } }).WebGLRenderer, WebGLRenderer);
+test("the PML 0.6.3 i binding is used instead of its unrelated n CSS module", () => {
+  class WebGLRenderer {
+    constructor() {
+      this.isWebGLRenderer = true;
+    }
+  }
+  class Scene {
+    constructor() {
+      this.isScene = true;
+    }
+  }
+  class Color {
+    constructor() {
+      this.isColor = true;
+    }
+  }
+  class DirectionalLight {
+    constructor() {
+      this.isDirectionalLight = true;
+    }
+  }
+  function webpackRequire() {
+    return { WebGLRenderer, Scene, Color, DirectionalLight };
+  }
+  webpackRequire.m = {
+    core: () =>
+      "this.isWebGLRenderer = true; this.isScene = true; this.isColor = true; this.isDirectionalLight = true;",
+  };
+  assert.equal(
+    findThreeNamespace({
+      getFromPolyTrack(name) {
+        return name === "i" ? webpackRequire : {};
+      },
+    }).WebGLRenderer,
+    WebGLRenderer,
+  );
 });
 
-test('constructor-assigned render methods are intercepted before instantiation and restored on final detach', () => {
+test("constructor-assigned render methods are intercepted before instantiation and restored on final detach", () => {
   class WebGLRenderer {
     constructor() {
       this.calls = 0;
-      this.render = function () { this.calls++; return 'frame'; };
+      this.render = function () {
+        this.calls++;
+        return "frame";
+      };
     }
   }
-  let before = 0, after = 0;
-  const listener = { before() { before++; }, after() { after++; } };
+  let before = 0,
+    after = 0;
+  const listener = {
+    before() {
+      before++;
+    },
+    after() {
+      after++;
+    },
+  };
   const removeFirst = installRenderHook({ WebGLRenderer }, listener);
   const renderer = new WebGLRenderer();
-  const other = { before() { before++; }, after() {} };
+  const other = {
+    before() {
+      before++;
+    },
+    after() {},
+  };
   const removeSecond = installRenderHook({ WebGLRenderer }, other);
-  assert.equal(renderer.render({}, {}), 'frame');
+  assert.equal(renderer.render({}, {}), "frame");
   assert.equal(renderer.calls, 1);
   assert.equal(before, 2);
   assert.equal(after, 1);
@@ -124,5 +188,5 @@ test('constructor-assigned render methods are intercepted before instantiation a
   renderer.render({}, {});
   assert.equal(before, 3);
   assert.equal(renderer.calls, 3);
-  assert.equal(Object.hasOwn(WebGLRenderer.prototype, 'render'), false);
+  assert.equal(Object.hasOwn(WebGLRenderer.prototype, "render"), false);
 });

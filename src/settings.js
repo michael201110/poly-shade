@@ -1,6 +1,7 @@
-import { OVERRIDE_LIMITS, PRESET_IDS, PRESETS, SHADOW_MAP_SIZES } from "./presets.js";
+import { OPTION_DEFINITIONS, MATERIAL_KINDS } from "./options.js";
+import { PRESET_IDS } from "./presets.js";
 
-export const SETTINGS_SCHEMA_VERSION = 1;
+export const SETTINGS_SCHEMA_VERSION = 2;
 export const SETTINGS_STORAGE_KEY = "polyshade.settings";
 
 const DEFAULTS = Object.freeze({
@@ -14,28 +15,52 @@ function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
+export function validateOption(key, value) {
+  const definition = OPTION_DEFINITIONS[key];
+  if (!definition) throw new TypeError(`Invalid PolyShade setting: ${key}`);
+  const sample = definition[1];
+  if (key === "materialOverrides") {
+    if (!isPlainObject(value))
+      throw new TypeError("Material overrides must be an object");
+    return Object.fromEntries(
+      Object.entries(value)
+        .filter(
+          ([pattern, kind]) =>
+            pattern.length <= 160 &&
+            /^(material|mesh|parent):.+/.test(pattern) &&
+            MATERIAL_KINDS.includes(kind),
+        )
+        .slice(0, 100),
+    );
+  }
+  if (typeof sample === "boolean") {
+    if (typeof value !== "boolean")
+      throw new TypeError(`${key} must be a boolean`);
+    return value;
+  }
+  if (typeof sample === "string") {
+    if (sample.startsWith("#")) {
+      if (typeof value !== "string" || !/^#[0-9a-fA-F]{6}$/.test(value))
+        throw new TypeError(`${key} must be a six-digit hexadecimal color`);
+      return value.toLowerCase();
+    }
+    if (!definition[2].includes(value))
+      throw new RangeError(`Unknown ${key}: ${value}`);
+    return value;
+  }
+  if (typeof value !== "number" || !Number.isFinite(value))
+    throw new TypeError(`Invalid PolyShade setting: ${key}`);
+  return Math.min(definition[3], Math.max(definition[2], value));
+}
 function normalizeOverrides(overrides) {
-  if (!isPlainObject(overrides)) return {};
-
   const normalized = {};
+  if (!isPlainObject(overrides)) return normalized;
   for (const [key, value] of Object.entries(overrides)) {
-    if (key === "fogEnabled") {
-      if (typeof value === "boolean") normalized[key] = value;
-      continue;
+    try {
+      normalized[key] = validateOption(key, value);
+    } catch {
+      /* Ignore unknown or invalid saved keys. */
     }
-    if (key === "sunColor" || key === "ambientColor") {
-      if (typeof value === "string" && /^#[0-9a-fA-F]{6}$/.test(value)) {
-        normalized[key] = value.toLowerCase();
-      }
-      continue;
-    }
-    if (key === "shadowQuality") {
-      if (Object.hasOwn(SHADOW_MAP_SIZES, value)) normalized[key] = value;
-      continue;
-    }
-    const limits = OVERRIDE_LIMITS[key];
-    if (!limits || typeof value !== "number" || !Number.isFinite(value)) continue;
-    normalized[key] = Math.min(limits[1], Math.max(limits[0], value));
   }
   return normalized;
 }
@@ -50,10 +75,11 @@ export function createDefaultSettings() {
 export function normalizeSettings(value) {
   if (!isPlainObject(value)) return createDefaultSettings();
 
-  const preset = PRESET_IDS.includes(value.preset) ? value.preset : DEFAULTS.preset;
-  const enabled = typeof value.enabled === "boolean"
-    ? value.enabled
-    : preset !== "vanilla";
+  const preset = PRESET_IDS.includes(value.preset)
+    ? value.preset
+    : DEFAULTS.preset;
+  const enabled =
+    typeof value.enabled === "boolean" ? value.enabled : preset !== "vanilla";
 
   if (value.schemaVersion === SETTINGS_SCHEMA_VERSION) {
     return {
@@ -64,8 +90,14 @@ export function normalizeSettings(value) {
     };
   }
 
-  if (value.schemaVersion === 0 || value.schemaVersion === undefined) {
-    const legacyOverrides = isPlainObject(value.overrides) ? value.overrides : {};
+  if (
+    value.schemaVersion === 1 ||
+    value.schemaVersion === 0 ||
+    value.schemaVersion === undefined
+  ) {
+    const legacyOverrides = isPlainObject(value.overrides)
+      ? value.overrides
+      : {};
     return {
       schemaVersion: SETTINGS_SCHEMA_VERSION,
       preset,
@@ -85,18 +117,26 @@ export function loadSettings(storage, warn = console.warn) {
       ? createDefaultSettings()
       : normalizeSettings(JSON.parse(serialized));
   } catch (error) {
-    warn("[PolyShade] Saved settings could not be read; defaults are active.", error);
+    warn(
+      "[PolyShade] Saved settings could not be read; defaults are active.",
+      error,
+    );
     return createDefaultSettings();
   }
 }
 
 export function saveSettings(storage, settings, warn = console.warn) {
   if (!storage) {
-    warn("[PolyShade] Settings were not persisted because localStorage is unavailable.");
+    warn(
+      "[PolyShade] Settings were not persisted because localStorage is unavailable.",
+    );
     return false;
   }
   try {
-    storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(normalizeSettings(settings)));
+    storage.setItem(
+      SETTINGS_STORAGE_KEY,
+      JSON.stringify(normalizeSettings(settings)),
+    );
     return true;
   } catch (error) {
     warn("[PolyShade] Settings could not be persisted.", error);
@@ -105,7 +145,8 @@ export function saveSettings(storage, settings, warn = console.warn) {
 }
 
 export function selectPreset(settings, preset) {
-  if (!PRESET_IDS.includes(preset)) throw new RangeError(`Unknown PolyShade preset: ${preset}`);
+  if (!PRESET_IDS.includes(preset))
+    throw new RangeError(`Unknown PolyShade preset: ${preset}`);
   return {
     schemaVersion: SETTINGS_SCHEMA_VERSION,
     preset,
@@ -116,23 +157,7 @@ export function selectPreset(settings, preset) {
 
 export function updateOverride(settings, key, value) {
   const next = normalizeSettings(settings);
-  const limits = OVERRIDE_LIMITS[key];
-  if (key === "fogEnabled") {
-    if (typeof value !== "boolean") throw new TypeError("fogEnabled must be a boolean");
-  } else if (key === "sunColor" || key === "ambientColor") {
-    if (typeof value !== "string" || !/^#[0-9a-fA-F]{6}$/.test(value)) {
-      throw new TypeError(`${key} must be a six-digit hexadecimal color`);
-    }
-    value = value.toLowerCase();
-  } else if (key === "shadowQuality") {
-    if (!Object.hasOwn(SHADOW_MAP_SIZES, value)) {
-      throw new RangeError(`Unknown shadow quality: ${value}`);
-    }
-  } else if (!limits || typeof value !== "number" || !Number.isFinite(value)) {
-    throw new TypeError(`Invalid PolyShade setting: ${key}`);
-  } else {
-    value = Math.min(limits[1], Math.max(limits[0], value));
-  }
+  value = validateOption(key, value);
 
   return {
     ...next,

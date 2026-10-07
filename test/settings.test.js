@@ -19,25 +19,54 @@ function memoryStorage(initial = null) {
 
 test("settings round-trip with bounded custom overrides", () => {
   const storage = memoryStorage();
-  const settings = updateOverride(selectPreset(createDefaultSettings(), "cinematic"), "exposure", 1.2);
-  assert.equal(saveSettings(storage, settings, () => {}), true);
+  const settings = updateOverride(
+    selectPreset(createDefaultSettings(), "cinematic"),
+    "exposure",
+    1.2,
+  );
+  assert.equal(
+    saveSettings(storage, settings, () => {}),
+    true,
+  );
   assert.deepEqual(loadSettings(storage), settings);
   assert.equal(updateOverride(settings, "exposure", 9).overrides.exposure, 1.4);
 });
 
 test("settings migrate schema zero and reject malformed records", () => {
   assert.deepEqual(
-    normalizeSettings({ schemaVersion: 0, preset: "recording", enabled: true, overrides: { fogStrength: 0.6 } }),
-    { schemaVersion: 1, preset: "recording", enabled: true, overrides: { fogStrength: 0.6 } },
+    normalizeSettings({
+      schemaVersion: 0,
+      preset: "recording",
+      enabled: true,
+      overrides: { fogStrength: 0.6 },
+    }),
+    {
+      schemaVersion: 2,
+      preset: "recording",
+      enabled: true,
+      overrides: { fogStrength: 0.6 },
+    },
   );
-  assert.equal(normalizeSettings({ schemaVersion: 100 }).preset, "cinematic");
-  assert.deepEqual(loadSettings(memoryStorage("{invalid"), () => {}), createDefaultSettings());
+  assert.equal(normalizeSettings({ schemaVersion: 200 }).preset, "cinematic");
+  assert.deepEqual(
+    loadSettings(memoryStorage("{invalid"), () => {}),
+    createDefaultSettings(),
+  );
 });
 
 test("invalid values do not become persisted overrides", () => {
   const updated = updateOverride(createDefaultSettings(), "sunElevation", 100);
   assert.equal(updated.overrides.sunElevation, 75);
-  assert.equal(updateOverride(updated, "sunColor", "#F1E2D3").overrides.sunColor, "#f1e2d3");
-  assert.throws(() => updateOverride(updated, "ambientColor", "blue"), /six-digit hexadecimal color/);
-  assert.throws(() => updateOverride(updated, "not-a-setting", 1), /Invalid PolyShade setting/);
+  assert.equal(
+    updateOverride(updated, "sunColor", "#F1E2D3").overrides.sunColor,
+    "#f1e2d3",
+  );
+  assert.throws(
+    () => updateOverride(updated, "ambientColor", "blue"),
+    /six-digit hexadecimal color/,
+  );
+  assert.throws(
+    () => updateOverride(updated, "not-a-setting", 1),
+    /Invalid PolyShade setting/,
+  );
 });

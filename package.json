@@ -1,10 +1,10 @@
 {
   "name": "poly-shade",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "esbuild src/mod.js --bundle --format=esm --platform=browser --target=es2022 --external:https://* --outfile=0.1.2/main.mod.js",
+    "build": "esbuild src/mod.js --bundle --format=esm --platform=browser --target=es2022 --external:https://* --outfile=0.2.0/main.mod.js",
     "test": "node --test",
     "check": "npm test && npm run build",
     "verify:live": "npm run build && node scripts/verify-live.mjs"
@@ -12,6 +12,7 @@
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "esbuild": "^0.25.0",
+    "pngjs": "^7.0.0",
     "three": "^0.180.0"
   }
 }

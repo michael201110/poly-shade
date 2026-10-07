@@ -1,3 +1,4 @@
+import { OPTIONS, MATERIAL_KINDS } from "./options.js";
 import { PRESET_IDS, PRESET_LABELS, SHADOW_MAP_SIZES } from "./presets.js";
 
 const STYLE_ID = "polyshade-styles";
@@ -11,6 +12,8 @@ const CSS = `
   border-radius: 9px; box-shadow: 0 8px 28px rgba(0, 0, 0, .38);
   font: 12px/1.4 system-ui, sans-serif; backdrop-filter: blur(10px);
 }
+#${PANEL_ID} details { border-top:1px solid #465260;margin-top:8px;padding-top:7px; }
+#${PANEL_ID} summary { cursor:pointer; font-weight:600; padding:3px 0; }
 #${PANEL_ID} * { box-sizing: border-box; }
 #${PANEL_ID} header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 #${PANEL_ID} h2 { margin: 0; font-size: 15px; font-weight: 650; }
@@ -51,7 +54,10 @@ function createElement(document, tag, className, text) {
 
 function addRow(container, labelText, control) {
   const row = createElement(container.ownerDocument, "label", "polyshade-row");
-  row.append(createElement(container.ownerDocument, "span", "", labelText), control);
+  row.append(
+    createElement(container.ownerDocument, "span", "", labelText),
+    control,
+  );
   container.appendChild(row);
   return row;
 }
@@ -66,7 +72,9 @@ function makeRange(document, { min, max, step, value, format, onChange }) {
   input.step = String(step);
   input.value = String(value);
   const output = createElement(document, "output");
-  const update = () => { output.textContent = format(Number(input.value)); };
+  const update = () => {
+    output.textContent = format(Number(input.value));
+  };
   input.addEventListener("input", () => {
     update();
     onChange(Number(input.value));
@@ -132,7 +140,8 @@ export function mountPanel(document, callbacks, initialSettings) {
   const collapse = createElement(document, "button", "", "Hide");
   collapse.type = "button";
   collapse.addEventListener("click", () => {
-    panel.dataset.collapsed = panel.dataset.collapsed !== "true" ? "true" : "false";
+    panel.dataset.collapsed =
+      panel.dataset.collapsed !== "true" ? "true" : "false";
     collapse.textContent = panel.dataset.collapsed === "true" ? "Show" : "Hide";
   });
   header.appendChild(collapse);
@@ -147,61 +156,140 @@ export function mountPanel(document, callbacks, initialSettings) {
   );
   addRow(content, "Preset", presetSelect);
 
-  const enabled = makeCheck(document, "PolyShade enabled", initialSettings.enabled, callbacks.onEnabled);
+  const enabled = makeCheck(
+    document,
+    "PolyShade enabled",
+    initialSettings.enabled,
+    callbacks.onEnabled,
+  );
   content.appendChild(enabled);
 
-  const ranges = {};
-  const rangeDefinitions = [
-    ["sunIntensity", "Sun intensity", 0.5, 2, 0.01, (v) => v.toFixed(2) + "x"],
-    ["sunElevation", "Sun elevation", 10, 75, 1, (v) => `${Math.round(v)} deg`],
-    ["sunAzimuth", "Sun azimuth", 0, 360, 1, (v) => `${Math.round(v)} deg`],
-    ["ambientIntensity", "Ambient fill", 0.1, 1.8, 0.01, (v) => v.toFixed(2) + "x"],
-    ["surfaceWarmth", "Cream surfaces", 0, 1, 0.01, (v) => `${Math.round(v * 100)}%`],
-    ["shadowDistance", "Shadow coverage", 30, 200, 1, (v) => `${Math.round(v)} units`],
-    ["shadowSoftness", "Shadow softness", 0, 4, 0.1, (v) => v.toFixed(1)],
-    ["fogStrength", "Haze strength", 0, 1, 0.01, (v) => v.toFixed(2)],
-    ["exposure", "Exposure", 0.7, 1.4, 0.01, (v) => v.toFixed(2)],
-  ];
-  for (const [key, label, min, max, step, format] of rangeDefinitions) {
-    const range = makeRange(document, {
-      min,
-      max,
-      step,
-      value: initialSettings.values[key],
-      format,
-      onChange: (value) => callbacks.onValue(key, value),
-    });
-    ranges[key] = range;
-    addRow(content, label, range.element);
+  const controls = {};
+  for (const [group, definitions] of Object.entries(OPTIONS)) {
+    const details = createElement(document, "details");
+    details.append(createElement(document, "summary", "", group));
+    if (group === "Sky") details.open = true;
+    for (const [key, definition] of Object.entries(definitions)) {
+      const [label, value, min, max] = definition;
+      if (key === "materialOverrides") continue;
+      let control;
+      if (typeof value === "number") {
+        const range = makeRange(document, {
+          min,
+          max,
+          step: max - min > 10 ? 1 : max - min < 0.01 ? 0.00001 : 0.01,
+          value: initialSettings.values[key],
+          format: (v) => String(Number(v.toFixed(5))),
+          onChange: (v) => callbacks.onValue(key, v),
+        });
+        control = range.element;
+        controls[key] = (v) => range.setValue(v);
+      } else if (typeof value === "boolean") {
+        control = makeCheck(document, label, initialSettings.values[key], (v) =>
+          callbacks.onValue(key, v),
+        );
+        controls[key] = (v) => {
+          control.querySelector("input").checked = v;
+        };
+        details.append(control);
+        continue;
+      } else if (value.startsWith("#")) {
+        control = makeColor(document, initialSettings.values[key], (v) =>
+          callbacks.onValue(key, v),
+        );
+        controls[key] = (v) => {
+          control.value = v;
+        };
+      } else {
+        control = makeSelect(
+          document,
+          min.map((v) => [v, v]),
+          initialSettings.values[key],
+          (v) => callbacks.onValue(key, v),
+        );
+        controls[key] = (v) => {
+          control.value = v;
+        };
+      }
+      control.dataset.option = key;
+      addRow(details, label, control);
+    }
+    content.append(details);
   }
-
-  const sunColor = makeColor(document, initialSettings.values.sunColor,
-    (value) => callbacks.onValue("sunColor", value));
-  addRow(content, "Sun color", sunColor);
-  const ambientColor = makeColor(document, initialSettings.values.ambientColor,
-    (value) => callbacks.onValue("ambientColor", value));
-  addRow(content, "Ambient color", ambientColor);
-
-  const shadow = makeSelect(
-    document,
-    [["off", "Off"], ["low", "1024"], ["medium", "2048"], ["high", "4096"]],
-    initialSettings.values.shadowQuality,
-    (value) => callbacks.onValue("shadowQuality", value),
+  const inspector = createElement(document, "details");
+  inspector.append(
+    createElement(document, "summary", "", "Material inspector / overrides"),
   );
-  addRow(content, "Shadow map", shadow);
-
-  const scale = makeSelect(
+  const filter = document.createElement("input");
+  filter.placeholder = "Filter names or category";
+  filter.style.width = "100%";
+  inspector.append(filter);
+  const listing = createElement(document, "pre", "polyshade-metrics");
+  listing.style.maxHeight = "190px";
+  listing.style.overflow = "auto";
+  inspector.append(listing);
+  const refresh = createElement(document, "button", "", "Refresh inspector");
+  refresh.onclick = () => {
+    const records = callbacks.onInspect?.() ?? [];
+    const needle = filter.value.toLowerCase();
+    listing.textContent =
+      records
+        .filter((r) => JSON.stringify(r).toLowerCase().includes(needle))
+        .map(
+          (r) =>
+            `${r.kind} (${Math.round(r.confidence * 100)}%) ${r.type}\nmaterial:${r.material} mesh:${r.mesh} parent:${r.parent}\n${r.evidence.join(", ")}`,
+        )
+        .join("\n\n") || "No matching materials.";
+  };
+  inspector.append(refresh);
+  let picking = false;
+  const pick = createElement(document, "button", "", "Pick from canvas");
+  pick.onclick = () => {
+    picking = !picking;
+    pick.textContent = picking ? "Alt-click a surface" : "Pick from canvas";
+  };
+  inspector.append(pick);
+  const pickHandler = (event) => {
+    if (!picking || !event.altKey || panel.contains(event.target)) return;
+    const records = callbacks.onPick?.(event) ?? [];
+    listing.textContent = records
+      .map(
+        (r) =>
+          `${r.kind} (${Math.round(r.confidence * 100)}%) ${r.type}\nmaterial:${r.material} mesh:${r.mesh} parent:${r.parent}\n${r.evidence.join(", ")}`,
+      )
+      .join("\n\n");
+    picking = false;
+    pick.textContent = "Pick from canvas";
+  };
+  document.addEventListener("pointerdown", pickHandler);
+  const pattern = document.createElement("input");
+  pattern.placeholder = "mesh:Car* or material:Paint";
+  pattern.style.width = "100%";
+  inspector.append(pattern);
+  const kind = makeSelect(
     document,
-    [["1", "1.00x"], ["1.25", "1.25x"], ["1.5", "1.50x"]],
-    String(initialSettings.values.renderScale),
-    (value) => callbacks.onValue("renderScale", Number(value)),
+    MATERIAL_KINDS.map((v) => [v, v]),
+    "car",
+    () => {},
   );
-  addRow(content, "Render scale", scale);
-
-  const fog = makeCheck(document, "Atmospheric haze", initialSettings.values.fogEnabled,
-    (value) => callbacks.onValue("fogEnabled", value));
-  content.appendChild(fog);
-
+  inspector.append(kind);
+  const apply = createElement(document, "button", "", "Save override");
+  let overrideValues = initialSettings.values.materialOverrides;
+  apply.onclick = () => {
+    if (!/^(material|mesh|parent):.+/.test(pattern.value)) return;
+    callbacks.onValue("materialOverrides", {
+      ...overrideValues,
+      [pattern.value]: kind.value,
+    });
+  };
+  const remove = createElement(document, "button", "", "Remove pattern");
+  remove.onclick = () => {
+    const next = { ...overrideValues };
+    delete next[pattern.value];
+    callbacks.onValue("materialOverrides", next);
+  };
+  inspector.append(apply, remove);
+  content.append(inspector);
   const actions = createElement(document, "div", "polyshade-actions");
   const reset = createElement(document, "button", "", "Reset preset");
   reset.type = "button";
@@ -212,17 +300,25 @@ export function mountPanel(document, callbacks, initialSettings) {
   actions.append(reset, disable);
   content.appendChild(actions);
 
-  const status = createElement(document, "div", "polyshade-status", "Waiting for the live PolyTrack scene.");
+  const status = createElement(
+    document,
+    "div",
+    "polyshade-status",
+    "Waiting for the live PolyTrack scene.",
+  );
   status.setAttribute("role", "status");
   content.appendChild(status);
-  const metricsToggle = makeCheck(document, "Show render diagnostics", false, (visible) => {
-    metrics.hidden = !visible;
-  });
-  content.appendChild(metricsToggle);
   const metrics = createElement(document, "div", "polyshade-metrics");
   metrics.hidden = true;
   content.appendChild(metrics);
-  content.appendChild(createElement(document, "p", "polyshade-muted", "F7 toggles PolyShade. UI remains outside the game canvas."));
+  content.appendChild(
+    createElement(
+      document,
+      "p",
+      "polyshade-muted",
+      "F7 toggles PolyShade. UI remains outside the game canvas.",
+    ),
+  );
 
   panel.appendChild(content);
   document.body.appendChild(panel);
@@ -234,25 +330,34 @@ export function mountPanel(document, callbacks, initialSettings) {
     setSettings(settings) {
       presetSelect.value = settings.preset;
       enabled.querySelector("input").checked = settings.enabled;
-      for (const [key, range] of Object.entries(ranges)) {
-        range.setValue(settings.values[key]);
-      }
-      sunColor.value = settings.values.sunColor;
-      ambientColor.value = settings.values.ambientColor;
-      shadow.value = settings.values.shadowQuality;
-      scale.value = String(settings.values.renderScale);
-      fog.querySelector("input").checked = settings.values.fogEnabled;
+      for (const [key, set] of Object.entries(controls))
+        set(settings.values[key]);
+      overrideValues = settings.values.materialOverrides;
+      metrics.hidden = !settings.values.debugEnabled;
     },
     setMetrics(data) {
       const shadowSize = SHADOW_MAP_SIZES[data.shadowQuality] || "off";
       metrics.textContent = [
         `FPS (render calls): ${data.fps.toFixed(0)}`,
-        `Frame time avg / p95: ${data.averageFrameTime.toFixed(2)} / ${data.p95FrameTime.toFixed(2)} ms`,
+        `CPU render submission avg / p95: ${data.averageFrameTime.toFixed(2)} / ${data.p95FrameTime.toFixed(2)} ms`,
         `Preset: ${PRESET_LABELS[data.preset]} | scale: ${data.renderScale.toFixed(2)}x`,
         `Shadow map: ${shadowSize} | tuned materials: ${data.modifiedMaterials}`,
+        data.gpu
+          ? `GPU render avg / p95: ${data.gpu.average.toFixed(2)} / ${data.gpu.p95.toFixed(2)} ms (${data.gpu.samples} samples)`
+          : "GPU timer unavailable / no completed queries",
+        ...(data.capabilities
+          ? [
+              `WebGL ${data.capabilities.webgl2 ? 2 : 1} | HDR ${data.capabilities.halfFloat} | depth ${data.capabilities.features.depthTexture}`,
+              `Passes: ${data.capabilities.passes?.join(" ? ")}`,
+              `Targets: ${JSON.stringify(data.capabilities.resources)}`,
+              `Environment: ${JSON.stringify(data.capabilities.environment)}`,
+              `Failures: ${JSON.stringify(data.capabilities.failures)}`,
+            ]
+          : []),
       ].join("\n");
     },
     dispose() {
+      document.removeEventListener("pointerdown", pickHandler);
       panel.remove();
       style.remove();
     },
@@ -261,9 +366,11 @@ export function mountPanel(document, callbacks, initialSettings) {
 
 export function installHotkey(document, toggle) {
   const onKeyDown = (event) => {
-    if (event.code !== "F7" || event.repeat || event.target?.isContentEditable) return;
+    if (event.code !== "F7" || event.repeat || event.target?.isContentEditable)
+      return;
     const tagName = event.target?.tagName?.toLowerCase();
-    if (tagName === "input" || tagName === "textarea" || tagName === "select") return;
+    if (tagName === "input" || tagName === "textarea" || tagName === "select")
+      return;
     event.preventDefault();
     toggle();
   };

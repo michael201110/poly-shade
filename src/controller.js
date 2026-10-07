@@ -1,3 +1,4 @@
+import { CinematicRenderer } from "./rendering/cinematic.js";
 import {
   applyRendererEffects,
   applySceneEffects,
@@ -47,6 +48,7 @@ export class RenderController {
 
   onRender(renderer, scene, camera) {
     const now = performance.now();
+    this.camera = camera;
     if (!scene?.isScene) return;
     const settings = resolvePresetSettings(this.getSettings());
     if (!settings.enabled) {
@@ -55,28 +57,119 @@ export class RenderController {
     }
 
     if (renderer !== this.activeRenderer) this.attachRenderer(renderer);
+    if (
+      settings.atmosphereEnabled &&
+      !this.cinematic.capabilities.features.depthTexture
+    )
+      settings.fogEnabled = true;
     if (scene !== this.activeScene) {
       if (countMeshes(scene) < 3) return;
       this.attachScene(scene);
     }
 
-    const csmChanged = usesNativeCSM(scene) !== Boolean(this.sceneState.nativeCSM);
+    const csmChanged =
+      usesNativeCSM(scene) !== Boolean(this.sceneState.nativeCSM);
     if (csmChanged) {
       restoreMaterials(this.sceneState);
       this.sceneState.lastScanAt = 0;
     }
     if (
-      this.revision !== this.appliedRevision
-      || csmChanged
-      || now - this.sceneState.lastScanAt >= 1000
+      this.revision !== this.appliedRevision ||
+      csmChanged ||
+      now - this.sceneState.lastScanAt >= 1000
     ) {
+      if (this.revision !== this.appliedRevision) {
+        restoreMaterials(this.sceneState);
+        this.sceneState.lastScanAt = 0;
+      }
       applyRendererEffects(this.rendererState, this.three, settings);
+      this.cinematic.update(this.sceneState, settings, now, camera);
       applySceneEffects(this.sceneState, this.three, settings, camera, now);
       this.modifiedMaterials = this.sceneState.originalMaterials.size;
       this.appliedRevision = this.revision;
     }
-    refreshFrameEffects(this.sceneState, this.rendererState, this.three, settings, camera);
+    if (this.cinematic.guard.failures.has("material")) {
+      restoreMaterials(this.sceneState);
+      (this.sceneState.failedEffects ??= new Set()).add("material response");
+    }
+    this.cinematic.frame(settings, now);
+    this.updateCSM(settings);
+    refreshFrameEffects(
+      this.sceneState,
+      this.rendererState,
+      this.three,
+      settings,
+      camera,
+    );
     syncMaterialColors(this.sceneState, settings);
+  }
+
+  updateCSM(settings) {
+    const csm = this.nativeWrapper?.csm;
+    if (!csm || !this.sceneState.nativeCSM) return;
+    if (!this.csmSnapshot || this.csmSnapshot.csm !== csm)
+      this.csmSnapshot = {
+        csm,
+        direction: csm.lightDirection.clone(),
+        sizes: csm.lights.map((l) => l.shadow.mapSize.clone()),
+      };
+    if (!settings.nativeCSMTuning) {
+      csm.lights.forEach((light, index) => {
+        const size = this.csmSnapshot.sizes[index];
+        if (size && light.shadow.mapSize.x !== size.x) {
+          light.shadow.map?.dispose();
+          light.shadow.map = null;
+          light.shadow.mapSize.copy(size);
+        }
+        const original = this.sceneState.lightSnapshots.get(light)?.shadow;
+        if (original) {
+          light.shadow.bias = original.bias;
+          light.shadow.normalBias = original.normalBias;
+          light.shadow.radius = original.radius;
+        }
+      });
+      csm.lightDirection.copy(this.cinematic.palette.direction).negate();
+      csm.update();
+      return;
+    }
+    csm.lightDirection.copy(this.cinematic.palette.direction).negate();
+    const limit = this.cinematic.capabilities.maxTextureSize;
+    csm.lights.forEach((light, index) => {
+      const requested = { off: 0, low: 1024, medium: 2048, high: 4096 }[
+        settings.shadowQuality
+      ];
+      const size = Math.min(
+        limit,
+        index < 2 ? requested : Math.min(requested, 2048),
+      );
+      if (size && light.shadow.mapSize.x !== size) {
+        light.shadow.map?.dispose();
+        light.shadow.map = null;
+        light.shadow.mapSize.set(size, size);
+      }
+      light.shadow.bias = settings.shadowBias * (1 + index * 0.3);
+      light.shadow.normalBias =
+        index < 2
+          ? settings.shadowNormalBias * (1 + index)
+          : Math.max(
+              settings.shadowNormalBias,
+              this.sceneState.lightSnapshots.get(light)?.shadow?.normalBias ??
+                0.1,
+            );
+      light.shadow.radius = settings.shadowSoftness;
+      light.color.copy(this.cinematic.palette.sun);
+    });
+    csm.update();
+  }
+
+  aroundRender(renderer, scene, camera, draw) {
+    if (scene !== this.activeScene || !this.cinematic) return draw();
+    return this.cinematic.render(
+      scene,
+      camera,
+      resolvePresetSettings(this.getSettings()),
+      draw,
+    );
   }
 
   onFrame(renderer, scene, duration) {
@@ -90,19 +183,49 @@ export class RenderController {
 
   attachScene(scene) {
     if (this.sceneState) restoreScene(this.sceneState);
+    this.cinematic?.detachScene();
+    this.cinematic?.post?.pool.dispose();
     this.activeScene = scene;
     this.sceneState = createSceneState(scene);
+    this.sceneState.maxShadowSize = this.cinematic?.capabilities.maxTextureSize;
+    this.cinematic?.attachScene(scene);
     this.appliedRevision = -1;
   }
 
   attachRenderer(renderer) {
+    if (this.sceneState) restoreScene(this.sceneState);
+    this.sceneState = null;
+    this.activeScene = null;
     if (this.rendererState) restoreRenderer(this.rendererState);
+    this.cinematic?.dispose();
+    this.cinematic = new CinematicRenderer(this.three, renderer);
+    this.removeContextListener?.();
+    const onRestored = () => this.restore();
+    renderer.domElement?.addEventListener("webglcontextrestored", onRestored);
+    this.removeContextListener = () =>
+      renderer.domElement?.removeEventListener(
+        "webglcontextrestored",
+        onRestored,
+      );
     this.activeRenderer = renderer;
     this.rendererState = createRendererState(renderer);
+    this.rendererState.postScale = !!this.cinematic.post;
     this.appliedRevision = -1;
   }
 
   restore() {
+    this.removeContextListener?.();
+    this.removeContextListener = null;
+    if (this.csmSnapshot) {
+      const { csm, direction, sizes } = this.csmSnapshot;
+      csm.lightDirection.copy(direction);
+      csm.lights.forEach((l, i) => {
+        if (sizes[i]) l.shadow.mapSize.copy(sizes[i]);
+      });
+      this.csmSnapshot = null;
+    }
+    this.cinematic?.dispose();
+    this.cinematic = null;
     if (this.sceneState) restoreScene(this.sceneState);
     if (this.rendererState) restoreRenderer(this.rendererState);
     this.sceneState = null;
@@ -119,10 +242,16 @@ export class RenderController {
     this.sampleCount = Math.min(this.sampleCount + 1, MAX_SAMPLES);
     if (now - this.lastMetricsAt < 1000) return;
 
-    const ordered = Array.from(this.samples.slice(0, this.sampleCount)).sort((a, b) => a - b);
-    const average = ordered.reduce((sum, value) => sum + value, 0) / Math.max(1, ordered.length);
+    const ordered = Array.from(this.samples.slice(0, this.sampleCount)).sort(
+      (a, b) => a - b,
+    );
+    const average =
+      ordered.reduce((sum, value) => sum + value, 0) /
+      Math.max(1, ordered.length);
     const p95 = ordered[Math.max(0, Math.ceil(ordered.length * 0.95) - 1)] ?? 0;
     this.onMetrics({
+      capabilities: this.cinematic?.report(),
+      gpu: this.cinematic?.timer.metrics(),
       fps: this.renderCount / Math.max((now - this.lastMetricsAt) / 1000, 1),
       averageFrameTime: average,
       p95FrameTime: p95,
