@@ -145,7 +145,10 @@ export function mountPanel(document, callbacks, initialSettings) {
     ["sunIntensity", "Sun intensity", 0.5, 2, 0.01, (v) => v.toFixed(2) + "x"],
     ["sunElevation", "Sun elevation", 10, 75, 1, (v) => `${Math.round(v)} deg`],
     ["sunAzimuth", "Sun azimuth", 0, 360, 1, (v) => `${Math.round(v)} deg`],
-    ["ambientIntensity", "Ambient fill", 0.5, 1.8, 0.01, (v) => v.toFixed(2) + "x"],
+    ["ambientIntensity", "Ambient fill", 0.1, 1.8, 0.01, (v) => v.toFixed(2) + "x"],
+    ["surfaceWarmth", "Cream surfaces", 0, 1, 0.01, (v) => `${Math.round(v * 100)}%`],
+    ["shadowDistance", "Shadow coverage", 30, 200, 1, (v) => `${Math.round(v)} units`],
+    ["shadowSoftness", "Shadow softness", 0, 4, 0.1, (v) => v.toFixed(1)],
     ["fogStrength", "Haze strength", 0, 1, 0.01, (v) => v.toFixed(2)],
     ["exposure", "Exposure", 0.7, 1.4, 0.01, (v) => v.toFixed(2)],
   ];

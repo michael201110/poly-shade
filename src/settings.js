@@ -5,7 +5,7 @@ export const SETTINGS_STORAGE_KEY = "polyshade.settings";
 
 const DEFAULTS = Object.freeze({
   schemaVersion: SETTINGS_SCHEMA_VERSION,
-  preset: "cinematic-lite",
+  preset: "cinematic",
   enabled: true,
   overrides: Object.freeze({}),
 });
@@ -136,7 +136,7 @@ export function updateOverride(settings, key, value) {
 
   return {
     ...next,
-    preset: next.preset === "vanilla" ? "cinematic-lite" : next.preset,
+    preset: next.preset === "vanilla" ? "cinematic" : next.preset,
     enabled: true,
     overrides: { ...next.overrides, [key]: value },
   };

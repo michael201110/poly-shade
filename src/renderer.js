@@ -10,6 +10,7 @@ const CLASS_MARKERS = Object.freeze({
   HemisphereLight: "isHemisphereLight",
   Box3: "isBox3",
   Sphere: "isSphere",
+  MeshPhongMaterial: "isMeshPhongMaterial",
 });
 
 function sourceHasMarker(source, marker) {
@@ -47,7 +48,7 @@ function readThreeExports(moduleExports) {
         }
       }
     }
-    for (const name of ["ACESFilmicToneMapping", "PCFSoftShadowMap"]) {
+    for (const name of ["ACESFilmicToneMapping", "PCFSoftShadowMap", "PCFShadowMap"]) {
       if (typeof exports[name] === "number") three[name] = exports[name];
     }
   }
@@ -70,6 +71,7 @@ function findThreeModuleIds(moduleFactories) {
     }
 
     if (sourceHasMarker(source, CLASS_MARKERS.WebGLRenderer)) rendererIds.push(id);
+    if (sourceHasMarker(source, CLASS_MARKERS.MeshPhongMaterial)) coreIds.push(id);
     if (
       sourceHasMarker(source, CLASS_MARKERS.Scene)
       && sourceHasMarker(source, CLASS_MARKERS.Color)
@@ -123,6 +125,7 @@ export function findThreeNamespace(pml) {
     // Three.js bundles often mangle the export keys; these are its stable enum values.
     three.ACESFilmicToneMapping ??= 4;
     three.PCFSoftShadowMap ??= 2;
+    three.PCFShadowMap ??= 1;
     return three;
   }
 

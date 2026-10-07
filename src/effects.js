@@ -102,8 +102,13 @@ function ensureSun(sceneState, three) {
 function ensureFill(sceneState, three) {
   let fill;
   sceneState.scene.traverse((object) => {
-    if (!fill && (object.isHemisphereLight || object.isAmbientLight) && object.intensity > 0) fill = object;
+    if (!fill && object.isHemisphereLight && object.intensity > 0) fill = object;
   });
+  if (!fill && typeof three.HemisphereLight !== "function") {
+    sceneState.scene.traverse((object) => {
+      if (!fill && object.isAmbientLight && object.intensity > 0) fill = object;
+    });
+  }
   if (fill) return fill;
 
   if (typeof three.HemisphereLight === "function") {
@@ -134,7 +139,7 @@ function configureLight(sceneState, three, light, settings, bounds) {
 
   if (light.isDirectionalLight) {
     light.intensity = snapshot.intensity * settings.sunIntensity;
-    setLightColor(light, snapshot, three, settings.sunColor, 0.13);
+    setLightColor(light, snapshot, three, settings.sunColor, 0.75);
 
     const center = bounds?.center ?? sceneState.scene.position?.clone?.();
     if (!center) throw new Error("Three.js scene position vectors are unavailable.");
@@ -166,27 +171,27 @@ function configureLight(sceneState, three, light, settings, bounds) {
         light.shadow.mapSize?.set?.(mapSize, mapSize);
       }
       if (typeof light.shadow.bias === "number") light.shadow.bias = -0.00012;
-      if (typeof light.shadow.normalBias === "number") light.shadow.normalBias = 0.025;
-      if (typeof light.shadow.radius === "number") light.shadow.radius = 3;
+      if (typeof light.shadow.normalBias === "number") light.shadow.normalBias = 0.015;
+      if (typeof light.shadow.radius === "number") light.shadow.radius = settings.shadowSoftness ?? 1.5;
 
       const camera = light.shadow.camera;
       if (camera && bounds && Number.isFinite(bounds.radius)) {
-        const extent = bounds.radius * 1.15;
+        const extent = settings.shadowDistance ?? 85;
         camera.left = -extent;
         camera.right = extent;
         camera.top = extent;
         camera.bottom = -extent;
-        camera.near = Math.max(0.1, extent * 0.01);
+        camera.near = 0.1;
         camera.far = Math.max(extent * 4, 100);
         camera.updateProjectionMatrix?.();
       }
     }
   } else {
     light.intensity = snapshot.intensity * settings.ambientIntensity;
-    setLightColor(light, snapshot, three, settings.ambientColor, 0.1);
+    setLightColor(light, snapshot, three, settings.ambientColor, 0.8);
     if (light.groundColor && snapshot.groundColor) {
       light.groundColor.copy(snapshot.groundColor);
-      light.groundColor.lerp?.(new three.Color(0x87877f), 0.08);
+      light.groundColor.lerp?.(new three.Color(0xb19a7b), 0.65);
     }
   }
 }
@@ -195,7 +200,7 @@ function updateBackground(sceneState, three) {
   const background = sceneState.originalBackground;
   if (background === null || background?.isColor) {
     const color = background?.clone?.() ?? new three.Color(0x83a9cb);
-    color.lerp(new three.Color(0xaabed0), 0.08);
+    color.lerp(new three.Color(0x94b4cf), 0.5);
     sceneState.scene.background = color;
   }
 }
@@ -213,8 +218,8 @@ function updateFog(sceneState, three, settings, camera, bounds) {
     : new three.Color(0xaabed0);
   const cameraFar = Number.isFinite(camera?.far) ? camera.far : 2000;
   const horizonDistance = Math.min(cameraFar, (bounds?.radius ?? cameraFar) * 3);
-  const far = Math.max(40, horizonDistance * (0.3 - settings.fogStrength * 0.08));
-  const near = far * (0.4 + (1 - settings.fogStrength) * 0.25);
+  const far = Math.max(100, horizonDistance * (1.2 - settings.fogStrength * 0.4));
+  const near = far * (0.65 - settings.fogStrength * 0.15);
 
   if (!sceneState.fog || sceneState.fog.constructor !== three.Fog) {
     sceneState.fog = new three.Fog(color, near, far);
@@ -257,10 +262,23 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
   safelyApply("directional sunlight", () => {
     const sun = ensureSun(sceneState, three);
     configureLight(sceneState, three, sun, settings, sceneState.bounds);
+    sceneState.sun = sun;
+    sceneState.scene.traverse((light) => {
+      if (light !== sun && light.isDirectionalLight) {
+        rememberLight(sceneState, light);
+        light.intensity = 0;
+      }
+    });
   });
   safelyApply("ambient fill", () => {
     const fill = ensureFill(sceneState, three);
     configureLight(sceneState, three, fill, settings, sceneState.bounds);
+    sceneState.scene.traverse((light) => {
+      if (light !== fill && (light.isAmbientLight || light.isHemisphereLight)) {
+        rememberLight(sceneState, light);
+        light.intensity = 0;
+      }
+    });
   });
   if (SHADOW_MAP_SIZES[settings.shadowQuality] > 0) {
     safelyApply("shadow receivers and casters", () => {
@@ -277,12 +295,20 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
         const materials = Array.isArray(object.material) ? object.material : [object.material];
         const isGhost = materials.some((material) => isReplayGhost(object, material)
           || material?.transparent || material?.opacity < 0.98);
-        if (isGhost) return;
+        if (isGhost) {
+          const snapshot = sceneState.meshShadowSnapshots.get(object);
+          object.castShadow = snapshot.castShadow;
+          object.receiveShadow = snapshot.receiveShadow;
+          return;
+        }
 
         object.receiveShadow = true;
         const kind = materials.map((material) => classifyMaterial(object, material))
           .find((materialKind) => materialKind === "car" || materialKind === "barrier");
-        if (kind === "car" || kind === "barrier") object.castShadow = true;
+        if (!materials.some((material) => material?.wireframe)
+          && (kind === "car" || kind === "barrier" || object.geometry?.attributes?.normal)) {
+          object.castShadow = true;
+        }
       });
       for (const [mesh, snapshot] of sceneState.meshShadowSnapshots) {
         if (activeMeshes.has(mesh)) continue;
@@ -306,9 +332,48 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
   safelyApply("atmospheric haze", () => updateFog(sceneState, three, settings, camera, sceneState.bounds));
 
   if (now - sceneState.lastScanAt >= 1000 || sceneState.lastScanAt === 0) {
-    safelyApply("material response", () => applyMaterialTuning(sceneState));
+    safelyApply("material response", () => applyMaterialTuning(sceneState, three, settings));
     sceneState.lastScanAt = now;
   }
+  updateShadowFocus(sceneState, settings, camera);
+}
+
+// Keep a fixed-size, texel-aligned shadow region around the visible action.
+// Whole-track bounds can turn even a 4096 map into metre-wide shadow pixels.
+export function updateShadowFocus(sceneState, settings, camera) {
+  const sun = sceneState.sun;
+  const size = SHADOW_MAP_SIZES[settings.shadowQuality];
+  if (!sun || !size || !camera?.position?.clone) return;
+  const extent = settings.shadowDistance ?? 85;
+  const focus = sceneState.shadowFocus ??= camera.position.clone();
+  if (camera.getWorldPosition) camera.getWorldPosition(focus);
+  else focus.copy(camera.position);
+  const forward = sceneState.shadowForward ??= focus.clone();
+  if (camera.getWorldDirection) {
+    camera.getWorldDirection(forward);
+    focus.addScaledVector(forward, extent * 0.3);
+  }
+  const elevation = settings.sunElevation * Math.PI / 180;
+  const azimuth = settings.sunAzimuth * Math.PI / 180;
+  const sa = Math.sin(azimuth), ca = Math.cos(azimuth);
+  const se = Math.sin(elevation), ce = Math.cos(elevation);
+  const texel = extent * 2 / size;
+  const u = focus.x * ca - focus.z * sa;
+  const v = -focus.x * se * sa + focus.y * ce - focus.z * se * ca;
+  const du = Math.round(u / texel) * texel - u;
+  const dv = Math.round(v / texel) * texel - v;
+  focus.x += du * ca - dv * se * sa;
+  focus.y += dv * ce;
+  focus.z += -du * sa - dv * se * ca;
+  sun.target.position.copy(focus);
+  sun.target.parent?.worldToLocal?.(sun.target.position);
+  sun.position.copy(focus);
+  sun.position.x += ce * sa * extent * 2;
+  sun.position.y += se * extent * 2;
+  sun.position.z += ce * ca * extent * 2;
+  sun.parent?.worldToLocal?.(sun.position);
+  sun.target.updateMatrixWorld?.();
+  sun.updateMatrixWorld?.();
 }
 
 export function applyRendererEffects(rendererState, three, settings) {
@@ -332,7 +397,7 @@ export function applyRendererEffects(rendererState, three, settings) {
     }
     shadowMap.enabled = size > 0;
     if (size > 0 && typeof three.PCFSoftShadowMap === "number") {
-      shadowMap.type = three.PCFSoftShadowMap;
+      shadowMap.type = three.PCFShadowMap ?? three.PCFSoftShadowMap;
     }
   });
 

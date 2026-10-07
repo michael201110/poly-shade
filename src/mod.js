@@ -44,13 +44,15 @@ function updatePanel() {
 
 function toggleEnabled(enabled) {
   const next = settings.preset === "vanilla" && enabled
-    ? { ...selectPreset(settings, "cinematic-lite"), enabled: true }
+    ? { ...selectPreset(settings, "cinematic"), enabled: true }
     : { ...settings, enabled: enabled && settings.preset !== "vanilla" };
   persistAndApply(next);
   panel?.setStatus(enabled ? "PolyShade enabled." : "Restored the original rendering state.");
 }
 
 function attachRenderer() {
+  controller?.restore();
+  removeRenderHook?.();
   try {
     const three = findThreeNamespace(pml);
     controller = new RenderController(three, () => settings, (metrics) => panel?.setMetrics(metrics));

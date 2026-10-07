@@ -7,9 +7,9 @@ var PRESET_IDS = Object.freeze([
 ]);
 var PRESET_LABELS = Object.freeze({
   vanilla: "Vanilla",
-  "cinematic-lite": "Cinematic Lite",
-  cinematic: "Cinematic",
-  recording: "Recording"
+  "cinematic-lite": "Golden Hour Lite",
+  cinematic: "Golden Hour",
+  recording: "Golden Hour Capture"
 });
 var SHADOW_MAP_SIZES = Object.freeze({
   off: 0,
@@ -20,65 +20,80 @@ var SHADOW_MAP_SIZES = Object.freeze({
 var PRESETS = Object.freeze({
   vanilla: Object.freeze({
     sunIntensity: 1,
-    sunElevation: 38,
+    sunElevation: 30,
     sunAzimuth: 225,
-    sunColor: "#fff2df",
+    sunColor: "#ffe3ba",
     ambientIntensity: 1,
-    ambientColor: "#d6e3f1",
+    ambientColor: "#b9d0eb",
     exposure: 1,
     fogEnabled: false,
     fogStrength: 0.2,
     shadowQuality: "off",
-    renderScale: 1
+    renderScale: 1,
+    surfaceWarmth: 0.65,
+    shadowDistance: 85,
+    shadowSoftness: 1.5
   }),
   "cinematic-lite": Object.freeze({
-    sunIntensity: 1.12,
-    sunElevation: 38,
+    sunIntensity: 1.45,
+    sunElevation: 30,
     sunAzimuth: 225,
-    sunColor: "#fff2df",
-    ambientIntensity: 1.08,
-    ambientColor: "#d6e3f1",
-    exposure: 1.02,
-    fogEnabled: true,
+    sunColor: "#ffe3ba",
+    ambientIntensity: 0.65,
+    ambientColor: "#b9d0eb",
+    exposure: 1.08,
+    fogEnabled: false,
     fogStrength: 0.12,
     shadowQuality: "low",
-    renderScale: 1
+    renderScale: 1,
+    surfaceWarmth: 0.65,
+    shadowDistance: 85,
+    shadowSoftness: 1.5
   }),
   cinematic: Object.freeze({
-    sunIntensity: 1.28,
-    sunElevation: 34,
+    sunIntensity: 1.65,
+    sunElevation: 26,
     sunAzimuth: 225,
-    sunColor: "#fff1df",
-    ambientIntensity: 1.12,
-    ambientColor: "#d4e2f0",
-    exposure: 1.04,
-    fogEnabled: true,
+    sunColor: "#ffe3ba",
+    ambientIntensity: 0.55,
+    ambientColor: "#b9d0eb",
+    exposure: 1.1,
+    fogEnabled: false,
     fogStrength: 0.2,
     shadowQuality: "medium",
-    renderScale: 1
+    renderScale: 1,
+    surfaceWarmth: 0.65,
+    shadowDistance: 85,
+    shadowSoftness: 1.5
   }),
   recording: Object.freeze({
-    sunIntensity: 1.32,
-    sunElevation: 34,
+    sunIntensity: 1.65,
+    sunElevation: 26,
     sunAzimuth: 225,
-    sunColor: "#fff1df",
-    ambientIntensity: 1.14,
-    ambientColor: "#d4e2f0",
-    exposure: 1.04,
-    fogEnabled: true,
+    sunColor: "#ffe3ba",
+    ambientIntensity: 0.55,
+    ambientColor: "#b9d0eb",
+    exposure: 1.1,
+    fogEnabled: false,
     fogStrength: 0.22,
     shadowQuality: "high",
-    renderScale: 1
+    renderScale: 1,
+    surfaceWarmth: 0.65,
+    shadowDistance: 85,
+    shadowSoftness: 1.5
   })
 });
 var OVERRIDE_LIMITS = Object.freeze({
   sunIntensity: [0.5, 2],
   sunElevation: [10, 75],
   sunAzimuth: [0, 360],
-  ambientIntensity: [0.5, 1.8],
+  ambientIntensity: [0.1, 1.8],
   exposure: [0.7, 1.4],
   fogStrength: [0, 1],
-  renderScale: [1, 1.5]
+  renderScale: [1, 1.5],
+  surfaceWarmth: [0, 1],
+  shadowDistance: [30, 200],
+  shadowSoftness: [0, 4]
 });
 function resolvePresetSettings(settings2) {
   return {
@@ -97,12 +112,21 @@ var MATERIAL_KEYWORDS = Object.freeze({
   grass: /(?:^|[^a-z0-9])(grass|turf|field|ground|terrain)(?:$|[^a-z0-9])/,
   road: /(?:^|[^a-z0-9])(road|asphalt|track|pavement|surface)(?:$|[^a-z0-9])/
 });
+function ancestorNames(mesh) {
+  const names = [];
+  for (let parent = mesh?.parent; parent && !parent.isScene; parent = parent.parent) {
+    if (typeof parent.name === "string") names.push(parent.name);
+    if (typeof parent.userData?.type === "string") names.push(parent.userData.type);
+  }
+  return names.join(" ");
+}
 function isReplayGhost(mesh, material) {
   const descriptors = [
     mesh?.name,
     mesh?.userData?.type,
     material?.name,
-    material?.userData?.type
+    material?.userData?.type,
+    ancestorNames(mesh)
   ].filter((value) => typeof value === "string").join(" ").toLowerCase();
   return ["ghost", "replay", "swarm", "training"].some((marker) => descriptors.includes(marker));
 }
@@ -113,7 +137,8 @@ function classifyMaterial(mesh, material) {
     mesh?.userData?.material,
     material?.name,
     material?.userData?.type,
-    material?.map?.name
+    material?.map?.name,
+    ancestorNames(mesh)
   ].filter((value) => typeof value === "string").join(" ").toLowerCase();
   if (isReplayGhost(mesh, material)) {
     return "other";
@@ -137,21 +162,76 @@ function tuneMaterial(material, kind) {
       tire: [0.94, 0.01]
     }[kind];
     if (tuning) {
-      material.roughness = Math.max(material.roughness, tuning[0]);
+      material.roughness = tuning[0];
       material.metalness = Math.min(material.metalness, tuning[1]);
       material.needsUpdate = true;
       return true;
     }
   }
   if (typeof material.shininess === "number") {
-    const ceiling = kind === "car" ? 38 : kind === "tire" ? 4 : 16;
-    material.shininess = Math.min(material.shininess, ceiling);
+    material.shininess = kind === "car" ? 65 : kind === "tire" ? 4 : 12;
     material.needsUpdate = true;
     return true;
   }
   return false;
 }
-function applyMaterialTuning(sceneState) {
+var SURFACE_PROPERTIES = [
+  "name",
+  "map",
+  "alphaMap",
+  "alphaTest",
+  "opacity",
+  "transparent",
+  "side",
+  "vertexColors",
+  "fog",
+  "wireframe",
+  "depthTest",
+  "depthWrite",
+  "colorWrite",
+  "blending",
+  "blendSrc",
+  "blendDst",
+  "blendEquation",
+  "premultipliedAlpha",
+  "polygonOffset",
+  "polygonOffsetFactor",
+  "polygonOffsetUnits",
+  "visible",
+  "lightMap",
+  "lightMapIntensity",
+  "aoMap",
+  "aoMapIntensity",
+  "envMap",
+  "combine",
+  "reflectivity",
+  "refractionRatio",
+  "skinning",
+  "morphTargets",
+  "morphNormals"
+];
+function syncMaterialColors(sceneState, settings2 = {}) {
+  for (const [source, byKind] of sceneState.materialClones) {
+    for (const [kind, clone] of byKind) {
+      for (const key of ["opacity", "transparent", "visible", "depthWrite", "map", "alphaMap", "alphaTest", "vertexColors"]) {
+        if (source[key] === void 0 || clone[key] === source[key]) continue;
+        clone[key] = source[key];
+        if (!["opacity", "visible", "depthWrite"].includes(key)) clone.needsUpdate = true;
+      }
+      if (!clone.color?.copy || !source.color) continue;
+      clone.color.copy(source.color);
+      const { r, g, b } = source.color;
+      const neutral = Math.max(r, g, b) - Math.min(r, g, b) < 0.12;
+      if (neutral && kind !== "car" && kind !== "tire" && !source.map && !source.vertexColors) {
+        const warmth = settings2.surfaceWarmth ?? 0;
+        clone.color.r *= 1 - warmth * 0.04;
+        clone.color.g *= 1 - warmth * 0.16;
+        clone.color.b *= 1 - warmth * 0.32;
+      }
+    }
+  }
+}
+function applyMaterialTuning(sceneState, three = {}, settings2 = {}) {
   const { scene, materialClones, originalMaterials, processedMeshes } = sceneState;
   const activeMeshes = /* @__PURE__ */ new Set();
   let modified = 0;
@@ -159,10 +239,13 @@ function applyMaterialTuning(sceneState) {
     if (!mesh?.isMesh) return;
     activeMeshes.add(mesh);
     const knownMaterial = processedMeshes.get(mesh);
-    if (knownMaterial === mesh.material) return;
+    if (knownMaterial === mesh.material) {
+      const source = originalMaterials.get(mesh);
+      const sources = Array.isArray(source) ? source : [source];
+      if (!source || !sources.some((material) => isReplayGhost(mesh, material) || material?.transparent || material?.opacity < 0.98)) return;
+      mesh.material = source;
+    }
     if (processedMeshes.has(mesh)) {
-      const original2 = originalMaterials.get(mesh);
-      if (original2 !== void 0) mesh.material = original2;
       originalMaterials.delete(mesh);
     }
     const original = mesh.material;
@@ -173,8 +256,10 @@ function applyMaterialTuning(sceneState) {
     const replacements = materials.map((material) => {
       if (!material || typeof material.clone !== "function") return material;
       if (replayGhost || material.transparent || material.opacity < 0.98) return material;
+      if (material.wireframe || material.onBeforeCompile !== Object.getPrototypeOf(material).onBeforeCompile) return material;
       const kind = classifyMaterial(mesh, material);
-      if (kind === "other" || kind === "glass") return material;
+      const basic = material.isMeshBasicMaterial && typeof three.MeshPhongMaterial === "function" && mesh.geometry?.attributes?.normal;
+      if (kind === "glass" || kind === "other" && !basic) return material;
       let byKind = materialClones.get(material);
       if (!byKind) {
         byKind = /* @__PURE__ */ new Map();
@@ -182,7 +267,17 @@ function applyMaterialTuning(sceneState) {
       }
       let clone = byKind.get(kind);
       if (!clone) {
-        clone = material.clone();
+        if (basic) {
+          clone = new three.MeshPhongMaterial();
+          for (const key of SURFACE_PROPERTIES) {
+            if (material[key] !== void 0) clone[key] = material[key];
+          }
+          clone.color.copy(material.color);
+          clone.flatShading = true;
+          clone.toneMapped = true;
+        } else {
+          clone = material.clone();
+        }
         if (!tuneMaterial(clone, kind)) {
           clone.dispose?.();
           return material;
@@ -219,11 +314,12 @@ function applyMaterialTuning(sceneState) {
     }
     if (byKind.size === 0) materialClones.delete(material);
   }
+  syncMaterialColors(sceneState, settings2);
   return modified;
 }
 function restoreMaterials(sceneState) {
   for (const [mesh, material] of sceneState.originalMaterials) {
-    if (mesh) mesh.material = material;
+    if (mesh && mesh.material === sceneState.processedMeshes.get(mesh)) mesh.material = material;
   }
   for (const byKind of sceneState.materialClones.values()) {
     for (const clone of byKind.values()) clone.dispose?.();
@@ -319,8 +415,13 @@ function ensureSun(sceneState, three) {
 function ensureFill(sceneState, three) {
   let fill;
   sceneState.scene.traverse((object) => {
-    if (!fill && (object.isHemisphereLight || object.isAmbientLight) && object.intensity > 0) fill = object;
+    if (!fill && object.isHemisphereLight && object.intensity > 0) fill = object;
   });
+  if (!fill && typeof three.HemisphereLight !== "function") {
+    sceneState.scene.traverse((object) => {
+      if (!fill && object.isAmbientLight && object.intensity > 0) fill = object;
+    });
+  }
   if (fill) return fill;
   if (typeof three.HemisphereLight === "function") {
     fill = new three.HemisphereLight(14149364, 7829103, 0.7);
@@ -347,7 +448,7 @@ function configureLight(sceneState, three, light, settings2, bounds) {
   const snapshot = sceneState.lightSnapshots.get(light);
   if (light.isDirectionalLight) {
     light.intensity = snapshot.intensity * settings2.sunIntensity;
-    setLightColor(light, snapshot, three, settings2.sunColor, 0.13);
+    setLightColor(light, snapshot, three, settings2.sunColor, 0.75);
     const center = bounds?.center ?? sceneState.scene.position?.clone?.();
     if (!center) throw new Error("Three.js scene position vectors are unavailable.");
     const oldDistance = snapshot.position?.distanceTo?.(snapshot.targetPosition ?? center) || 100;
@@ -377,26 +478,26 @@ function configureLight(sceneState, three, light, settings2, bounds) {
         light.shadow.mapSize?.set?.(mapSize, mapSize);
       }
       if (typeof light.shadow.bias === "number") light.shadow.bias = -12e-5;
-      if (typeof light.shadow.normalBias === "number") light.shadow.normalBias = 0.025;
-      if (typeof light.shadow.radius === "number") light.shadow.radius = 3;
+      if (typeof light.shadow.normalBias === "number") light.shadow.normalBias = 0.015;
+      if (typeof light.shadow.radius === "number") light.shadow.radius = settings2.shadowSoftness ?? 1.5;
       const camera = light.shadow.camera;
       if (camera && bounds && Number.isFinite(bounds.radius)) {
-        const extent = bounds.radius * 1.15;
+        const extent = settings2.shadowDistance ?? 85;
         camera.left = -extent;
         camera.right = extent;
         camera.top = extent;
         camera.bottom = -extent;
-        camera.near = Math.max(0.1, extent * 0.01);
+        camera.near = 0.1;
         camera.far = Math.max(extent * 4, 100);
         camera.updateProjectionMatrix?.();
       }
     }
   } else {
     light.intensity = snapshot.intensity * settings2.ambientIntensity;
-    setLightColor(light, snapshot, three, settings2.ambientColor, 0.1);
+    setLightColor(light, snapshot, three, settings2.ambientColor, 0.8);
     if (light.groundColor && snapshot.groundColor) {
       light.groundColor.copy(snapshot.groundColor);
-      light.groundColor.lerp?.(new three.Color(8882047), 0.08);
+      light.groundColor.lerp?.(new three.Color(11639419), 0.65);
     }
   }
 }
@@ -404,7 +505,7 @@ function updateBackground(sceneState, three) {
   const background = sceneState.originalBackground;
   if (background === null || background?.isColor) {
     const color = background?.clone?.() ?? new three.Color(8628683);
-    color.lerp(new three.Color(11189968), 0.08);
+    color.lerp(new three.Color(9745615), 0.5);
     sceneState.scene.background = color;
   }
 }
@@ -418,8 +519,8 @@ function updateFog(sceneState, three, settings2, camera, bounds) {
   const color = background?.isColor ? background.clone() : new three.Color(11189968);
   const cameraFar = Number.isFinite(camera?.far) ? camera.far : 2e3;
   const horizonDistance = Math.min(cameraFar, (bounds?.radius ?? cameraFar) * 3);
-  const far = Math.max(40, horizonDistance * (0.3 - settings2.fogStrength * 0.08));
-  const near = far * (0.4 + (1 - settings2.fogStrength) * 0.25);
+  const far = Math.max(100, horizonDistance * (1.2 - settings2.fogStrength * 0.4));
+  const near = far * (0.65 - settings2.fogStrength * 0.15);
   if (!sceneState.fog || sceneState.fog.constructor !== three.Fog) {
     sceneState.fog = new three.Fog(color, near, far);
   } else {
@@ -458,10 +559,23 @@ function applySceneEffects(sceneState, three, settings2, camera, now) {
   safelyApply("directional sunlight", () => {
     const sun = ensureSun(sceneState, three);
     configureLight(sceneState, three, sun, settings2, sceneState.bounds);
+    sceneState.sun = sun;
+    sceneState.scene.traverse((light) => {
+      if (light !== sun && light.isDirectionalLight) {
+        rememberLight(sceneState, light);
+        light.intensity = 0;
+      }
+    });
   });
   safelyApply("ambient fill", () => {
     const fill = ensureFill(sceneState, three);
     configureLight(sceneState, three, fill, settings2, sceneState.bounds);
+    sceneState.scene.traverse((light) => {
+      if (light !== fill && (light.isAmbientLight || light.isHemisphereLight)) {
+        rememberLight(sceneState, light);
+        light.intensity = 0;
+      }
+    });
   });
   if (SHADOW_MAP_SIZES[settings2.shadowQuality] > 0) {
     safelyApply("shadow receivers and casters", () => {
@@ -477,10 +591,17 @@ function applySceneEffects(sceneState, three, settings2, camera, now) {
         }
         const materials = Array.isArray(object.material) ? object.material : [object.material];
         const isGhost = materials.some((material) => isReplayGhost(object, material) || material?.transparent || material?.opacity < 0.98);
-        if (isGhost) return;
+        if (isGhost) {
+          const snapshot = sceneState.meshShadowSnapshots.get(object);
+          object.castShadow = snapshot.castShadow;
+          object.receiveShadow = snapshot.receiveShadow;
+          return;
+        }
         object.receiveShadow = true;
         const kind = materials.map((material) => classifyMaterial(object, material)).find((materialKind) => materialKind === "car" || materialKind === "barrier");
-        if (kind === "car" || kind === "barrier") object.castShadow = true;
+        if (!materials.some((material) => material?.wireframe) && (kind === "car" || kind === "barrier" || object.geometry?.attributes?.normal)) {
+          object.castShadow = true;
+        }
       });
       for (const [mesh, snapshot] of sceneState.meshShadowSnapshots) {
         if (activeMeshes.has(mesh)) continue;
@@ -503,9 +624,45 @@ function applySceneEffects(sceneState, three, settings2, camera, now) {
   }
   safelyApply("atmospheric haze", () => updateFog(sceneState, three, settings2, camera, sceneState.bounds));
   if (now - sceneState.lastScanAt >= 1e3 || sceneState.lastScanAt === 0) {
-    safelyApply("material response", () => applyMaterialTuning(sceneState));
+    safelyApply("material response", () => applyMaterialTuning(sceneState, three, settings2));
     sceneState.lastScanAt = now;
   }
+  updateShadowFocus(sceneState, settings2, camera);
+}
+function updateShadowFocus(sceneState, settings2, camera) {
+  const sun = sceneState.sun;
+  const size = SHADOW_MAP_SIZES[settings2.shadowQuality];
+  if (!sun || !size || !camera?.position?.clone) return;
+  const extent = settings2.shadowDistance ?? 85;
+  const focus = sceneState.shadowFocus ??= camera.position.clone();
+  if (camera.getWorldPosition) camera.getWorldPosition(focus);
+  else focus.copy(camera.position);
+  const forward = sceneState.shadowForward ??= focus.clone();
+  if (camera.getWorldDirection) {
+    camera.getWorldDirection(forward);
+    focus.addScaledVector(forward, extent * 0.3);
+  }
+  const elevation = settings2.sunElevation * Math.PI / 180;
+  const azimuth = settings2.sunAzimuth * Math.PI / 180;
+  const sa = Math.sin(azimuth), ca = Math.cos(azimuth);
+  const se = Math.sin(elevation), ce = Math.cos(elevation);
+  const texel = extent * 2 / size;
+  const u = focus.x * ca - focus.z * sa;
+  const v = -focus.x * se * sa + focus.y * ce - focus.z * se * ca;
+  const du = Math.round(u / texel) * texel - u;
+  const dv = Math.round(v / texel) * texel - v;
+  focus.x += du * ca - dv * se * sa;
+  focus.y += dv * ce;
+  focus.z += -du * sa - dv * se * ca;
+  sun.target.position.copy(focus);
+  sun.target.parent?.worldToLocal?.(sun.target.position);
+  sun.position.copy(focus);
+  sun.position.x += ce * sa * extent * 2;
+  sun.position.y += se * extent * 2;
+  sun.position.z += ce * ca * extent * 2;
+  sun.parent?.worldToLocal?.(sun.position);
+  sun.target.updateMatrixWorld?.();
+  sun.updateMatrixWorld?.();
 }
 function applyRendererEffects(rendererState, three, settings2) {
   const { renderer } = rendererState;
@@ -527,7 +684,7 @@ function applyRendererEffects(rendererState, three, settings2) {
     }
     shadowMap.enabled = size > 0;
     if (size > 0 && typeof three.PCFSoftShadowMap === "number") {
-      shadowMap.type = three.PCFSoftShadowMap;
+      shadowMap.type = three.PCFShadowMap ?? three.PCFSoftShadowMap;
     }
   });
   safelyApply("render scale", () => {
@@ -650,6 +807,8 @@ var RenderController = class {
       this.modifiedMaterials = this.sceneState.originalMaterials.size;
       this.appliedRevision = this.revision;
     }
+    updateShadowFocus(this.sceneState, settings2, camera);
+    syncMaterialColors(this.sceneState, settings2);
   }
   onFrame(renderer, scene, duration) {
     if (scene !== this.activeScene || renderer !== this.activeRenderer) return;
@@ -715,7 +874,8 @@ var CLASS_MARKERS = Object.freeze({
   AmbientLight: "isAmbientLight",
   HemisphereLight: "isHemisphereLight",
   Box3: "isBox3",
-  Sphere: "isSphere"
+  Sphere: "isSphere",
+  MeshPhongMaterial: "isMeshPhongMaterial"
 });
 function sourceHasMarker(source, marker) {
   return new RegExp(`\\.${marker}\\s*=`).test(source);
@@ -749,7 +909,7 @@ function readThreeExports(moduleExports) {
         }
       }
     }
-    for (const name of ["ACESFilmicToneMapping", "PCFSoftShadowMap"]) {
+    for (const name of ["ACESFilmicToneMapping", "PCFSoftShadowMap", "PCFShadowMap"]) {
       if (typeof exports[name] === "number") three[name] = exports[name];
     }
   }
@@ -768,6 +928,7 @@ function findThreeModuleIds(moduleFactories) {
       continue;
     }
     if (sourceHasMarker(source, CLASS_MARKERS.WebGLRenderer)) rendererIds.push(id);
+    if (sourceHasMarker(source, CLASS_MARKERS.MeshPhongMaterial)) coreIds.push(id);
     if (sourceHasMarker(source, CLASS_MARKERS.Scene) && sourceHasMarker(source, CLASS_MARKERS.Color) && sourceHasMarker(source, CLASS_MARKERS.DirectionalLight)) {
       coreIds.push(id);
     }
@@ -804,6 +965,7 @@ function findThreeNamespace(pml2) {
   if (typeof three.WebGLRenderer === "function" && typeof three.Scene === "function" && typeof three.Color === "function" && typeof three.DirectionalLight === "function") {
     three.ACESFilmicToneMapping ??= 4;
     three.PCFSoftShadowMap ??= 2;
+    three.PCFShadowMap ??= 1;
     return three;
   }
   const missing = ["WebGLRenderer", "Scene", "Color", "DirectionalLight"].filter((name) => typeof three[name] !== "function");
@@ -991,7 +1153,10 @@ function mountPanel(document2, callbacks, initialSettings) {
     ["sunIntensity", "Sun intensity", 0.5, 2, 0.01, (v) => v.toFixed(2) + "x"],
     ["sunElevation", "Sun elevation", 10, 75, 1, (v) => `${Math.round(v)} deg`],
     ["sunAzimuth", "Sun azimuth", 0, 360, 1, (v) => `${Math.round(v)} deg`],
-    ["ambientIntensity", "Ambient fill", 0.5, 1.8, 0.01, (v) => v.toFixed(2) + "x"],
+    ["ambientIntensity", "Ambient fill", 0.1, 1.8, 0.01, (v) => v.toFixed(2) + "x"],
+    ["surfaceWarmth", "Cream surfaces", 0, 1, 0.01, (v) => `${Math.round(v * 100)}%`],
+    ["shadowDistance", "Shadow coverage", 30, 200, 1, (v) => `${Math.round(v)} units`],
+    ["shadowSoftness", "Shadow softness", 0, 4, 0.1, (v) => v.toFixed(1)],
     ["fogStrength", "Haze strength", 0, 1, 0.01, (v) => v.toFixed(2)],
     ["exposure", "Exposure", 0.7, 1.4, 0.01, (v) => v.toFixed(2)]
   ];
@@ -1110,7 +1275,7 @@ var SETTINGS_SCHEMA_VERSION = 1;
 var SETTINGS_STORAGE_KEY = "polyshade.settings";
 var DEFAULTS = Object.freeze({
   schemaVersion: SETTINGS_SCHEMA_VERSION,
-  preset: "cinematic-lite",
+  preset: "cinematic",
   enabled: true,
   overrides: Object.freeze({})
 });
@@ -1223,7 +1388,7 @@ function updateOverride(settings2, key, value) {
   }
   return {
     ...next,
-    preset: next.preset === "vanilla" ? "cinematic-lite" : next.preset,
+    preset: next.preset === "vanilla" ? "cinematic" : next.preset,
     enabled: true,
     overrides: { ...next.overrides, [key]: value }
   };
@@ -1260,11 +1425,13 @@ function updatePanel() {
   });
 }
 function toggleEnabled(enabled) {
-  const next = settings.preset === "vanilla" && enabled ? { ...selectPreset(settings, "cinematic-lite"), enabled: true } : { ...settings, enabled: enabled && settings.preset !== "vanilla" };
+  const next = settings.preset === "vanilla" && enabled ? { ...selectPreset(settings, "cinematic"), enabled: true } : { ...settings, enabled: enabled && settings.preset !== "vanilla" };
   persistAndApply(next);
   panel?.setStatus(enabled ? "PolyShade enabled." : "Restored the original rendering state.");
 }
 function attachRenderer() {
+  controller?.restore();
+  removeRenderHook?.();
   try {
     const three = findThreeNamespace(pml);
     controller = new RenderController(three, () => settings, (metrics) => panel?.setMetrics(metrics));

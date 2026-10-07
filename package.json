@@ -9,6 +9,7 @@
     "check": "npm test && npm run build"
   },
   "devDependencies": {
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.25.0",
+    "three": "^0.180.0"
   }
 }

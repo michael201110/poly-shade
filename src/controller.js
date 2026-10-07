@@ -5,7 +5,9 @@ import {
   createSceneState,
   restoreRenderer,
   restoreScene,
+  updateShadowFocus,
 } from "./effects.js";
+import { syncMaterialColors } from "./materials.js";
 import { resolvePresetSettings } from "./presets.js";
 
 const MAX_SAMPLES = 240;
@@ -66,6 +68,8 @@ export class RenderController {
       this.modifiedMaterials = this.sceneState.originalMaterials.size;
       this.appliedRevision = this.revision;
     }
+    updateShadowFocus(this.sceneState, settings, camera);
+    syncMaterialColors(this.sceneState, settings);
   }
 
   onFrame(renderer, scene, duration) {

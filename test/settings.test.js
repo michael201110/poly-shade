@@ -30,7 +30,7 @@ test("settings migrate schema zero and reject malformed records", () => {
     normalizeSettings({ schemaVersion: 0, preset: "recording", enabled: true, overrides: { fogStrength: 0.6 } }),
     { schemaVersion: 1, preset: "recording", enabled: true, overrides: { fogStrength: 0.6 } },
   );
-  assert.equal(normalizeSettings({ schemaVersion: 100 }).preset, "cinematic-lite");
+  assert.equal(normalizeSettings({ schemaVersion: 100 }).preset, "cinematic");
   assert.deepEqual(loadSettings(memoryStorage("{invalid"), () => {}), createDefaultSettings());
 });
 

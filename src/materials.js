@@ -7,12 +7,22 @@ const MATERIAL_KEYWORDS = Object.freeze({
   road: /(?:^|[^a-z0-9])(road|asphalt|track|pavement|surface)(?:$|[^a-z0-9])/,
 });
 
+function ancestorNames(mesh) {
+  const names = [];
+  for (let parent = mesh?.parent; parent && !parent.isScene; parent = parent.parent) {
+    if (typeof parent.name === "string") names.push(parent.name);
+    if (typeof parent.userData?.type === "string") names.push(parent.userData.type);
+  }
+  return names.join(" ");
+}
+
 export function isReplayGhost(mesh, material) {
   const descriptors = [
     mesh?.name,
     mesh?.userData?.type,
     material?.name,
     material?.userData?.type,
+    ancestorNames(mesh),
   ].filter((value) => typeof value === "string").join(" ").toLowerCase();
   return ["ghost", "replay", "swarm", "training"].some((marker) => descriptors.includes(marker));
 }
@@ -25,6 +35,7 @@ export function classifyMaterial(mesh, material) {
     material?.name,
     material?.userData?.type,
     material?.map?.name,
+    ancestorNames(mesh),
   ].filter((value) => typeof value === "string").join(" ").toLowerCase();
 
   if (isReplayGhost(mesh, material)) {
@@ -51,7 +62,7 @@ function tuneMaterial(material, kind) {
       tire: [0.94, 0.01],
     }[kind];
     if (tuning) {
-      material.roughness = Math.max(material.roughness, tuning[0]);
+      material.roughness = tuning[0];
       material.metalness = Math.min(material.metalness, tuning[1]);
       material.needsUpdate = true;
       return true;
@@ -59,15 +70,47 @@ function tuneMaterial(material, kind) {
   }
 
   if (typeof material.shininess === "number") {
-    const ceiling = kind === "car" ? 38 : kind === "tire" ? 4 : 16;
-    material.shininess = Math.min(material.shininess, ceiling);
+    material.shininess = kind === "car" ? 65 : kind === "tire" ? 4 : 12;
     material.needsUpdate = true;
     return true;
   }
   return false;
 }
 
-export function applyMaterialTuning(sceneState) {
+// Copy common render flags without copying Basic's type or shader identity.
+const SURFACE_PROPERTIES = [
+  "name", "map", "alphaMap", "alphaTest", "opacity", "transparent", "side",
+  "vertexColors", "fog", "wireframe", "depthTest", "depthWrite", "colorWrite",
+  "blending", "blendSrc", "blendDst", "blendEquation", "premultipliedAlpha",
+  "polygonOffset", "polygonOffsetFactor", "polygonOffsetUnits", "visible",
+  "lightMap", "lightMapIntensity", "aoMap", "aoMapIntensity", "envMap",
+  "combine", "reflectivity", "refractionRatio", "skinning", "morphTargets", "morphNormals",
+];
+
+export function syncMaterialColors(sceneState, settings = {}) {
+  for (const [source, byKind] of sceneState.materialClones) {
+    for (const [kind, clone] of byKind) {
+      for (const key of ["opacity", "transparent", "visible", "depthWrite", "map", "alphaMap", "alphaTest", "vertexColors"]) {
+        if (source[key] === undefined || clone[key] === source[key]) continue;
+        clone[key] = source[key];
+        if (!["opacity", "visible", "depthWrite"].includes(key)) clone.needsUpdate = true;
+      }
+      if (!clone.color?.copy || !source.color) continue;
+      clone.color.copy(source.color);
+      const { r, g, b } = source.color;
+      // Tint only neutral architecture; retain saturated paint and track markings.
+      const neutral = Math.max(r, g, b) - Math.min(r, g, b) < 0.12;
+      if (neutral && kind !== "car" && kind !== "tire" && !source.map && !source.vertexColors) {
+        const warmth = settings.surfaceWarmth ?? 0;
+        clone.color.r *= 1 - warmth * 0.04;
+        clone.color.g *= 1 - warmth * 0.16;
+        clone.color.b *= 1 - warmth * 0.32;
+      }
+    }
+  }
+}
+
+export function applyMaterialTuning(sceneState, three = {}, settings = {}) {
   const { scene, materialClones, originalMaterials, processedMeshes } = sceneState;
   const activeMeshes = new Set();
   let modified = 0;
@@ -76,10 +119,15 @@ export function applyMaterialTuning(sceneState) {
     activeMeshes.add(mesh);
 
     const knownMaterial = processedMeshes.get(mesh);
-    if (knownMaterial === mesh.material) return;
+    if (knownMaterial === mesh.material) {
+      const source = originalMaterials.get(mesh);
+      const sources = Array.isArray(source) ? source : [source];
+      if (!source || !sources.some((material) => isReplayGhost(mesh, material)
+        || material?.transparent || material?.opacity < 0.98)) return;
+      mesh.material = source;
+    }
     if (processedMeshes.has(mesh)) {
-      const original = originalMaterials.get(mesh);
-      if (original !== undefined) mesh.material = original;
+      // The game assigned a new material: keep that assignment as the new baseline.
       originalMaterials.delete(mesh);
     }
 
@@ -91,8 +139,12 @@ export function applyMaterialTuning(sceneState) {
     const replacements = materials.map((material) => {
       if (!material || typeof material.clone !== "function") return material;
       if (replayGhost || material.transparent || material.opacity < 0.98) return material;
+      if (material.wireframe
+        || material.onBeforeCompile !== Object.getPrototypeOf(material).onBeforeCompile) return material;
       const kind = classifyMaterial(mesh, material);
-      if (kind === "other" || kind === "glass") return material;
+      const basic = material.isMeshBasicMaterial
+        && typeof three.MeshPhongMaterial === "function" && mesh.geometry?.attributes?.normal;
+      if (kind === "glass" || (kind === "other" && !basic)) return material;
 
       let byKind = materialClones.get(material);
       if (!byKind) {
@@ -101,7 +153,17 @@ export function applyMaterialTuning(sceneState) {
       }
       let clone = byKind.get(kind);
       if (!clone) {
-        clone = material.clone();
+        if (basic) {
+          clone = new three.MeshPhongMaterial();
+          for (const key of SURFACE_PROPERTIES) {
+            if (material[key] !== undefined) clone[key] = material[key];
+          }
+          clone.color.copy(material.color);
+          clone.flatShading = true;
+          clone.toneMapped = true;
+        } else {
+          clone = material.clone();
+        }
         if (!tuneMaterial(clone, kind)) {
           clone.dispose?.();
           return material;
@@ -141,12 +203,13 @@ export function applyMaterialTuning(sceneState) {
     }
     if (byKind.size === 0) materialClones.delete(material);
   }
+  syncMaterialColors(sceneState, settings);
   return modified;
 }
 
 export function restoreMaterials(sceneState) {
   for (const [mesh, material] of sceneState.originalMaterials) {
-    if (mesh) mesh.material = material;
+    if (mesh && mesh.material === sceneState.processedMeshes.get(mesh)) mesh.material = material;
   }
   for (const byKind of sceneState.materialClones.values()) {
     for (const clone of byKind.values()) clone.dispose?.();
