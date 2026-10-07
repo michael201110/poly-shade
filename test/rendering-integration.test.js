@@ -84,16 +84,16 @@ test('camera-focused shadows stay bounded on huge tracks and restore all scene/l
   const camera = new THREE.PerspectiveCamera();
   camera.position.set(1500, 10, 1800); camera.updateMatrixWorld();
   applySceneEffects(state, THREE, profile, camera, 1000);
-  assert.equal(sun.shadow.camera.right, profile.shadowDistance);
-  assert.ok(sun.target.position.distanceTo(camera.position) < profile.shadowDistance);
+  assert.equal(state.sun.shadow.camera.right, profile.shadowDistance);
+  assert.ok(state.sun.target.position.distanceTo(camera.position) < profile.shadowDistance);
   assert.equal(floor.castShadow, true);
   assert.equal(floor.receiveShadow, true);
   assert.equal(ambient.intensity, 0);
-  const previous = sun.target.position.clone();
+  const previous = state.sun.target.position.clone();
   camera.position.x += 500; camera.updateMatrixWorld();
   updateShadowFocus(state, profile, camera);
-  assert.ok(sun.target.position.distanceTo(previous) > 490);
-  assert.ok(sun.position.distanceTo(sun.target.position) - profile.shadowDistance * 2 < 0.01);
+  assert.ok(state.sun.target.position.distanceTo(previous) > 490);
+  assert.ok(state.sun.position.distanceTo(state.sun.target.position) - profile.shadowDistance * 2 < 0.01);
   restoreScene(state);
   assert.equal(sun.intensity, 2);
   assert.equal(ambient.intensity, 0.6);
@@ -128,4 +128,23 @@ test('a source turning translucent is released on the next material scan', () =>
   assert.equal(mesh.material, original);
   assert.equal(state.originalMaterials.size, 0);
   assert.equal(state.materialClones.size, 0);
+});
+
+test('paint updates made directly through a replacement material persist and restore', () => {
+  const scene = new THREE.Scene();
+  const original = new THREE.MeshBasicMaterial({ color: '#333333' });
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(), original); mesh.name='vehicle';
+  scene.add(mesh);
+  const state = createSceneState(scene);
+  applyMaterialTuning(state, THREE, profile);
+  mesh.material.color.set('#00cfff');
+  const paint = mesh.material.color.clone();
+  syncMaterialColors(state, profile);
+  assert.ok(mesh.material.color.equals(paint));
+  assert.ok(original.color.equals(paint));
+  syncMaterialColors(state, profile);
+  assert.ok(mesh.material.color.equals(paint));
+  restoreMaterials(state);
+  assert.equal(mesh.material, original);
+  assert.ok(mesh.material.color.equals(paint));
 });

@@ -88,14 +88,26 @@ const SURFACE_PROPERTIES = [
 ];
 
 export function syncMaterialColors(sceneState, settings = {}) {
+  const snapshots = sceneState.materialSyncSnapshots ??= new WeakMap();
   for (const [source, byKind] of sceneState.materialClones) {
     for (const [kind, clone] of byKind) {
+      const previous = snapshots.get(clone);
       for (const key of ["opacity", "transparent", "visible", "depthWrite", "map", "alphaMap", "alphaTest", "vertexColors"]) {
+        if (previous && source[key] === previous[key] && clone[key] !== previous[key]) {
+          source[key] = clone[key];
+          if (!["opacity", "visible", "depthWrite"].includes(key)) source.needsUpdate = true;
+        }
         if (source[key] === undefined || clone[key] === source[key]) continue;
         clone[key] = source[key];
         if (!["opacity", "visible", "depthWrite"].includes(key)) clone.needsUpdate = true;
       }
       if (!clone.color?.copy || !source.color) continue;
+      if (previous && source.color.r === previous.sourceR && source.color.g === previous.sourceG
+        && source.color.b === previous.sourceB && (clone.color.r !== previous.outputR
+          || clone.color.g !== previous.outputG || clone.color.b !== previous.outputB)) {
+        // The game also updates colors through mesh.material after async model loading.
+        source.color.copy(clone.color);
+      }
       clone.color.copy(source.color);
       const { r, g, b } = source.color;
       // Tint only neutral architecture; retain saturated paint and track markings.
@@ -106,11 +118,19 @@ export function syncMaterialColors(sceneState, settings = {}) {
         clone.color.g *= 1 - warmth * 0.16;
         clone.color.b *= 1 - warmth * 0.32;
       }
+      snapshots.set(clone, {
+        sourceR: source.color.r, sourceG: source.color.g, sourceB: source.color.b,
+        outputR: clone.color.r, outputG: clone.color.g, outputB: clone.color.b,
+        opacity: source.opacity, transparent: source.transparent, visible: source.visible,
+        depthWrite: source.depthWrite, map: source.map, alphaMap: source.alphaMap,
+        alphaTest: source.alphaTest, vertexColors: source.vertexColors,
+      });
     }
   }
 }
 
 export function applyMaterialTuning(sceneState, three = {}, settings = {}) {
+  const LitMaterial = three.MeshPhongMaterial ?? three.MeshStandardMaterial ?? three.MeshLambertMaterial;
   const { scene, materialClones, originalMaterials, processedMeshes } = sceneState;
   const activeMeshes = new Set();
   let modified = 0;
@@ -143,7 +163,7 @@ export function applyMaterialTuning(sceneState, three = {}, settings = {}) {
         || material.onBeforeCompile !== Object.getPrototypeOf(material).onBeforeCompile) return material;
       const kind = classifyMaterial(mesh, material);
       const basic = material.isMeshBasicMaterial
-        && typeof three.MeshPhongMaterial === "function" && mesh.geometry?.attributes?.normal;
+        && typeof LitMaterial === "function" && mesh.geometry?.attributes?.normal;
       if (kind === "glass" || (kind === "other" && !basic)) return material;
 
       let byKind = materialClones.get(material);
@@ -154,7 +174,7 @@ export function applyMaterialTuning(sceneState, three = {}, settings = {}) {
       let clone = byKind.get(kind);
       if (!clone) {
         if (basic) {
-          clone = new three.MeshPhongMaterial();
+          clone = new LitMaterial();
           for (const key of SURFACE_PROPERTIES) {
             if (material[key] !== undefined) clone[key] = material[key];
           }
@@ -164,7 +184,7 @@ export function applyMaterialTuning(sceneState, three = {}, settings = {}) {
         } else {
           clone = material.clone();
         }
-        if (!tuneMaterial(clone, kind)) {
+        if (!tuneMaterial(clone, kind) && !basic) {
           clone.dispose?.();
           return material;
         }

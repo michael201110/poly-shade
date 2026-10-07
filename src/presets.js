@@ -33,7 +33,7 @@ export const PRESETS = Object.freeze({
     shadowQuality: "off",
     renderScale: 1,
     surfaceWarmth: 0.65,
-    shadowDistance: 85,
+    shadowDistance: 30,
     shadowSoftness: 1.5,
   }),
   "cinematic-lite": Object.freeze({
@@ -49,7 +49,7 @@ export const PRESETS = Object.freeze({
     shadowQuality: "low",
     renderScale: 1,
     surfaceWarmth: 0.65,
-    shadowDistance: 85,
+    shadowDistance: 30,
     shadowSoftness: 1.5,
   }),
   cinematic: Object.freeze({
@@ -65,7 +65,7 @@ export const PRESETS = Object.freeze({
     shadowQuality: "medium",
     renderScale: 1,
     surfaceWarmth: 0.65,
-    shadowDistance: 85,
+    shadowDistance: 30,
     shadowSoftness: 1.5,
   }),
   recording: Object.freeze({
@@ -81,7 +81,7 @@ export const PRESETS = Object.freeze({
     shadowQuality: "high",
     renderScale: 1,
     surfaceWarmth: 0.65,
-    shadowDistance: 85,
+    shadowDistance: 30,
     shadowSoftness: 1.5,
   }),
 });

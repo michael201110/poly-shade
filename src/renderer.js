@@ -11,6 +11,8 @@ const CLASS_MARKERS = Object.freeze({
   Box3: "isBox3",
   Sphere: "isSphere",
   MeshPhongMaterial: "isMeshPhongMaterial",
+  MeshStandardMaterial: "isMeshStandardMaterial",
+  MeshLambertMaterial: "isMeshLambertMaterial",
 });
 
 function sourceHasMarker(source, marker) {
@@ -71,7 +73,8 @@ function findThreeModuleIds(moduleFactories) {
     }
 
     if (sourceHasMarker(source, CLASS_MARKERS.WebGLRenderer)) rendererIds.push(id);
-    if (sourceHasMarker(source, CLASS_MARKERS.MeshPhongMaterial)) coreIds.push(id);
+    if (["MeshPhongMaterial", "MeshStandardMaterial", "MeshLambertMaterial"]
+      .some((name) => sourceHasMarker(source, CLASS_MARKERS[name]))) coreIds.push(id);
     if (
       sourceHasMarker(source, CLASS_MARKERS.Scene)
       && sourceHasMarker(source, CLASS_MARKERS.Color)
@@ -90,10 +93,16 @@ export function findThreeNamespace(pml) {
   }
 
   let webpackRequire;
-  try {
-    webpackRequire = pml.getFromPolyTrack("n");
-  } catch (error) {
-    throw new Error("PML could not access PolyTrack's scoped Webpack require function.", { cause: error });
+  for (const name of ["i", "n"]) {
+    try {
+      const candidate = pml.getFromPolyTrack(name);
+      if (typeof candidate === "function" && candidate.m) {
+        webpackRequire = candidate;
+        break;
+      }
+    } catch {
+      // Minified identifiers differ between game bundles; verify the module table.
+    }
   }
 
   const moduleFactories = webpackRequire?.m;
@@ -136,34 +145,36 @@ export function findThreeNamespace(pml) {
 
 export function installRenderHook(three, onRender) {
   const prototype = three?.WebGLRenderer?.prototype;
-  if (!prototype || typeof prototype.render !== "function") {
-    throw new Error("Three.js WebGLRenderer.render is not accessible.");
+  if (!prototype) {
+    throw new Error("Three.js WebGLRenderer is not accessible.");
   }
 
   const existing = prototype[RENDER_PATCH];
   if (existing) {
     existing.listeners.add(onRender);
-    return () => existing.listeners.delete(onRender);
+    return () => existing.remove(onRender);
   }
 
   const originalRender = prototype.render;
   const listeners = new Set([onRender]);
-  function polyShadeRender(scene, camera, ...args) {
+  const instances = new Map();
+  const descriptor = Object.getOwnPropertyDescriptor(prototype, "render");
+  function invoke(original, renderer, scene, camera, args) {
     for (const listener of listeners) {
       try {
-        listener.before(this, scene, camera);
+        listener.before(renderer, scene, camera);
       } catch (error) {
         console.error("[PolyShade] Render pre-hook failed; the original frame will still render.", error);
       }
     }
     const started = performance.now();
     try {
-      return originalRender.call(this, scene, camera, ...args);
+      return original.call(renderer, scene, camera, ...args);
     } finally {
       const duration = performance.now() - started;
       for (const listener of listeners) {
         try {
-          listener.after(this, scene, camera, duration);
+          listener.after(renderer, scene, camera, duration);
         } catch (error) {
           console.error("[PolyShade] Render post-hook failed.", error);
         }
@@ -171,17 +182,43 @@ export function installRenderHook(three, onRender) {
     }
   }
 
+  function polyShadeRender(scene, camera, ...args) {
+    return invoke(originalRender, this, scene, camera, args);
+  }
+
+  function remove(listener) {
+    listeners.delete(listener);
+    if (listeners.size) return;
+    for (const [renderer, entry] of instances) {
+      if (renderer.render === entry.wrapper) renderer.render = entry.original;
+    }
+    instances.clear();
+    if (descriptor) Object.defineProperty(prototype, "render", descriptor);
+    else delete prototype.render;
+    delete prototype[RENDER_PATCH];
+  }
+
   Object.defineProperty(prototype, RENDER_PATCH, {
     configurable: true,
-    value: { originalRender, listeners, wrapper: polyShadeRender },
+    value: { originalRender, listeners, wrapper: polyShadeRender, remove },
   });
-  prototype.render = polyShadeRender;
+  if (typeof originalRender === "function") prototype.render = polyShadeRender;
+  else {
+    // Three.js assigns this.render inside its constructor. Install before game init.
+    Object.defineProperty(prototype, "render", {
+      configurable: true,
+      set(original) {
+        const renderer = this;
+        const wrapper = function (scene, camera, ...args) {
+          return invoke(original, renderer, scene, camera, args);
+        };
+        Object.defineProperty(renderer, "render", {
+          configurable: true, enumerable: true, writable: true, value: wrapper,
+        });
+        instances.set(renderer, { original, wrapper });
+      },
+    });
+  }
 
-  return () => {
-    listeners.delete(onRender);
-    if (listeners.size === 0 && prototype.render === polyShadeRender) {
-      prototype.render = originalRender;
-      delete prototype[RENDER_PATCH];
-    }
-  };
+  return () => remove(onRender);
 }

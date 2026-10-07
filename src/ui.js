@@ -21,7 +21,17 @@ const CSS = `
 #${PANEL_ID} button { cursor: pointer; }
 #${PANEL_ID} button:hover { background: #394a59; }
 #${PANEL_ID} .polyshade-row { display: grid; grid-template-columns: 1fr 112px; gap: 8px; align-items: center; margin: 8px 0; }
-#${PANEL_ID} .polyshade-range { width: 100%; accent-color: #d8b985; }
+#${PANEL_ID} .polyshade-range {
+  appearance: none; width: 100%; height: 5px; padding: 0; margin: 5px 0;
+  background: #526171; border: 0; border-radius: 3px; box-shadow: none;
+}
+#${PANEL_ID} .polyshade-range::-webkit-slider-thumb {
+  appearance: none; width: 12px; height: 12px; border: 0; border-radius: 50%;
+  background: #d8b985; box-shadow: none;
+}
+#${PANEL_ID} .polyshade-range::-moz-range-thumb {
+  width: 12px; height: 12px; border: 0; border-radius: 50%; background: #d8b985;
+}
 #${PANEL_ID} output { display: block; color: #bac7d2; text-align: right; }
 #${PANEL_ID} .polyshade-check { display: flex; align-items: center; gap: 7px; }
 #${PANEL_ID} .polyshade-actions { display: flex; gap: 7px; margin-top: 11px; }

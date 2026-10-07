@@ -17,6 +17,7 @@ let panel;
 let removeRenderHook;
 let removeHotkey;
 let unloadListener;
+let confirmedScene;
 
 function getStorage() {
   try {
@@ -61,6 +62,10 @@ function attachRenderer() {
       before(renderer, scene, camera) {
         try {
           controller.onRender(renderer, scene, camera);
+          if (controller.activeScene === scene && confirmedScene !== scene) {
+            confirmedScene = scene;
+            panel?.setStatus(`Enhancing the live scene; ${controller.modifiedMaterials} mesh materials tuned.`);
+          }
         } catch (error) {
           console.error("[PolyShade] Scene enhancement failed; rendering continues unchanged.", error);
         }
@@ -110,6 +115,7 @@ function restoreAndDispose() {
   if (unloadListener) globalThis.removeEventListener?.("pagehide", unloadListener);
   panel?.dispose();
   controller = null;
+  confirmedScene = null;
   panel = null;
   removeRenderHook = undefined;
   removeHotkey = undefined;
@@ -120,7 +126,7 @@ class PolyShadeMod extends PolyMod {}
 export const polyMod = Object.assign(new PolyShadeMod(), {
   modName: "PolyShade",
   modID: "polyshade",
-  modVersion: "0.1.1",
+  modVersion: "0.1.2",
   modAuthor: "PolyShade",
   modDescription: "<p>Lighting, shadows, material response, and atmosphere for PolyTrack's live Three.js scene. Rendering only; no physics or simulation changes.</p>",
   touchingPhysics: false,
@@ -130,17 +136,21 @@ export const polyMod = Object.assign(new PolyShadeMod(), {
   init(pmlInstance) {
     pml ??= pmlInstance;
     settings = loadSettings(getStorage());
+    attachRenderer();
   },
   postInit() {
     if (!settings) settings = loadSettings(getStorage());
     makePanel();
+    if (controller) panel?.setStatus(controller.activeScene
+      ? `Enhancing the live scene; ${controller.modifiedMaterials} mesh materials tuned.`
+      : "Renderer hook installed; waiting for a rendered scene.");
     removeHotkey ??= installHotkey(document, () => toggleEnabled(!settings.enabled));
   },
   onGameLoad() {
     if (!settings) settings = loadSettings(getStorage());
     makePanel();
     if (!removeHotkey) removeHotkey = installHotkey(document, () => toggleEnabled(!settings.enabled));
-    attachRenderer();
+    if (!controller) attachRenderer();
     unloadListener ??= restoreAndDispose;
     globalThis.addEventListener?.("pagehide", unloadListener, { once: true });
   },

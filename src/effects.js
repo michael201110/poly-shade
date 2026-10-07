@@ -85,11 +85,11 @@ function restoreShadowSettings(light, snapshot) {
 function ensureSun(sceneState, three) {
   let sun;
   sceneState.scene.traverse((object) => {
-    if (!sun && object.isDirectionalLight && object.intensity > 0) sun = object;
+    if (!sun && object.isDirectionalLight && object.userData?.[OWNED_LIGHT]) sun = object;
   });
   if (sun) return sun;
 
-  sun = new three.DirectionalLight(0xfff2df, 1.8);
+  sun = new three.DirectionalLight(0xfff2df, 4.7);
   sun.name = "PolyShade sunlight";
   sun.userData[OWNED_LIGHT] = true;
   sun.castShadow = true;
@@ -102,7 +102,7 @@ function ensureSun(sceneState, three) {
 function ensureFill(sceneState, three) {
   let fill;
   sceneState.scene.traverse((object) => {
-    if (!fill && object.isHemisphereLight && object.intensity > 0) fill = object;
+    if (!fill && (object.isHemisphereLight || object.isAmbientLight) && object.userData?.[OWNED_LIGHT]) fill = object;
   });
   if (!fill && typeof three.HemisphereLight !== "function") {
     sceneState.scene.traverse((object) => {
@@ -112,7 +112,7 @@ function ensureFill(sceneState, three) {
   if (fill) return fill;
 
   if (typeof three.HemisphereLight === "function") {
-    fill = new three.HemisphereLight(0xd7e6f4, 0x77766f, 0.7);
+    fill = new three.HemisphereLight(0xd7e6f4, 0x77766f, 1.6);
   } else if (typeof three.AmbientLight === "function") {
     fill = new three.AmbientLight(0xcbd8e8, 0.55);
   } else {
@@ -259,7 +259,37 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
   }
 
   safelyApply("sky", () => updateBackground(sceneState, three));
+  sceneState.nativeCSM = usesNativeCSM(sceneState.scene);
+  sceneState.scene.traverse((object) => {
+    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    if (materials.some((material) => material?.defines?.USE_CSM !== undefined)) sceneState.nativeCSM = true;
+  });
   safelyApply("directional sunlight", () => {
+    if (sceneState.nativeCSM) {
+      // CSM indexes directional lights as cascades; an extra sun breaks its shader arrays.
+      for (const light of sceneState.ownedLights) {
+        if (!light.isDirectionalLight) continue;
+        light.parent?.remove(light);
+        light.target?.parent?.remove(light.target);
+        light.shadow?.map?.dispose?.();
+        sceneState.ownedLights.delete(light);
+        sceneState.lightSnapshots.delete(light);
+      }
+      sceneState.sun = null;
+      sceneState.scene.traverse((light) => {
+        if (!light.isDirectionalLight) return;
+        rememberLight(sceneState, light);
+        const snapshot = sceneState.lightSnapshots.get(light);
+        if (light.userData?.[OWNED_LIGHT]) {
+          light.intensity = 0;
+          light.castShadow = false;
+          return;
+        }
+        light.intensity = snapshot.intensity * settings.sunIntensity;
+        setLightColor(light, snapshot, three, settings.sunColor, 0.75);
+      });
+      return;
+    }
     const sun = ensureSun(sceneState, three);
     configureLight(sceneState, three, sun, settings, sceneState.bounds);
     sceneState.sun = sun;
@@ -338,12 +368,17 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
   updateShadowFocus(sceneState, settings, camera);
 }
 
+export function usesNativeCSM(scene) {
+  return (scene.children ?? []).filter((light) => light.isDirectionalLight
+    && !light.userData?.[OWNED_LIGHT]).length > 1;
+}
+
 // Keep a fixed-size, texel-aligned shadow region around the visible action.
 // Whole-track bounds can turn even a 4096 map into metre-wide shadow pixels.
 export function updateShadowFocus(sceneState, settings, camera) {
   const sun = sceneState.sun;
   const size = SHADOW_MAP_SIZES[settings.shadowQuality];
-  if (!sun || !size || !camera?.position?.clone) return;
+  if (sceneState.nativeCSM || !sun || !size || !camera?.position?.clone) return;
   const extent = settings.shadowDistance ?? 85;
   const focus = sceneState.shadowFocus ??= camera.position.clone();
   if (camera.getWorldPosition) camera.getWorldPosition(focus);
@@ -374,6 +409,15 @@ export function updateShadowFocus(sceneState, settings, camera) {
   sun.parent?.worldToLocal?.(sun.position);
   sun.target.updateMatrixWorld?.();
   sun.updateMatrixWorld?.();
+}
+
+export function refreshFrameEffects(sceneState, rendererState, three, settings, camera) {
+  // The native renderer's update() rewrites shadowMap.enabled before every render.
+  applyRendererEffects(rendererState, three, settings);
+  if (!sceneState.nativeCSM && sceneState.sun) {
+    sceneState.sun.castShadow = SHADOW_MAP_SIZES[settings.shadowQuality] > 0;
+  }
+  updateShadowFocus(sceneState, settings, camera);
 }
 
 export function applyRendererEffects(rendererState, three, settings) {

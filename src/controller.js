@@ -5,9 +5,10 @@ import {
   createSceneState,
   restoreRenderer,
   restoreScene,
-  updateShadowFocus,
+  refreshFrameEffects,
+  usesNativeCSM,
 } from "./effects.js";
-import { syncMaterialColors } from "./materials.js";
+import { syncMaterialColors, restoreMaterials } from "./materials.js";
 import { resolvePresetSettings } from "./presets.js";
 
 const MAX_SAMPLES = 240;
@@ -59,8 +60,14 @@ export class RenderController {
       this.attachScene(scene);
     }
 
+    const csmChanged = usesNativeCSM(scene) !== Boolean(this.sceneState.nativeCSM);
+    if (csmChanged) {
+      restoreMaterials(this.sceneState);
+      this.sceneState.lastScanAt = 0;
+    }
     if (
       this.revision !== this.appliedRevision
+      || csmChanged
       || now - this.sceneState.lastScanAt >= 1000
     ) {
       applyRendererEffects(this.rendererState, this.three, settings);
@@ -68,7 +75,7 @@ export class RenderController {
       this.modifiedMaterials = this.sceneState.originalMaterials.size;
       this.appliedRevision = this.revision;
     }
-    updateShadowFocus(this.sceneState, settings, camera);
+    refreshFrameEffects(this.sceneState, this.rendererState, this.three, settings, camera);
     syncMaterialColors(this.sceneState, settings);
   }
 
