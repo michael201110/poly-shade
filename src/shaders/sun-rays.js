@@ -1,5 +1,5 @@
-// A depth mask around the projected procedural sun provides radial shafts.
-// Fully clear and fully hidden suns fade out; foreground surfaces reject shafts.
+// Sky depth samples define illuminated gaps around the real sun. The finished
+// shafts composite over foreground surfaces, as screen-space light scatter should.
 export const SUN_RAYS_FRAGMENT = `
 varying vec2 vUv;
 uniform sampler2D tDepth;
@@ -13,12 +13,13 @@ float mask(vec2 uv){
   return step(0.999999,texture2D(tDepth,uv).r)*exp(-dot(delta,delta)/0.0016);
 }
 void main(){
-  float partial=texture2D(tSunVisibility,vec2(0.5)).g;
-  if(partial<0.001){gl_FragColor=vec4(0.0);return;}
-  vec2 uv=vUv,stepUv=(vUv-sunUv)*density/32.0;
+  vec3 sun=texture2D(tSunVisibility,vec2(0.5)).rgb;
+  float rayVisibility=clamp(sun.r*0.15+sun.g*0.85,0.0,1.0)*sun.b;
+  if(rayVisibility<0.001){gl_FragColor=vec4(0.0);return;}
+  vec2 uv=sunUv,stepUv=(vUv-sunUv)*density/32.0;
   float sum=0.0,weight=1.0;
-  for(int i=0;i<32;i++){uv-=stepUv;sum+=mask(uv)*weight;weight*=decay;}
-  float foreground=step(0.999999,texture2D(tDepth,vUv).r);
-  float shaft=sum/32.0*partial*visibility*foreground*exposure;
+  for(int i=0;i<32;i++){uv+=stepUv;sum+=mask(uv)*weight;weight*=decay;}
+  float normalizer=max(1.0-pow(decay,32.0),0.001);
+  float shaft=sum/normalizer*rayVisibility*visibility*exposure;
   gl_FragColor=vec4(sunColor*shaft,1.0);
 }`;

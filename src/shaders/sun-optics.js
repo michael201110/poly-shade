@@ -20,17 +20,19 @@ uniform sampler2D tSunVisibility;uniform vec2 sunUv;
 uniform float flareStrength,ghostStrength,iridescence,streakStrength,sunVisibility,aspect;
 vec3 lensFlare(vec2 uv){
 vec3 mask=texture2D(tSunVisibility,vec2(0.5)).rgb;
-float visible=mask.r*mask.b*sunVisibility;
+float visible=clamp(mask.r+mask.g*0.2,0.0,1.0)*mix(mask.b,1.0,0.18)*sunVisibility;
 if(flareStrength<=0.0||visible<0.001)return vec3(0.0);
 vec2 delta=(uv-sunUv)*vec2(aspect,1.0);float r=length(delta);
 float sky=step(0.999999,texture2D(tDepth,uv).r);
-vec3 f=sunColor*exp(-r*r/0.00065)*0.16*sky;
-for(int i=0;i<3;i++){
-vec2 center=mix(sunUv,vec2(0.5),0.6+float(i)*0.5);
+float cloudDiffusion=4.0*mask.b*(1.0-mask.b);
+vec3 f=sunColor*(exp(-r*r/0.00042)*0.62+exp(-r*r/0.0035)*cloudDiffusion*0.055)*sky;
+for(int i=0;i<4;i++){
+float axis=0.35+float(i)*0.4;
+vec2 center=sunUv+(vec2(0.5)-sunUv)*axis;
 float d=length((uv-center)*vec2(aspect,1.0));
-float radius=0.027+float(i)*0.015;
-vec3 ring=exp(-pow((vec3(d)-radius+vec3(-1.0,0.0,1.0)*iridescence*0.003)/0.008,vec3(2.0)));
-f+=mix(vec3(dot(ring,vec3(0.333))),ring,iridescence)*ghostStrength*0.12;
+float radius=0.016+float(i)*0.006;
+vec3 ring=exp(-pow((vec3(d)-radius+vec3(-1.0,0.0,1.0)*iridescence*0.012)/0.006,vec3(2.0)));
+f+=mix(vec3(dot(ring,vec3(0.333))),ring,iridescence)*ghostStrength*0.34;
 }
-f+=sunColor*exp(-abs(delta.x)*10.0-delta.y*delta.y/0.000002)*streakStrength*0.04*sky;
+f+=sunColor*exp(-abs(delta.x)*8.0-delta.y*delta.y/0.000008)*streakStrength*0.2*sky;
 return f*flareStrength*visible;}`;

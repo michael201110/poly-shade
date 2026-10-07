@@ -30,5 +30,9 @@ void main(){
  if(debugView==1)c=vec3(clamp(viewDistance(vUv)/100.0,0.0,1.0));
  if(debugView==2)c=aoActive>0.5?texture2D(tAO,vUv).rgb:vec3(1.0);
  if(debugView==3)c=shoulder(texture2D(tBloom,vUv).rgb);
+ if(debugView==4){float d=length((vUv-sunUv)*vec2(aspect,1.0));c=vec3(0.04,0.06,0.09);c=mix(c,vec3(0.1,0.5,1.0),1.0-smoothstep(0.04,0.18,d));c=mix(c,vec3(1.0,0.85,0.15),1.0-smoothstep(0.003,0.007,d));}
+ if(debugView==5)c=texture2D(tSunVisibility,vec2(0.5)).rgb;
+ if(debugView==6)c=texture2D(tRays,vUv).rgb*4.0;
+ if(debugView==7)c=texture2D(tVolume,vUv).rgb*4.0;
  gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
 }`;

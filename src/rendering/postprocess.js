@@ -1,6 +1,6 @@
 import { SUN_RAYS_FRAGMENT } from "../shaders/sun-rays.js";
 import { SUN_VISIBILITY_FRAGMENT } from "../shaders/sun-optics.js";
-import { SunVisibility } from "./sun-visibility.js";
+import { SunVisibility, sunScreenVisibility } from "./sun-visibility.js";
 import { VOLUMETRIC_FRAGMENT } from "../shaders/volumetric.js";
 import { FULLSCREEN_VERTEX } from "../shaders/fullscreen.js";
 import { SSAO_FRAGMENT, AO_BLUR_FRAGMENT } from "../shaders/ssao.js";
@@ -8,6 +8,16 @@ import { BLOOM_FRAGMENT, BLOOM_BLUR_FRAGMENT } from "../shaders/bloom.js";
 import { GRADE_FRAGMENT } from "../shaders/grade.js";
 import { FINISH_FRAGMENT } from "../shaders/finish.js";
 import { RenderState, TargetPool } from "./render-targets.js";
+const DEBUG_VIEWS = [
+  "final",
+  "depth",
+  "ao",
+  "bloom",
+  "sun-position",
+  "sun-visibility",
+  "sun-rays",
+  "volumetric",
+];
 const GRADE_OUTPUT_FRAGMENT = GRADE_FRAGMENT.replace(
   "gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);",
   "gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);\n#include <colorspace_fragment>",
@@ -236,17 +246,26 @@ export class PostProcess {
         raysActive = false,
         opticsActive = false,
         visibility = 0;
+      const debugSun =
+        s.debugView === "sun-position" ||
+        s.debugView === "sun-visibility" ||
+        s.debugView === "sun-rays" ||
+        s.debugView === "volumetric";
+      const debugRays = s.debugView === "sun-rays";
+      const debugVolume = s.debugView === "volumetric";
       const volumeRequested =
-        s.volumetricEnabled &&
-        s.volumetricStrength > 0 &&
-        s.volumetricDensity > 0 &&
+        ((s.volumetricEnabled &&
+          s.volumetricStrength > 0 &&
+          s.volumetricDensity > 0) ||
+          debugVolume) &&
         !this.guard.failures.has("volumetric");
       const sunUv = (this.sunUv ??= new this.three.Vector2());
       let visibilityTexture = sceneTarget.texture;
       if (
         ((s.sunRaysEnabled && s.sunRayStrength > 0 && s.sunRayExposure > 0) ||
           (s.lensFlareEnabled && s.lensFlareStrength > 0) ||
-          volumeRequested) &&
+          volumeRequested ||
+          debugSun) &&
         depth
       ) {
         const direction = (this.sunView ??= new this.three.Vector3());
@@ -261,22 +280,8 @@ export class PostProcess {
           (clip.x / Math.max(clip.w, 0.001)) * 0.5 + 0.5,
           (clip.y / Math.max(clip.w, 0.001)) * 0.5 + 0.5,
         );
-        visibility =
-          clip.w > 0
-            ? Math.max(
-                0,
-                Math.min(
-                  1,
-                  (1.2 -
-                    Math.max(
-                      Math.abs(sunUv.x - 0.5) * 2,
-                      Math.abs(sunUv.y - 0.5) * 2,
-                    )) *
-                    5,
-                ),
-              )
-            : 0;
-        if (visibility > 0) {
+        visibility = sunScreenVisibility(clip.w, sunUv);
+        if (visibility > 0 || debugSun) {
           const probe = this.pool.get("sun-visibility", 1, 1);
           retain.add("sun-visibility");
           this.pass(
@@ -306,11 +311,13 @@ export class PostProcess {
             s.lensFlareStrength > 0 &&
             this.sunVisibility.clear > 0.01;
           if (
-            s.sunRaysEnabled &&
-            s.sunRayStrength > 0 &&
-            s.sunRayExposure > 0 &&
-            this.sunVisibility.partial > 0.01 &&
-            !(volumeRequested && this.sunVisibility.clear > 0.01)
+            ((s.sunRaysEnabled &&
+              s.sunRayStrength > 0 &&
+              s.sunRayExposure > 0) ||
+              debugRays) &&
+            (debugRays ||
+              this.sunVisibility.partial > 0.01 ||
+              this.sunVisibility.clear > 0.01)
           ) {
             const scale = Math.min(0.25, 512 / gl.drawingBufferWidth),
               target = this.pool.get(
@@ -346,8 +353,8 @@ export class PostProcess {
       if (
         volumeRequested &&
         depth &&
-        visibility > 0 &&
-        this.sunVisibility.clear > 0.01
+        (visibility > 0 || debugVolume) &&
+        (this.sunVisibility.clear > 0.01 || debugVolume)
       ) {
         const scale = Math.min(0.25, 512 / gl.drawingBufferWidth),
           vw = Math.round(gl.drawingBufferWidth * scale),
@@ -397,7 +404,8 @@ export class PostProcess {
         tVolume: volume,
         volumeTexel,
         volumeMaxDistance: s.volumetricMaxDistance,
-        volumeStrength: volumeActive ? s.volumetricStrength : 0,
+        volumeStrength:
+          volumeActive && s.volumetricEnabled ? s.volumetricStrength : 0,
         tSunVisibility: visibilityTexture,
         sunUv,
         aspect: w / h,
@@ -418,7 +426,7 @@ export class PostProcess {
         atmosphereActive:
           s.atmosphereEnabled && s.atmosphereStrength > 0 && depth ? 1 : 0,
         gradeActive: s.gradeEnabled ? 1 : 0,
-        debugView: ["final", "depth", "ao", "bloom"].indexOf(s.debugView),
+        debugView: DEBUG_VIEWS.indexOf(s.debugView),
       };
       for (const key of [
         "exposure",
@@ -484,8 +492,11 @@ export class PostProcess {
         sunRays: raysActive,
         volumetric: volumeActive,
         lensFlare: opticsActive,
+        sunUv: [sunUv.x, sunUv.y],
+        sunScreenVisibility: visibility,
         sunClear: this.sunVisibility.clear,
         sunPartial: this.sunVisibility.partial,
+        cloudTransmission: this.sunVisibility.transmission,
         samples: sceneTarget.samples,
         fxaa: s.fxaaEnabled,
         sceneSize: [w, h],

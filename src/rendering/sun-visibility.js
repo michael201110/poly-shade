@@ -1,11 +1,20 @@
 // Four bytes, asynchronously transferred after a fence signals. Never wait for
 // GPU work or synchronously read the scene depth buffer.
+export function sunScreenVisibility(clipW, uv) {
+  if (clipW <= 0 || uv.x < -0.03 || uv.x > 1.03 || uv.y < -0.03 || uv.y > 1.03)
+    return 0;
+  const edge = Math.min(uv.x, 1 - uv.x, uv.y, 1 - uv.y),
+    t = Math.max(0, Math.min(1, (edge + 0.03) / 0.1));
+  return t * t * (3 - 2 * t);
+}
+
 export class SunVisibility {
   constructor(renderer) {
     this.gl = renderer.getContext();
     this.result = new Uint8Array(4);
     this.clear = 1;
     this.partial = 1;
+    this.transmission = 1;
     this.frame = 0;
   }
   poll() {
@@ -25,6 +34,7 @@ export class SunVisibility {
     }
     this.clear = this.result[0] / 255;
     this.partial = this.result[1] / 255;
+    this.transmission = this.result[2] / 255;
   }
   capture(sunUv) {
     const g = this.gl;
@@ -34,6 +44,7 @@ export class SunVisibility {
     ) {
       this.clear = 1;
       this.partial = 1;
+      this.transmission = 1;
     }
     this.lastX = sunUv.x;
     this.lastY = sunUv.y;
@@ -61,5 +72,6 @@ export class SunVisibility {
     this.lastY = undefined;
     this.clear = 1;
     this.partial = 1;
+    this.transmission = 1;
   }
 }

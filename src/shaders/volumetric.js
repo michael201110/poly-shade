@@ -18,13 +18,13 @@ void main(){
  vec3 surface=viewPosition(vUv);float end=min(length(surface),volumeMaxDistance);
  vec3 ray=normalize(surface);vec3 vis=texture2D(tSunVisibility,vec2(0.5)).rgb;
  float cloudPartial=4.0*vis.b*(1.0-vis.b);
- float gate=(vis.g*0.85+vis.r*(0.08+cloudPartial*0.3))*vis.b;
+ float gate=(vis.g*0.82+vis.r*(0.14+cloudPartial*0.25))*mix(vis.b,1.0,cloudPartial*0.25);
  float total=0.0,stepLength=end/float(volumeSamples);
  if(gate>0.001){for(int i=0;i<16;i++){if(i>=volumeSamples)break;
  float distance=(float(i)+0.5)*stepLength;vec3 p=ray*distance;
  float light=min(sunlit(p,min(volumeMaxDistance*0.15,12.0)),sunlit(p,min(volumeMaxDistance*1.5,160.0)));
  total+=light*volumeDensity*stepLength*exp(-volumeDensity*distance)*pow(volumeDecay,float(i));}}
- float phase=0.12+0.88*pow(max(dot(ray,sunViewDirection),0.0),4.0);
+ float phase=0.1+0.9*pow(max(dot(ray,sunViewDirection),0.0),2.0);
  gl_FragColor=vec4(sunColor*total*phase*gate,end/volumeMaxDistance);
 }`;
 

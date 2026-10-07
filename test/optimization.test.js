@@ -3,7 +3,10 @@ import assert from "node:assert/strict";
 import * as THREE from "three";
 import { TargetPool } from "../src/rendering/render-targets.js";
 import { PostProcess } from "../src/rendering/postprocess.js";
-import { SunVisibility } from "../src/rendering/sun-visibility.js";
+import {
+  SunVisibility,
+  sunScreenVisibility,
+} from "../src/rendering/sun-visibility.js";
 import { BrakeLights } from "../src/rendering/brake-lights.js";
 import { PRESETS } from "../src/presets.js";
 import { normalizeSettings } from "../src/settings.js";
@@ -90,19 +93,20 @@ test("zero-strength passes release targets and grade writes output directly with
   post.render(
     new THREE.Scene(),
     camera,
-    { ...s, volumetricStrength: 0.045, sunRayStrength: 0.08 },
+    { ...s, volumetricStrength: 0.08, sunRayStrength: 0.24 },
     draw,
     palette,
   );
   assert.equal(post.active.volumetric, true);
   assert.equal(
     post.active.sunRays,
-    false,
-    "volumetric shafts replace overlapping radial shafts",
+    true,
+    "partial sun visibility keeps radial shafts active alongside softer volumetrics",
   );
   assert.deepEqual(post.passOrder, [
     "scene",
     "sun-visibility",
+    "sun-rays",
     "volumetric",
     "grade-output",
   ]);
@@ -165,6 +169,13 @@ test("sun visibility never reads a pending fence and deletes pending resources o
   assert.equal(probe.partial, 0);
   probe.dispose();
   assert.equal(deleted, 2);
+});
+
+test("sun screen visibility fades at the edge and stops for offscreen or behind-camera suns", () => {
+  assert.equal(sunScreenVisibility(1, new THREE.Vector2(0.5, 0.5)), 1);
+  assert.ok(sunScreenVisibility(1, new THREE.Vector2(0.02, 0.5)) > 0);
+  assert.equal(sunScreenVisibility(1, new THREE.Vector2(-0.04, 0.5)), 0);
+  assert.equal(sunScreenVisibility(-1, new THREE.Vector2(0.5, 0.5)), 0);
 });
 test("missing SpotLight keeps native lamps and creates no omni light fallback", () => {
   const manager = new BrakeLights(

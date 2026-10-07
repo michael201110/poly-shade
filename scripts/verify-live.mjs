@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { PNG } from "pngjs";
 import { mkdir } from "node:fs/promises";
 const output =
-  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.2.1");
+  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.2.2");
 await mkdir(output, { recursive: true });
 const report = { presets: {}, comparisons: {}, screenshots: [] };
 function imageStats(buffer) {
@@ -68,7 +68,7 @@ report.environment = {
   platform: process.platform,
   architecture: process.arch,
   viewport: [1280, 720],
-  release: process.env.POLYSHADE_RELEASE ?? "0.2.1",
+  release: process.env.POLYSHADE_RELEASE ?? "0.2.2",
   date: new Date().toISOString(),
 };
 const renderingErrors = [];
@@ -600,6 +600,18 @@ try {
   });
   assert.deepEqual(report.sunRays.failures, {});
   await shot("stylized-sky-sun-rays");
+  await page.evaluate(() => {
+    const c = window.__polyShadeController;
+    c.getSettings().overrides.debugView = "sun-rays";
+    c.notifySettingsChanged();
+  });
+  await page.waitForTimeout(250);
+  await shot("debug-sun-rays");
+  await page.evaluate(() => {
+    const c = window.__polyShadeController;
+    c.getSettings().overrides.debugView = "final";
+    c.notifySettingsChanged();
+  });
   report.optics = {};
   const frontAzimuth = await page.evaluate(
     () => window.__polyShadeController.getSettings().overrides.sunAzimuth,
@@ -608,6 +620,7 @@ try {
     ["sun-visible", 12, 0],
     ["low-sun", 2, 0],
     ["open-sky", 35, 0],
+    ["sun-edge", 12, 45],
     ["sun-behind", 20, 180],
   ]) {
     await page.evaluate(
@@ -625,11 +638,56 @@ try {
     report.optics[name] = await page.evaluate(
       () => window.__polyShadeController.cinematic.post.active,
     );
+    if (name === "sun-edge")
+      assert.ok(
+        Math.min(
+          report.optics[name].sunUv[0],
+          1 - report.optics[name].sunUv[0],
+        ) < 0.15,
+        "edge case projects close to a horizontal screen edge",
+      );
     await shot(name);
   }
   assert.equal(report.optics["sun-behind"].sunRays, false);
   assert.equal(report.optics["sun-behind"].lensFlare, false);
   assert.equal(report.optics["sun-behind"].volumetric, false);
+  // Keep the shipped cloud art intact while moving the sun through its
+  // projected coverage. Capture a real cloud attenuation case for the report.
+  for (const offset of [30, -30, 20, -20, 10, -10, 0, 40, -40, 25, -25]) {
+    await page.evaluate(
+      ({ azimuth }) => {
+        const c = window.__polyShadeController;
+        Object.assign(c.getSettings().overrides, {
+          sunElevation: 12,
+          sunAzimuth: azimuth,
+          cloudsEnabled: true,
+          cloudAmount: 0.4,
+        });
+        c.notifySettingsChanged();
+      },
+      { azimuth: (frontAzimuth + offset + 360) % 360 },
+    );
+    await page.waitForTimeout(300);
+    const a = await page.evaluate(
+      () => window.__polyShadeController.cinematic.post.active,
+    );
+    if (
+      a.sunUv[0] > 0 &&
+      a.sunUv[0] < 1 &&
+      a.sunUv[1] > 0 &&
+      a.sunUv[1] < 1 &&
+      a.sunClear > 0.1 &&
+      a.cloudTransmission < 0.8
+    ) {
+      report.optics["sun-through-clouds"] = a;
+      await shot("sun-through-clouds");
+      break;
+    }
+  }
+  assert.ok(
+    report.optics["sun-through-clouds"],
+    "find a live cloud attenuating the on-screen sun",
+  );
   // Find the actual track/mountain silhouette in this live camera. No depth
   // mock or synthetic occluder is used for these visibility cases.
   for (let elevation = 0; elevation <= 5; elevation += 0.25) {
@@ -955,6 +1013,20 @@ try {
       () => window.__polyShadeController.cinematic.post.active,
     );
     await shot(name + "-volume-on");
+    if (name === "arch-partial") {
+      await page.evaluate(() => {
+        const c = window.__polyShadeController;
+        c.getSettings().overrides.debugView = "volumetric";
+        c.notifySettingsChanged();
+      });
+      await page.waitForTimeout(200);
+      await shot("debug-volumetric");
+      await page.evaluate(() => {
+        const c = window.__polyShadeController;
+        c.getSettings().overrides.debugView = "final";
+        c.notifySettingsChanged();
+      });
+    }
     await page.evaluate(() => {
       const c = window.__polyShadeController;
       c.getSettings().overrides.volumetricEnabled = false;
