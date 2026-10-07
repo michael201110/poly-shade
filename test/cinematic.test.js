@@ -11,7 +11,7 @@ import { ShaderGuard } from "../src/rendering/shader-guard.js";
 import { GpuTimer } from "../src/rendering/performance.js";
 import { BrakeLights } from "../src/rendering/brake-lights.js";
 
-test("brake lamps create real point lights, follow native emissive state, exclude ghosts and clean up", () => {
+test("brake lamps create local rear/downward spotlights, follow native emissive state, exclude ghosts and clean up", () => {
   const scene = new THREE.Scene(),
     camera = new THREE.PerspectiveCamera();
   const lamp = new THREE.MeshStandardMaterial({ emissive: 0x000000 });
@@ -25,6 +25,10 @@ test("brake lamps create real point lights, follow native emissive state, exclud
   ghost.material = lamp.clone();
   ghost.material.name = "BrakeLight";
   scene.add(ghost);
+  camera.position.set(0, 1, 5);
+  camera.lookAt(car.position);
+  camera.updateMatrixWorld();
+  scene.updateMatrixWorld();
   const manager = new BrakeLights(THREE, scene);
   manager.scan(PRESETS.cinematic, camera);
   manager.update(PRESETS.cinematic);
@@ -38,18 +42,36 @@ test("brake lamps create real point lights, follow native emissive state, exclud
   assert.ok(
     lights.every(
       (l) =>
-        l.isPointLight &&
+        l.isSpotLight &&
         l.visible &&
         l.intensity > 0 &&
         l.distance === 2.5 &&
         !l.castShadow,
     ),
   );
+  for (const light of lights) {
+    const local = light.target.position.clone().sub(light.position).normalize();
+    assert.ok(local.z > 0.9 && local.y < 0);
+    assert.equal(light.target.parent, car);
+    car.rotation.set(0.3, Math.PI / 2, 0.7);
+    scene.updateMatrixWorld();
+    const actual = light.target
+      .getWorldPosition(new THREE.Vector3())
+      .sub(light.getWorldPosition(new THREE.Vector3()))
+      .normalize();
+    assert.ok(
+      actual.distanceTo(local.clone().transformDirection(car.matrixWorld)) <
+        1e-6,
+    );
+    car.rotation.set(0, 0, 0);
+    scene.updateMatrixWorld();
+  }
   lamp.emissive.setRGB(0, 0, 0);
   manager.update(PRESETS.cinematic);
   assert.ok(lights.every((l) => l.intensity === 0));
   manager.dispose();
   assert.ok(lights.every((l) => l.parent === null));
+  assert.ok(lights.every((l) => l.target.parent === null));
   assert.equal(car.children.length, 0);
 });
 
@@ -91,9 +113,17 @@ test("environment reuses textures until sky settings change, disposes replacemen
   env.update({ ...PRESETS.cinematic, exposure: 1.2 });
   assert.equal(env.texture, first);
   assert.equal(env.generations, 1);
-  env.update({ ...PRESETS.cinematic, sunAzimuth: 90 });
+  env.update({ ...PRESETS.cinematic, environmentEnabled: false });
+  assert.equal(scene.environment, original);
+  assert.equal(env.texture, null);
   assert.equal(disposed, 1);
+  env.update(PRESETS.cinematic);
+  assert.notEqual(env.texture, first);
   assert.equal(env.generations, 2);
+  env.texture.addEventListener("dispose", () => disposed++);
+  env.update({ ...PRESETS.cinematic, sunAzimuth: 90 });
+  assert.equal(disposed, 2);
+  assert.equal(env.generations, 3);
   assert.equal(env.texture.mapping, THREE.EquirectangularReflectionMapping);
   // The generated equirectangular image must agree with the game's UV convention.
   const { width, height, data } = env.texture.image;
@@ -130,7 +160,7 @@ test("render target pool clamps to GPU limits, resizes without growing the pool,
   assert.deepEqual([a.width, a.height], [1024, 512]);
   assert.equal(a.samples, 4);
   assert.ok(a.depthTexture);
-  assert.equal(pool.get("scene", 500, 250), a);
+  assert.equal(pool.get("scene", 500, 250, { depth: true, samples: 4 }), a);
   assert.equal(pool.allocations, 1);
   pool.get("ao", 200, 100);
   pool.retain(new Set(["scene"]));

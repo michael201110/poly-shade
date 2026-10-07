@@ -92,7 +92,7 @@ export class RenderController {
       restoreMaterials(this.sceneState);
       (this.sceneState.failedEffects ??= new Set()).add("material response");
     }
-    this.cinematic.frame(settings, now);
+    this.cinematic.frame(settings, now, camera);
     this.updateCSM(settings);
     refreshFrameEffects(
       this.sceneState,

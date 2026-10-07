@@ -1,10 +1,17 @@
 import { SUN_RAYS_FRAGMENT } from "../shaders/sun-rays.js";
+import { SUN_VISIBILITY_FRAGMENT } from "../shaders/sun-optics.js";
+import { SunVisibility } from "./sun-visibility.js";
+import { VOLUMETRIC_FRAGMENT } from "../shaders/volumetric.js";
 import { FULLSCREEN_VERTEX } from "../shaders/fullscreen.js";
 import { SSAO_FRAGMENT, AO_BLUR_FRAGMENT } from "../shaders/ssao.js";
 import { BLOOM_FRAGMENT, BLOOM_BLUR_FRAGMENT } from "../shaders/bloom.js";
 import { GRADE_FRAGMENT } from "../shaders/grade.js";
 import { FINISH_FRAGMENT } from "../shaders/finish.js";
 import { RenderState, TargetPool } from "./render-targets.js";
+const GRADE_OUTPUT_FRAGMENT = GRADE_FRAGMENT.replace(
+  "gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);",
+  "gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);\n#include <colorspace_fragment>",
+);
 
 export class PostProcess {
   constructor(three, renderer, capabilities, guard) {
@@ -25,6 +32,7 @@ export class PostProcess {
     this.disabled = false;
     this.frames = 0;
     this.active = {};
+    this.sunVisibility = new SunVisibility(renderer);
   }
   material(name, fragment) {
     if (!this.materials.has(name))
@@ -48,7 +56,7 @@ export class PostProcess {
     if (entry) entry.value = value;
     else material.uniforms[key] = { value };
   }
-  pass(name, fragment, target, values, draw) {
+  pass(name, fragment, target, values, draw, profileName = name) {
     if (this.guard.failures.has(name)) return false;
     const m = this.material(name, fragment);
     for (const [key, value] of Object.entries(values))
@@ -57,7 +65,9 @@ export class PostProcess {
     this.guard.pass = name;
     this.renderer.setRenderTarget(target);
     this.renderer.setScissorTest(false);
-    draw(this.scene, this.camera);
+    if (this.profiler)
+      this.profiler.measure(profileName, () => draw(this.scene, this.camera));
+    else draw(this.scene, this.camera);
     this.passOrder.push(name);
     return !this.guard.failures.has(name);
   }
@@ -66,6 +76,7 @@ export class PostProcess {
     this.passOrder.length = 0;
     if (this.disabled || !s.postEnabled || s.postQuality === "off") {
       this.pool.dispose();
+      this.sunVisibility.dispose();
       this.active = { post: false };
       return draw(scene, camera);
     }
@@ -80,13 +91,26 @@ export class PostProcess {
       const sceneTarget = this.pool.get("scene", w, h, {
         depth: true,
         samples: this.capabilities.antialias
-          ? Math.min(4, this.capabilities.maxSamples)
+          ? Math.min(
+              s.sceneSamples === "auto" || s.sceneSamples === undefined
+                ? 0
+                : Number(s.sceneSamples),
+              this.capabilities.maxSamples,
+            )
           : 0,
       });
       w = sceneTarget.width;
       h = sceneTarget.height;
-      const gradeTarget = this.pool.get("grade", w, h),
-        retain = new Set(["scene", "grade"]);
+      const finishNeeded =
+        s.fxaaEnabled || (s.sharpenEnabled && s.sharpenStrength > 0);
+      const gradeTarget = finishNeeded
+          ? this.pool.get(
+              "grade",
+              gl.drawingBufferWidth,
+              gl.drawingBufferHeight,
+            )
+          : this.state.target,
+        retain = new Set(finishNeeded ? ["scene", "grade"] : ["scene"]);
       r.xr.enabled = false;
       r.autoClear = true;
       r.toneMapping = this.three.NoToneMapping;
@@ -94,7 +118,12 @@ export class PostProcess {
       r.setRenderTarget(sceneTarget);
       r.setScissorTest(false);
       this.guard.pass = "scene";
-      draw(scene, camera);
+      if (this.profiler) this.profiler.scene(() => draw(scene, camera));
+      else draw(scene, camera);
+      if (this.profiler && sceneTarget.samples)
+        this.profiler.measure("scene-msaa-resolve", () =>
+          r.setRenderTarget(null),
+        );
       this.passOrder.push("scene");
       const depth = sceneTarget.depthTexture;
       const depthValues = {
@@ -106,7 +135,12 @@ export class PostProcess {
         aoActive = false,
         bloom = sceneTarget.texture,
         bloomActive = false;
-      if (s.aoEnabled && depth && this.capabilities.features.ssao) {
+      if (
+        s.aoEnabled &&
+        s.aoStrength > 0 &&
+        depth &&
+        this.capabilities.features.ssao
+      ) {
         const scale = s.aoQuality === "high" ? 0.5 : 0.4,
           baseWidth = w / s.renderScale,
           baseHeight = h / s.renderScale;
@@ -140,6 +174,7 @@ export class PostProcess {
             b,
             { ...depthValues, tInput: a.texture, stepUv: step },
             draw,
+            "ao-blur-horizontal",
           );
           step.set(0, 1 / ah);
           aoActive =
@@ -149,14 +184,19 @@ export class PostProcess {
               a,
               { ...depthValues, tInput: b.texture, stepUv: step },
               draw,
+              "ao-blur-vertical",
             ) && aoActive;
           ao = a.texture;
         }
       }
-      if (s.bloomEnabled && this.capabilities.features.bloom) {
-        const scale = Math.min(0.25, 768 / w),
-          bw = Math.round(w * scale),
-          bh = Math.round(h * scale);
+      if (
+        s.bloomEnabled &&
+        s.bloomStrength > 0 &&
+        this.capabilities.features.bloom
+      ) {
+        const scale = Math.min(0.25, 768 / gl.drawingBufferWidth),
+          bw = Math.round(gl.drawingBufferWidth * scale),
+          bh = Math.round(gl.drawingBufferHeight * scale);
         const a = this.pool.get("bloom", bw, bh),
           b = this.pool.get("bloom-blur", bw, bh);
         retain.add("bloom");
@@ -177,6 +217,7 @@ export class PostProcess {
             b,
             { tInput: a.texture, stepUv: step },
             draw,
+            "bloom-blur-1",
           );
           step.multiplyScalar(s.postQuality === "high" ? 2 : 1.5);
           bloomActive =
@@ -186,13 +227,28 @@ export class PostProcess {
               a,
               { tInput: b.texture, stepUv: step },
               draw,
+              "bloom-blur-2",
             ) && bloomActive;
           bloom = a.texture;
         }
       }
       let rays = sceneTarget.texture,
-        raysActive = false;
-      if (s.sunRaysEnabled && depth) {
+        raysActive = false,
+        opticsActive = false,
+        visibility = 0;
+      const volumeRequested =
+        s.volumetricEnabled &&
+        s.volumetricStrength > 0 &&
+        s.volumetricDensity > 0 &&
+        !this.guard.failures.has("volumetric");
+      const sunUv = (this.sunUv ??= new this.three.Vector2());
+      let visibilityTexture = sceneTarget.texture;
+      if (
+        ((s.sunRaysEnabled && s.sunRayStrength > 0 && s.sunRayExposure > 0) ||
+          (s.lensFlareEnabled && s.lensFlareStrength > 0) ||
+          volumeRequested) &&
+        depth
+      ) {
         const direction = (this.sunView ??= new this.three.Vector3());
         direction
           .copy(palette.direction)
@@ -201,12 +257,11 @@ export class PostProcess {
         clip
           .set(direction.x, direction.y, direction.z, 0)
           .applyMatrix4(camera.projectionMatrix);
-        const sunUv = (this.sunUv ??= new this.three.Vector2());
         sunUv.set(
           (clip.x / Math.max(clip.w, 0.001)) * 0.5 + 0.5,
           (clip.y / Math.max(clip.w, 0.001)) * 0.5 + 0.5,
         );
-        const visibility =
+        visibility =
           clip.w > 0
             ? Math.max(
                 0,
@@ -222,30 +277,106 @@ export class PostProcess {
               )
             : 0;
         if (visibility > 0) {
-          const scale = Math.min(0.25, 512 / w),
-            target = this.pool.get(
-              "sun-rays",
-              Math.round(w * scale),
-              Math.round(h * scale),
-            );
-          retain.add("sun-rays");
-          raysActive = this.pass(
-            "sun-rays",
-            SUN_RAYS_FRAGMENT,
-            target,
+          const probe = this.pool.get("sun-visibility", 1, 1);
+          retain.add("sun-visibility");
+          this.pass(
+            "sun-visibility",
+            SUN_VISIBILITY_FRAGMENT,
+            probe,
             {
               tDepth: depth,
               sunUv,
-              sunColor: palette.sun,
-              decay: s.sunRayDecay,
-              density: s.sunRayDensity,
-              exposure: s.sunRayExposure,
               aspect: w / h,
-              visibility,
+              sunDirection: palette.direction,
+              cloudAmount: s.skyEnabled && s.cloudsEnabled ? s.cloudAmount : 0,
+              cloudTime: performance.now() / 1000,
             },
             draw,
           );
-          rays = target.texture;
+          visibilityTexture = probe.texture;
+          if (this.profiler)
+            this.profiler.measure(
+              "sun-visibility-transfer",
+              () => this.sunVisibility.capture(sunUv),
+              false,
+            );
+          else this.sunVisibility.capture(sunUv);
+          opticsActive =
+            s.lensFlareEnabled &&
+            s.lensFlareStrength > 0 &&
+            this.sunVisibility.clear > 0.01;
+          if (
+            s.sunRaysEnabled &&
+            s.sunRayStrength > 0 &&
+            s.sunRayExposure > 0 &&
+            this.sunVisibility.partial > 0.01 &&
+            !(volumeRequested && this.sunVisibility.clear > 0.01)
+          ) {
+            const scale = Math.min(0.25, 512 / gl.drawingBufferWidth),
+              target = this.pool.get(
+                "sun-rays",
+                Math.round(gl.drawingBufferWidth * scale),
+                Math.round(gl.drawingBufferHeight * scale),
+              );
+            retain.add("sun-rays");
+            raysActive = this.pass(
+              "sun-rays",
+              SUN_RAYS_FRAGMENT,
+              target,
+              {
+                tDepth: depth,
+                tSunVisibility: visibilityTexture,
+                sunUv,
+                sunColor: palette.sun,
+                decay: s.sunRayDecay,
+                density: s.sunRayDensity,
+                exposure: s.sunRayExposure,
+                aspect: w / h,
+                visibility,
+              },
+              draw,
+            );
+            rays = target.texture;
+          }
+        }
+      }
+      let volume = sceneTarget.texture,
+        volumeActive = false;
+      const volumeTexel = (this.volumeTexel ??= new this.three.Vector2());
+      if (
+        volumeRequested &&
+        depth &&
+        visibility > 0 &&
+        this.sunVisibility.clear > 0.01
+      ) {
+        const scale = Math.min(0.25, 512 / gl.drawingBufferWidth),
+          vw = Math.round(gl.drawingBufferWidth * scale),
+          vh = Math.round(gl.drawingBufferHeight * scale);
+        const target = this.pool.get("volumetric", vw, vh);
+        volumeTexel.set(1 / vw, 1 / vh);
+        volumeActive = this.pass(
+          "volumetric",
+          VOLUMETRIC_FRAGMENT,
+          target,
+          {
+            ...depthValues,
+            tSunVisibility: visibilityTexture,
+            cameraProjection: camera.projectionMatrix,
+            sunViewDirection: this.sunView,
+            sunColor: palette.sun,
+            volumeDensity: s.volumetricDensity,
+            volumeDecay: s.volumetricDecay,
+            volumeSamples: Math.min(
+              16,
+              Math.max(4, Math.round(s.volumetricSamples)),
+            ),
+            volumeMaxDistance: s.volumetricMaxDistance,
+          },
+          draw,
+        );
+        if (volumeActive) {
+          retain.add("volumetric");
+          volume = target.texture;
         }
       }
       if (!raysActive) retain.delete("sun-rays");
@@ -263,14 +394,29 @@ export class PostProcess {
         tAO: ao,
         tBloom: bloom,
         tRays: rays,
-        rayStrength: raysActive ? s.sunRayStrength : 0,
+        tVolume: volume,
+        volumeTexel,
+        volumeMaxDistance: s.volumetricMaxDistance,
+        volumeStrength: volumeActive ? s.volumetricStrength : 0,
+        tSunVisibility: visibilityTexture,
+        sunUv,
+        aspect: w / h,
+        sunVisibility: visibility,
+        flareStrength: opticsActive ? s.lensFlareStrength : 0,
+        ghostStrength: s.flareGhostStrength,
+        iridescence: s.flareIridescence,
+        streakStrength: s.flareStreakStrength,
+        rayStrength: raysActive
+          ? s.sunRayStrength * (volumeActive ? 0.2 : 1)
+          : 0,
         aoActive: aoActive ? 1 : 0,
         bloomStrength: bloomActive ? s.bloomStrength : 0,
         cameraWorld: camera.matrixWorld,
         horizon: palette.horizon,
         sunDirection: palette.direction,
         sunColor: palette.sun,
-        atmosphereActive: s.atmosphereEnabled && depth ? 1 : 0,
+        atmosphereActive:
+          s.atmosphereEnabled && s.atmosphereStrength > 0 && depth ? 1 : 0,
         gradeActive: s.gradeEnabled ? 1 : 0,
         debugView: ["final", "depth", "ao", "bloom"].indexOf(s.debugView),
       };
@@ -293,12 +439,26 @@ export class PostProcess {
       ])
         values[key] = s[key];
       values.exposure *= this.state.exposure / s.exposure;
-      if (!this.pass("grade", GRADE_FRAGMENT, gradeTarget, values, draw))
+      if (volumeActive) values.atmosphereStrength *= 0.8;
+      if (!finishNeeded) r.outputColorSpace = this.state.output;
+      const gradeFragment = finishNeeded
+        ? GRADE_FRAGMENT
+        : GRADE_OUTPUT_FRAGMENT;
+      if (
+        !this.pass(
+          finishNeeded ? "grade" : "grade-output",
+          gradeFragment,
+          gradeTarget,
+          values,
+          draw,
+        )
+      )
         throw new Error("Colour grade failed");
       r.outputColorSpace = this.state.output;
       const texel = (this.texel ??= new this.three.Vector2());
-      texel.set(1 / w, 1 / h);
+      texel.set(1 / gl.drawingBufferWidth, 1 / gl.drawingBufferHeight);
       if (
+        finishNeeded &&
         !this.pass(
           "finish",
           FINISH_FRAGMENT,
@@ -314,6 +474,7 @@ export class PostProcess {
       )
         throw new Error("Final colour output failed");
       this.pool.retain(retain);
+      if (!retain.has("sun-visibility")) this.sunVisibility.dispose();
       this.frames++;
       this.active = {
         post: true,
@@ -321,6 +482,11 @@ export class PostProcess {
         ao: aoActive,
         bloom: bloomActive,
         sunRays: raysActive,
+        volumetric: volumeActive,
+        lensFlare: opticsActive,
+        sunClear: this.sunVisibility.clear,
+        sunPartial: this.sunVisibility.partial,
+        samples: sceneTarget.samples,
         fxaa: s.fxaaEnabled,
         sceneSize: [w, h],
         targets: this.pool.targets.size,
@@ -339,6 +505,7 @@ export class PostProcess {
     }
   }
   dispose() {
+    this.sunVisibility.dispose();
     this.pool.dispose();
     for (const material of this.materials.values()) material.dispose();
     this.materials.clear();

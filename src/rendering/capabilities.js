@@ -6,6 +6,7 @@ const CLASS_NAMES = [
   "FogExp2",
   "DirectionalLight",
   "PointLight",
+  "SpotLight",
   "AmbientLight",
   "HemisphereLight",
   "Vector2",

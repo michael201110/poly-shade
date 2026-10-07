@@ -352,6 +352,12 @@ export function mountPanel(document, callbacks, initialSettings) {
               `Targets: ${JSON.stringify(data.capabilities.resources)}`,
               `Environment: ${JSON.stringify(data.capabilities.environment)}`,
               `Failures: ${JSON.stringify(data.capabilities.failures)}`,
+              ...(data.capabilities.profile
+                ? Object.entries(data.capabilities.profile).map(
+                    ([name, p]) =>
+                      `${name}: CPU ${p.cpu.average.toFixed(2)} / ${p.cpu.p95.toFixed(2)} ms; GPU ${p.gpu ? p.gpu.average.toFixed(2) + " / " + p.gpu.p95.toFixed(2) + " ms" : "unavailable"}`,
+                  )
+                : []),
             ]
           : []),
       ].join("\n");

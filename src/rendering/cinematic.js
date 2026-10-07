@@ -4,7 +4,7 @@ import { ProceduralSky, skyPalette } from "./sky.js";
 import { SkyEnvironment } from "./environment.js";
 import { ShaderGuard } from "./shader-guard.js";
 import { PostProcess } from "./postprocess.js";
-import { GpuTimer } from "./performance.js";
+import { GpuTimer, PassProfiler } from "./performance.js";
 
 export class CinematicRenderer {
   constructor(three, renderer) {
@@ -12,6 +12,7 @@ export class CinematicRenderer {
     this.capabilities = inspectRenderer(three, renderer);
     this.guard = new ShaderGuard(renderer);
     this.timer = new GpuTimer(renderer, this.capabilities);
+    this.renderer = renderer;
     if (this.capabilities.features.postprocess)
       this.post = new PostProcess(
         three,
@@ -33,13 +34,18 @@ export class CinematicRenderer {
       );
   }
   update(state, settings, now, camera) {
+    this.configureProfiler(settings);
     this.brakeLights?.scan(settings, camera);
     this.brakeLights?.update(settings);
     this.palette = skyPalette(this.three, settings);
     this.sky?.update(settings, now);
     this.sky?.scan();
     try {
-      this.environment?.update(settings);
+      if (this.profiler)
+        this.profiler.measure("environment-generation-and-assignment", () =>
+          this.environment?.update(settings),
+        );
+      else this.environment?.update(settings);
     } catch (error) {
       console.warn("[PolyShade] Environment unavailable.", error);
       this.environment?.dispose();
@@ -47,7 +53,8 @@ export class CinematicRenderer {
     }
     state.palette = this.palette;
   }
-  frame(settings, now) {
+  frame(settings, now, camera) {
+    if (this.brakeLights && camera) this.brakeLights.camera = camera;
     this.brakeLights?.update(settings);
     if (this.sky && this.guard.failures.has("sky")) {
       this.sky.dispose();
@@ -56,14 +63,32 @@ export class CinematicRenderer {
     if (this.sky && settings.cloudsEnabled)
       this.sky.uniforms.time.value = now / 1000;
   }
+  configureProfiler(settings) {
+    if (settings.debugProfile) {
+      const key = JSON.stringify(settings);
+      if (this.profileKey !== key) {
+        this.profiler?.dispose();
+        this.profiler = null;
+        this.profileKey = key;
+      }
+    }
+    if (settings.debugProfile && !this.profiler)
+      this.profiler = new PassProfiler(this.renderer, this.capabilities);
+    if (!settings.debugProfile && this.profiler) {
+      this.profiler.dispose();
+      this.profiler = null;
+    }
+  }
   render(scene, camera, settings, draw) {
-    this.timer.begin();
+    this.configureProfiler(settings);
+    if (this.post) this.post.profiler = this.profiler;
+    if (!this.profiler) this.timer.begin();
     try {
       return this.post
         ? this.post.render(scene, camera, settings, draw, this.palette)
         : draw();
     } finally {
-      this.timer.end();
+      if (!this.profiler) this.timer.end();
     }
   }
   report() {
@@ -76,10 +101,13 @@ export class CinematicRenderer {
         ? {
             allocated: this.post.pool.allocations,
             disposed: this.post.pool.disposals,
+            resized: this.post.pool.resizes,
             live: this.post.pool.targets.size,
+            targets: this.post.pool.report(),
           }
         : null,
       failures: Object.fromEntries(this.guard.failures),
+      profile: this.profiler?.report(),
       brakeLights: this.brakeLights?.report(),
       environment: this.environment
         ? {
@@ -101,6 +129,7 @@ export class CinematicRenderer {
     this.detachScene();
     this.post?.dispose();
     this.timer.dispose();
+    this.profiler?.dispose();
     this.guard.dispose();
   }
 }

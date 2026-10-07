@@ -39,6 +39,7 @@ export class TargetPool {
     this.targets = new Map();
     this.allocations = 0;
     this.disposals = 0;
+    this.resizes = 0;
   }
   get(name, w, h, { depth = false, samples = 0 } = {}) {
     const t = this.three,
@@ -50,10 +51,18 @@ export class TargetPool {
     w = Math.max(1, Math.floor(w * factor));
     h = Math.max(1, Math.floor(h * factor));
     let target = this.targets.get(name);
+    samples = Math.min(samples, this.capabilities.maxSamples ?? 0);
+    if (
+      target &&
+      (target.samples !== samples || target.depthBuffer !== depth)
+    ) {
+      this.remove(name);
+      target = null;
+    }
     if (!target) {
       target = new t.WebGLRenderTarget(w, h, {
         type:
-          name === "grade"
+          name === "grade" || name.startsWith("ao") || name === "sun-visibility"
             ? t.UnsignedByteType
             : this.capabilities.halfFloat
               ? t.HalfFloatType
@@ -65,13 +74,17 @@ export class TargetPool {
       });
       target.texture.name = `PolyShade ${name}`;
       target.texture.colorSpace = t.LinearSRGBColorSpace;
-      target.samples = Math.min(samples, this.capabilities.maxSamples ?? 0);
+      if (name === "sun-visibility") target.texture.colorSpace = t.NoColorSpace;
+      target.samples = samples;
       if (depth && this.capabilities.features.depthTexture) {
         target.depthTexture = new t.DepthTexture(w, h, t.UnsignedIntType);
       }
       this.targets.set(name, target);
       this.allocations++;
-    } else if (target.width !== w || target.height !== h) target.setSize(w, h);
+    } else if (target.width !== w || target.height !== h) {
+      target.setSize(w, h);
+      this.resizes++;
+    }
     return target;
   }
   remove(name) {
@@ -89,5 +102,25 @@ export class TargetPool {
   }
   dispose() {
     for (const name of this.targets.keys()) this.remove(name);
+  }
+  report() {
+    return [...this.targets].map(([name, t]) => {
+      const bytesPerPixel = t.texture.type === this.three.HalfFloatType ? 8 : 4;
+      const pixels = t.width * t.height;
+      return {
+        name,
+        width: t.width,
+        height: t.height,
+        pixels,
+        samples: t.samples,
+        estimatedBytes:
+          pixels *
+          (bytesPerPixel +
+            (t.depthTexture ? 4 : 0) +
+            (t.samples
+              ? (bytesPerPixel + (t.depthBuffer ? 4 : 0)) * t.samples
+              : 0)),
+      };
+    });
   }
 }

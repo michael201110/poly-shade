@@ -1,7 +1,7 @@
 export const DEPTH_HELPERS = `
 uniform sampler2D tDepth;uniform mat4 inverseProjection;uniform vec2 nearFar;
 vec3 viewPosition(vec2 uv){float d=texture2D(tDepth,uv).x;vec4 p=inverseProjection*vec4(uv*2.0-1.0,d*2.0-1.0,1.0);return p.xyz/max(abs(p.w),1e-6)*sign(p.w);}
-float viewDistance(vec2 uv){return -viewPosition(uv).z;}
+float viewDistance(vec2 uv){float z=texture2D(tDepth,uv).x*2.0-1.0;return -(inverseProjection[2][2]*z+inverseProjection[3][2])/(inverseProjection[2][3]*z+inverseProjection[3][3]);}
 `;
 export const ATMOSPHERE_HELPERS = `
 uniform mat4 cameraWorld;uniform vec3 horizon,sunDirection,sunColor;

@@ -44,6 +44,10 @@ export class SkyEnvironment {
   update(s) {
     if (!s.environmentEnabled) {
       this.scene.environment = this.original;
+      this.texture?.dispose();
+      this.texture = null;
+      this.hash = null;
+      this.resolution = null;
       return;
     }
     const hash = JSON.stringify(KEYS.map((k) => s[k]));
