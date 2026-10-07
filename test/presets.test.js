@@ -13,8 +13,9 @@ test("all requested presets have independent quality profiles", () => {
   assert.equal(PRESETS.vanilla.shadowQuality, "off");
   assert.equal(PRESETS["cinematic-lite"].shadowQuality, "low");
   assert.equal(PRESETS.cinematic.shadowQuality, "medium");
-  assert.equal(PRESETS.recording.shadowQuality, "high");
-  assert.equal(PRESETS.recording.renderScale, 1.25);
+  assert.equal(PRESETS.recording.shadowQuality, "medium");
+  assert.equal(PRESETS.recording.renderScale, 1);
+  assert.equal(PRESETS.recording.fxaaEnabled, true);
 });
 
 test("Vanilla disables effects and preset selection clears overrides", () => {

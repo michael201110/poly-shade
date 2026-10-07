@@ -1,4 +1,4 @@
-# PolyShade 0.2.3
+# PolyShade 0.2.4
 
 A rendering-only PolyModLoader mod for **PolyTrack 0.6.3**. Warm sunlight, readable cool shadows, broad soft clouds and restrained camera optics preserve the game's low-poly appearance.
 
@@ -10,9 +10,9 @@ Install [PolyModLoader](https://polymodloader.com/), then add the [PolyShade ins
 https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/
 ```
 
-Select **0.2.3 / latest**, enable PolyShade and reload. Remove duplicate older entries. If the CDN caches an old manifest, replace `main` with the full latest SHA from [commit history](https://github.com/michael201110/poly-shade/commits/main/). This follows PML's [documented sharing format](https://wiki.polymodloader.com/sharing-your-mod/).
+Select **0.2.4 / latest**, enable PolyShade and reload. Remove duplicate older entries. If the CDN caches an old manifest, replace `main` with the full latest SHA from [commit history](https://github.com/michael201110/poly-shade/commits/main/). This follows PML's [documented sharing format](https://wiki.polymodloader.com/sharing-your-mod/).
 
-The root manifest maps 0.6.3 to `0.2.3/version.json` and `0.2.3/main.mod.js`. Earlier release directories are preserved. The corrected PML base class, lifecycle and constructor-assigned renderer interception remain intact.
+The root manifest maps 0.6.3 to `0.2.4/version.json` and `0.2.4/main.mod.js`. Earlier release directories are preserved. The corrected PML base class, lifecycle and constructor-assigned renderer interception remain intact.
 
 ## Presets
 
@@ -21,9 +21,9 @@ The root manifest maps 0.6.3 to `0.2.3/version.json` and `0.2.3/main.mod.js`. Ea
 | Vanilla             | Native      | Native    | Native rendering restored                                                             | Native             |
 | Golden Hour Lite    | 1x          | 1024      | FXAA; AO/bloom/rays/flare off                                                         | 128 x 64           |
 | Golden Hour         | 1x          | 2048      | Low AO, subtle bloom/rays, visible flare, FXAA                                        | 256 x 128          |
-| Golden Hour Capture | 1.25x       | 4096 near | High AO, visible rays/ghosts, volumetric sunlight, supersampling; optional sharpening | 512 x 256          |
+| Golden Hour Capture | 1x          | 2048      | High AO, visible rays/ghosts, volumetric sunlight, FXAA; optional sharpening         | 512 x 256          |
 
-Capture renders a 1600 x 900 scene on a 1280 x 720 canvas. Grading writes directly to output by default; optional FXAA/sharpening enable an output-sized intermediate. Bloom and ray targets use output-based resolution. Auto scene MSAA uses no additional samples: Lite/Golden use FXAA; Capture uses supersampling. Manual 0/2/4 sample settings are available. The native context is unchanged.
+Capture renders at the 1280 x 720 canvas resolution with a 2048 shadow map and FXAA, avoiding costly supersampling while retaining clean edges. Grading writes directly to output by default; optional FXAA/sharpening enable an output-sized intermediate. Bloom and ray targets use output-based resolution. Auto scene MSAA uses no additional samples; Lite/Golden/Capture use FXAA. Manual 0/2/4 sample settings are available. The native context is unchanged.
 
 The 0.2.0 cloud shader, broad silhouettes and sky palette are unchanged. Golden/Capture retain clouds at 0.4; Lite leaves them off. Slightly reduced fill, exposure and shadow lift improve tonal separation. Saved overrides remain valid; selecting/resetting a preset applies new defaults.
 
@@ -43,7 +43,7 @@ Flare is composited in the existing grade shader: a localized sun halo, four sof
 
 ## Pipeline, restoration and diagnostics
 
-Optional **volumetric sunlight** uses half-resolution camera-ray slices, with two depth-tested sunlight probes per slice. Eight deterministic samples integrate scattering only up to the visible surface or maximum distance. Edge-aware upsampling and a light depth-aware blur smooth blocky shafts while preserving road and occluder boundaries. Sun rays also render at half resolution and use a small soft filter. Both buffers are capped at 1024 pixels wide. Effects share the sun, depth, visibility and matching procedural cloud transmission; they add no world fog or temporal history. Strength, density, decay, samples and max distance are adjustable. Lite/Golden default off; Capture uses more perceptible but localized scattering. Radial rays remain strongest through partial occlusion and fade to a faint contribution in open sky. Their depth mask finds sky gaps around the sun, then shafts composite over road, barriers and architecture. Debug views expose the projected sun, visibility/cloud mask, ray buffer and volumetric buffer. The scattering remains a screen-space approximation, so offscreen occluders are unknown.
+Optional **volumetric sunlight** uses half-resolution camera-ray slices, with two depth-tested sunlight probes per slice. Eight deterministic samples integrate scattering only up to the visible surface or maximum distance. Edge-aware upsampling and a light depth-aware blur smooth blocky shafts while preserving road and occluder boundaries. Sun rays also render at half resolution, use 48 radial taps and a broader soft filter. Both buffers are capped at 1024 pixels wide. Costly shaft passes now skip fully visible or fully blocked suns and run when the sun is partially occluded. Effects share the sun, depth, visibility and matching procedural cloud transmission; they add no world fog or temporal history. Strength, density, decay, samples and max distance are adjustable. Lite/Golden default off; Capture uses more perceptible but localized scattering. Radial rays remain strongest through partial occlusion and fade to a faint contribution in open sky. Their depth mask finds sky gaps around the sun, then shafts composite over road, barriers and architecture. Debug views expose the projected sun, visibility/cloud mask, ray buffer and volumetric buffer. The scattering remains a screen-space approximation, so offscreen occluders are unknown.
 
 The original renderer draws the game scene once into a linear HDR target with depth. Reduced-resolution AO retains 8/12/16 samples and two bilateral blurs, with cheaper scalar depth reconstruction and byte AO storage. Bloom retains its two small blur passes. Atmosphere, AO, bloom, optics and linear grading precede one filmic tone map. Luminance-pivot contrast preserves hue. FXAA/sharpening run on an output-sized graded target; without either, grading writes directly to output and omits that target/pass. Final colour conversion occurs once. Disabled/zero-strength optional effects release targets; compatible resize reuses target objects and sample/depth changes dispose incompatible attachments.
 
@@ -51,7 +51,7 @@ The original renderer draws the game scene once into a linear HDR target with de
 
 Diagnostics report CPU submission average/p95, asynchronous GPU times, active passes, target sizes/estimated bytes, allocations/disposals/resizes, environment generations and failures. Opt-in **Per-pass profiling** reports scene, shadows, AO/blur, bloom/blur, visibility/transfer, rays, grade, finish and environment timings. Scene/shadow queries alternate to avoid nesting. CPU environment generation is separate; internal PMREM GPU work belongs to the scene. Profiling objects and shadow wrappers are absent during normal gameplay.
 
-See [0.2.1 measurements and verification](docs/0.2.1-verification.md), [0.2.2 sun effects calibration](docs/0.2.2-sun-effects.md) and [0.2.3 shadow and shaft fixes](docs/0.2.3-shadow-fixes.md) for performance, effect tuning, screenshots and limitations. Screen-space effects cannot see offscreen geometry; reflections represent the sky rather than nearby track. Visibility feedback takes a few frames, while the current GPU mask immediately suppresses blocked optics. Missing capabilities gate effects or use existing direct/fog fallbacks.
+See [0.2.1 measurements and verification](docs/0.2.1-verification.md), [0.2.2 sun effects calibration](docs/0.2.2-sun-effects.md), [0.2.3 shadow and shaft fixes](docs/0.2.3-shadow-fixes.md) and [0.2.4 ray quality and performance](docs/0.2.4-ray-performance.md) for performance, effect tuning, screenshots and limitations. Screen-space effects cannot see offscreen geometry; reflections represent the sky rather than nearby track. Visibility feedback takes a few frames, while the current GPU mask immediately suppresses blocked optics. Missing capabilities gate effects or use existing direct/fog fallbacks.
 
 Physics, input handling, simulation workers, replay timing, PolyBot messages and camera transforms/FOV are unchanged. Brake lights read only the visible native lamp emissive state. Multiplayer and a separately installed PolyBot were not exercised. PML does not guarantee an unload callback: F7, explicit disposal and page exit clean up; manager-only unload can require a reload. Settings remain schema 2; valid older saves migrate without rewriting their overrides.
 
@@ -63,6 +63,6 @@ npm run check
 npm run verify:live
 ```
 
-Three.js, Playwright and PNG tooling are development-only. Tests cover lifecycle/hooks, material preservation, settings, brake direction/rotation/cleanup, target reuse, pass skipping and asynchronous visibility. Live tests need Microsoft Edge and the official PML CDN. A fresh profile serves the local built mod through a test-only origin; instrumentation is absent from the release. Presets, resize, F7, braking, cockpit switching, driving/restart, multiple tracks, CSM and repeated resource cycles are checked. Screenshots/pixel statistics/reports go to `%TEMP%/polyshade-0.2.3/`.
+Three.js, Playwright and PNG tooling are development-only. Tests cover lifecycle/hooks, material preservation, settings, brake direction/rotation/cleanup, target reuse, pass skipping and asynchronous visibility. Live tests need Microsoft Edge and the official PML CDN. A fresh profile serves the local built mod through a test-only origin; instrumentation is absent from the release. Presets, resize, F7, braking, cockpit switching, driving/restart, multiple tracks, CSM and repeated resource cycles are checked. Screenshots/pixel statistics/reports go to `%TEMP%/polyshade-0.2.4/`.
 
 Set `POLYSHADE_BENCHMARK=1` for longer matched measurements; `POLYSHADE_RELEASE=0.2.0` tests the immutable baseline. `POLYSHADE_PROFILE=1` records pass profiles, `POLYSHADE_EXPERIMENT=1` records MSAA/calibration comparisons, and `POLYSHADE_OUTPUT` chooses a separate folder. These switches affect the test harness only.

@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { PNG } from "pngjs";
 import { mkdir } from "node:fs/promises";
 const output =
-  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.2.3");
+  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.2.4");
 await mkdir(output, { recursive: true });
 const report = { presets: {}, comparisons: {}, screenshots: [] };
 function imageStats(buffer) {
@@ -68,7 +68,7 @@ report.environment = {
   platform: process.platform,
   architecture: process.arch,
   viewport: [1280, 720],
-  release: process.env.POLYSHADE_RELEASE ?? "0.2.3",
+  release: process.env.POLYSHADE_RELEASE ?? "0.2.4",
   date: new Date().toISOString(),
 };
 const renderingErrors = [];
@@ -297,7 +297,7 @@ try {
     assert.equal(result.capabilities.active.ao, id !== "cinematic-lite");
     assert.equal(result.capabilities.active.bloom, id !== "cinematic-lite");
     if (id === "recording")
-      assert.deepEqual(result.capabilities.active.sceneSize, [1600, 900]);
+      assert.deepEqual(result.capabilities.active.sceneSize, [1280, 720]);
     const image = await shot(id);
     if (id === "cinematic")
       report.comparisons.enhanced = difference(baseline, image);
@@ -667,10 +667,6 @@ try {
     };
   });
   assert.deepEqual(report.sunRays.failures, {});
-  assert.deepEqual(
-    [report.sunRays.target.width, report.sunRays.target.height],
-    [640, 360],
-  );
   await shot("stylized-sky-sun-rays");
   await page.evaluate(() => {
     const c = window.__polyShadeController;
@@ -679,6 +675,15 @@ try {
   });
   await page.waitForTimeout(250);
   await shot("debug-sun-rays");
+  report.sunRays.target = await page.evaluate(() =>
+    window.__polyShadeController.cinematic
+      .report()
+      .resources.targets.find((target) => target.name === "sun-rays"),
+  );
+  assert.deepEqual(
+    [report.sunRays.target.width, report.sunRays.target.height],
+    [640, 360],
+  );
   await page.evaluate(() => {
     const c = window.__polyShadeController;
     c.getSettings().overrides.debugView = "final";
@@ -1172,7 +1177,7 @@ try {
       (l) => l.shadow.mapSize.x,
     ),
   );
-  assert.deepEqual(report.nativeCSMCapture, [4096, 4096, 2048, 2048]);
+  assert.deepEqual(report.nativeCSMCapture, [2048, 2048, 2048, 2048]);
   await page.evaluate(() => document.activeElement?.blur());
   await page.keyboard.press("F7");
   await page.waitForTimeout(300);

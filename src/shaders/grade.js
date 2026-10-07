@@ -5,7 +5,7 @@ export const GRADE_FRAGMENT = `varying vec2 vUv;${DEPTH_HELPERS}${ATMOSPHERE_HEL
 uniform sampler2D tInput,tAO,tBloom,tRays;
 uniform vec2 rayTexel;
 uniform float aoActive,bloomStrength,rayStrength,atmosphereActive,gradeActive,exposure,contrast,saturation,vibrance,temperature,tint,shadowLift,highlightCompression,blackLevel,whiteLevel,vignetteStrength,vignetteSoftness;
-vec3 softenedRays(vec2 uv){vec2 t=rayTexel*0.65;return (texture2D(tRays,uv).rgb*4.0+texture2D(tRays,uv+vec2(t.x,0.0)).rgb+texture2D(tRays,uv-vec2(t.x,0.0)).rgb+texture2D(tRays,uv+vec2(0.0,t.y)).rgb+texture2D(tRays,uv-vec2(0.0,t.y)).rgb)*0.125;}
+vec3 softenedRays(vec2 uv){vec2 t=rayTexel*1.1;return (texture2D(tRays,uv).rgb*4.0+(texture2D(tRays,uv+vec2(t.x,0.0)).rgb+texture2D(tRays,uv-vec2(t.x,0.0)).rgb+texture2D(tRays,uv+vec2(0.0,t.y)).rgb+texture2D(tRays,uv-vec2(0.0,t.y)).rgb)+(texture2D(tRays,uv+t).rgb+texture2D(tRays,uv-t).rgb+texture2D(tRays,uv+vec2(t.x,-t.y)).rgb+texture2D(tRays,uv+vec2(-t.x,t.y)).rgb)*0.5)/10.0;}
 uniform int debugView;
 vec3 shoulder(vec3 c){return clamp((c*(2.51*c+0.03))/(c*(2.43*c+0.59)+0.14),0.0,1.0);}
 void main(){

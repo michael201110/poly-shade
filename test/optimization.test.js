@@ -116,6 +116,19 @@ test("zero-strength passes release targets and grade writes output directly with
     post.materials.get("grade-output").uniforms.atmosphereStrength.value,
     s.atmosphereStrength * 0.8,
   );
+  post.sunVisibility.partial = 0;
+  post.render(
+    new THREE.Scene(),
+    camera,
+    { ...s, volumetricStrength: 0.08, sunRayStrength: 0.24 },
+    draw,
+    palette,
+  );
+  assert.deepEqual(
+    post.passOrder,
+    ["scene", "sun-visibility", "grade-output"],
+    "fully visible sun skips costly shaft passes",
+  );
   post.render(new THREE.Scene(), camera, s, draw, palette);
   assert.deepEqual([...post.pool.targets.keys()], ["scene"]);
   post.render(

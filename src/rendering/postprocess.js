@@ -317,8 +317,7 @@ export class PostProcess {
               s.sunRayExposure > 0) ||
               debugRays) &&
             (debugRays ||
-              this.sunVisibility.partial > 0.01 ||
-              this.sunVisibility.clear > 0.01)
+              this.sunVisibility.partial > 0.01)
           ) {
             const scale = Math.min(0.5, 1024 / gl.drawingBufferWidth),
               target = this.pool.get(
@@ -356,7 +355,7 @@ export class PostProcess {
         volumeRequested &&
         depth &&
         (visibility > 0 || debugVolume) &&
-        (this.sunVisibility.clear > 0.01 || debugVolume)
+        (this.sunVisibility.partial > 0.01 || debugVolume)
       ) {
         const scale = Math.min(0.5, 1024 / w),
           vw = Math.round(w * scale),
