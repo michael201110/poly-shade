@@ -13,25 +13,18 @@ export class ShaderWarmup {
   schedule(scene, camera, settings, post, brakes, meshCount, nativeCSM = false) {
     if (!this.supported) return;
     const lights = [];
-    for (const { lights: lamps } of brakes?.cars.values() ?? []) lights.push(...lamps);
+    if (brakes?.lightPool) lights.push(...brakes.lightPool);
+    else for (const { lights: lamps } of brakes?.cars.values() ?? []) lights.push(...lamps);
     if (this.settings === settings && this.meshCount === meshCount && this.nativeCSM === nativeCSM &&
       this.lights?.length === lights.length && lights.every((light, i) => this.lights[i] === light))
       return;
     this.settings = settings; this.meshCount = meshCount; this.lights = lights; this.nativeCSM = nativeCSM;
     this.jobs.length = 0;
-    let count = 0;
-    // Offscreen car parts may first enter view after braking ends. Warm the
-    // zero-lamp variant too, rather than only the meshes visible at startup.
-    if (!nativeCSM) this.jobs.push({ scene, camera, lights, count: 0, linear: !!post && settings.postEnabled && settings.postQuality !== "off" });
-    // Warm every possible active car count without adding idle lights to the
-    // real frame. This retains the existing cheap zero-light gameplay shader.
-    for (const { lights: lamps } of brakes?.cars.values() ?? []) {
-      // Native CSM shader hooks own mutable compilation/disposal state. Extra
-      // scene compilation must not disturb that state; post shaders are safe.
-      if (nativeCSM) break;
-      count += lamps.length;
-      this.jobs.push({ scene, camera, lights, count, linear: !!post && settings.postEnabled && settings.postQuality !== "off" });
-    }
+    // Brake lights keep a stable visible count, including at zero power.
+    // Only the actual configuration needs warming; avoid unused permutations.
+    // Native CSM owns mutable scene compilation state, so only warm its post.
+    if (!nativeCSM) this.jobs.push({ scene, camera, lights, count: lights.length,
+      linear: !!post && settings.postEnabled && settings.postQuality !== "off" });
     if (post && settings.postEnabled && settings.postQuality !== "off") {
       for (const { material, linear } of post.warmupMaterials(settings)) {
         this.jobs.push({ scene: post.scene, camera: post.camera, mesh: post.quad, material, linear });

@@ -315,7 +315,6 @@ export function createSceneState(scene) {
     ownedLights: new Set(),
     lightSnapshots: new Map(),
     meshShadowSnapshots: new Map(),
-    managedShadowMeshes: new Map(),
     materialClones: new Map(),
     originalMaterials: new Map(),
     processedMeshes: new Map(),
@@ -426,31 +425,24 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
           const snapshot = sceneState.meshShadowSnapshots.get(object);
           object.castShadow = snapshot.castShadow;
           object.receiveShadow = snapshot.receiveShadow;
-          snapshot.managedCastShadow = snapshot.castShadow;
-          snapshot.managedReceiveShadow = snapshot.receiveShadow;
-          sceneState.managedShadowMeshes.set(object, snapshot);
           return;
         }
 
         object.receiveShadow = true;
         if (
           !materials.some((material) => material?.wireframe) &&
-          (object.geometry?.attributes?.normal || materials.some((material) =>
-            ["car", "barrier", "concrete", "architecture"].includes(classifyMaterial(object, material))))
+          (sceneState.meshShadowSnapshots.get(object).castShadow ||
+            object.isInstancedMesh || materials.some((material) =>
+              ["car", "road", "barrier", "concrete", "architecture"].includes(classifyMaterial(object, material))))
         ) {
           object.castShadow = true;
         }
-        const snapshot = sceneState.meshShadowSnapshots.get(object);
-        snapshot.managedCastShadow = object.castShadow;
-        snapshot.managedReceiveShadow = object.receiveShadow;
-        sceneState.managedShadowMeshes.set(object, snapshot);
       });
       for (const [mesh, snapshot] of sceneState.meshShadowSnapshots) {
         if (activeMeshes.has(mesh)) continue;
         mesh.castShadow = snapshot.castShadow;
         mesh.receiveShadow = snapshot.receiveShadow;
         sceneState.meshShadowSnapshots.delete(mesh);
-        sceneState.managedShadowMeshes.delete(mesh);
       }
     });
   } else {
@@ -459,7 +451,6 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
       mesh.receiveShadow = snapshot.receiveShadow;
     }
     sceneState.meshShadowSnapshots.clear();
-    sceneState.managedShadowMeshes.clear();
     for (const [light, snapshot] of sceneState.lightSnapshots) {
       if (!light.isDirectionalLight) continue;
       if (typeof snapshot.castShadow === "boolean")
@@ -478,7 +469,6 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
     sceneState.lastScanAt = now;
   }
   updateShadowFocus(sceneState, settings, camera);
-  updateShadowRange(sceneState, settings, camera, three);
 }
 
 export function usesNativeCSM(scene) {
@@ -527,7 +517,7 @@ export function updateShadowFocus(sceneState, settings, camera) {
   }
   sun.shadow.bias =
     settings.shadowBias * (extent / (settings.shadowDistance ?? 30));
-  sun.shadow.normalBias = settings.shadowNormalBias * (extent / 30);
+  sun.shadow.normalBias = Math.max(settings.shadowNormalBias, (extent * 2 / size) * 1.25);
   if (camera.getWorldPosition) camera.getWorldPosition(focus);
   else focus.copy(camera.position);
   const forward = (sceneState.shadowForward ??= focus.clone());
@@ -562,41 +552,6 @@ export function updateShadowFocus(sceneState, settings, camera) {
   sun.parent?.worldToLocal?.(sun.position);
   sun.target.updateMatrixWorld?.();
   sun.updateMatrixWorld?.();
-}
-
-// The local shadow map only has stable detail near the camera. Distant
-// receivers expose its finite resolution as large square patches, so restrict
-// mod-managed shadow work to the configured coverage radius.
-function updateShadowRange(sceneState, settings, camera, three) {
-  if (!camera?.getWorldPosition || !three?.Vector3) return;
-  const range = Math.max(15, settings.shadowDistance ?? 30);
-  const rangeSquared = range * range;
-  const cameraPosition = (sceneState.shadowRangeCamera ??= new three.Vector3());
-  const meshPosition = (sceneState.shadowRangeMesh ??= new three.Vector3());
-  camera.getWorldPosition(cameraPosition);
-  for (const [mesh, desired] of sceneState.managedShadowMeshes) {
-    const matrix = mesh.matrixWorld?.elements;
-    let radius = 0;
-    const geometry = mesh.geometry;
-    if (!geometry?.boundingSphere && geometry?.computeBoundingSphere)
-      geometry.computeBoundingSphere();
-    if (matrix && geometry?.boundingSphere) {
-      meshPosition.copy(geometry.boundingSphere.center).applyMatrix4(mesh.matrixWorld);
-      radius = geometry.boundingSphere.radius * Math.max(
-        Math.hypot(matrix[0], matrix[1], matrix[2]),
-        Math.hypot(matrix[4], matrix[5], matrix[6]),
-        Math.hypot(matrix[8], matrix[9], matrix[10]),
-      );
-    } else if (matrix) meshPosition.set(matrix[12], matrix[13], matrix[14]);
-    else mesh.getWorldPosition?.(meshPosition);
-    const dx = meshPosition.x - cameraPosition.x;
-    const dy = meshPosition.y - cameraPosition.y;
-    const dz = meshPosition.z - cameraPosition.z;
-    const distanceSquared = dx * dx + dy * dy + dz * dz;
-    const inRange = Math.max(0, Math.sqrt(distanceSquared) - radius) ** 2 <= rangeSquared;
-    mesh.castShadow = inRange && desired.managedCastShadow;
-    mesh.receiveShadow = inRange && desired.managedReceiveShadow;
-  }
 }
 
 export function refreshFrameEffects(
@@ -722,7 +677,6 @@ export function restoreScene(sceneState) {
     mesh.receiveShadow = snapshot.receiveShadow;
   }
   sceneState.meshShadowSnapshots.clear();
-  sceneState.managedShadowMeshes.clear();
 
   for (const [light, snapshot] of sceneState.lightSnapshots) {
     light.intensity = snapshot.intensity;

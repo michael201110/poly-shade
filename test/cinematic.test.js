@@ -52,8 +52,10 @@ test("brake lamps create local rear/downward spotlights, follow native emissive 
   for (const light of lights) {
     const local = light.target.position.clone().sub(light.position).normalize();
     assert.ok(local.z > 0.9 && local.y < 0);
-    assert.equal(light.target.parent, car);
+    assert.equal(light.target.parent, scene);
     car.rotation.set(0.3, Math.PI / 2, 0.7);
+    scene.updateMatrixWorld();
+    manager.update(PRESETS.cinematic);
     scene.updateMatrixWorld();
     const actual = light.target
       .getWorldPosition(new THREE.Vector3())
@@ -65,10 +67,23 @@ test("brake lamps create local rear/downward spotlights, follow native emissive 
     );
     car.rotation.set(0, 0, 0);
     scene.updateMatrixWorld();
+    manager.update(PRESETS.cinematic);
   }
   lamp.emissive.setRGB(0, 0, 0);
   manager.update(PRESETS.cinematic);
-  assert.ok(lights.every((l) => l.intensity === 0));
+  assert.ok(lights.every((l) => l.intensity === 0 && l.visible));
+  car.visible = false;
+  manager.update(PRESETS.cinematic);
+  assert.ok(lights.every((l) => l.intensity === 0 && l.visible), "hidden cars retain the shader light count");
+  scene.remove(car);
+  manager.scan(PRESETS.cinematic, camera);
+  assert.equal(manager.report().cars, 0);
+  assert.equal(manager.report().lights, 2, "retired pairs keep the lighting configuration stable");
+  const replacement = car.clone(); replacement.visible = true;
+  scene.add(replacement); scene.updateMatrixWorld();
+  manager.scan(PRESETS.cinematic, camera);
+  assert.equal(manager.report().lights, 2);
+  assert.equal(manager.cars.get(replacement).lights[0], lights[0], "new car reuses the old pair");
   manager.dispose();
   assert.ok(lights.every((l) => l.parent === null));
   assert.ok(lights.every((l) => l.target.parent === null));

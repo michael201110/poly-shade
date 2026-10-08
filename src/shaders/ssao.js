@@ -3,7 +3,12 @@ export const SSAO_FRAGMENT = `varying vec2 vUv;${DEPTH_HELPERS}
 uniform float radius,strength,bias;uniform int samples;uniform float projectionScale;
 void main(){
  if(texture2D(tDepth,vUv).r>=0.999999){gl_FragColor=vec4(1.0);return;}
- vec3 p=viewPosition(vUv);vec3 normal=normalize(cross(dFdx(p),dFdy(p)));
+ vec3 p=viewPosition(vUv);
+ if(-p.z>120.0){gl_FragColor=vec4(1.0);return;}
+ vec3 normal=cross(dFdx(p),dFdy(p));
+ float normalLength=length(normal);
+ if(normalLength<1e-6){gl_FragColor=vec4(1.0);return;}
+ normal/=normalLength;
  if(dot(normal,-p)<0.0)normal=-normal;
  float occ=0.0;float screenRadius=clamp(radius*projectionScale/max(-p.z,0.1),0.0001,0.12);
  for(int i=0;i<16;i++){if(i>=samples)break;float f=(float(i)+0.5)/float(samples);
@@ -12,7 +17,8 @@ void main(){
  vec3 q=viewPosition(uv);vec3 delta=q-p;float len=length(delta);
  float contribution=max(dot(normal,delta)/max(len,0.001)-bias,0.0);
  occ+=contribution*(1.0-smoothstep(radius*0.4,radius,len));}
- float ao=clamp(1.0-occ/float(samples)*strength*3.0,0.55,1.0);gl_FragColor=vec4(vec3(ao),1.0);
+ float fade=1.0-smoothstep(80.0,120.0,-p.z);
+ float ao=clamp(1.0-occ/float(samples)*strength*fade*3.0,0.55,1.0);gl_FragColor=vec4(vec3(ao),1.0);
 }`;
 export const AO_BLUR_FRAGMENT = `varying vec2 vUv;${DEPTH_HELPERS}
 uniform sampler2D tInput;uniform vec2 stepUv;

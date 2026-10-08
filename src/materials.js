@@ -497,35 +497,42 @@ export function applyMaterialTuning(sceneState, three = {}, settings = {}) {
   sceneState.materialInspector = [...sceneState.inspectorRecords.values()]
     .flat()
     .slice(0, 250);
-  sceneState.paintEnvironmentSnapshots ??= new Map();
+  // Tune native vehicle uniforms in place. Cloning these materials would
+  // sever the paint/brake handles and CSM compile callbacks held by the game.
+  sceneState.paintSurfaceSnapshots ??= new Map();
   scene.traverse((mesh) => {
-    if (mesh.name !== "Body") return;
-    for (const material of Array.isArray(mesh.material)
-      ? mesh.material
-      : [mesh.material]) {
-      if (
-        material?.name !== "Main" ||
-        !material.isMeshStandardMaterial ||
-        material.defines?.USE_CSM !== undefined
-      )
-        continue;
-      if (!sceneState.paintEnvironmentSnapshots.has(material))
-        sceneState.paintEnvironmentSnapshots.set(
-          material,
-          material.envMapIntensity,
-        );
-      material.envMapIntensity =
-        (settings.environmentIntensity ?? 0.6) * (settings.carReflection ?? 1);
+    if (!mesh.isMesh || mesh.userData?.polyShadeOwned) return;
+    for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+      if (!material?.isMeshStandardMaterial || material.transparent ||
+          material.opacity < 0.98 || isReplayGhost(mesh, material)) continue;
+      const paint = mesh.name === "Body" && material.name === "Main";
+      const metal = ["Metal", "Rim"].includes(material.name);
+      const rubber = material.name === "Tire";
+      if (!paint && !metal && !rubber) continue;
+      if (!sceneState.paintSurfaceSnapshots.has(material))
+        sceneState.paintSurfaceSnapshots.set(material, {
+          roughness: material.roughness, metalness: material.metalness,
+          envMapIntensity: material.envMapIntensity,
+        });
+      material.roughness = paint ? 0.22 : metal ? 0.3 : 0.94;
+      material.metalness = paint ? 0.22 : metal ? 0.75 : 0.01;
+      material.envMapIntensity = (settings.environmentIntensity ?? 0.75) *
+        (paint ? (settings.carReflection ?? 1.2) : metal ? 1.1 : 0.08);
     }
   });
+  for (const [material, values] of sceneState.paintSurfaceSnapshots) {
+    if (activeMaterials.has(material)) continue;
+    Object.assign(material, values);
+    sceneState.paintSurfaceSnapshots.delete(material);
+  }
   syncMaterialColors(sceneState, settings);
   return modified;
 }
 
 export function restoreMaterials(sceneState) {
-  for (const [material, value] of sceneState.paintEnvironmentSnapshots ?? [])
-    material.envMapIntensity = value;
-  sceneState.paintEnvironmentSnapshots?.clear();
+  for (const [material, values] of sceneState.paintSurfaceSnapshots ?? [])
+    Object.assign(material, values);
+  sceneState.paintSurfaceSnapshots?.clear();
   for (const [mesh, material] of sceneState.originalMaterials) {
     if (mesh && mesh.material === sceneState.processedMeshes.get(mesh))
       mesh.material = material;

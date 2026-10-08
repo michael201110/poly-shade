@@ -1,0 +1,260 @@
+﻿{
+    "release":  "0.3.0",
+    "date":  "2026-10-08",
+    "environment":  "Microsoft Edge, fresh PML 0.6.3 profile, 1280x720, Capture, native CSM quality 3",
+    "track":  "Summer 2",
+    "replay":  "SpeedySebas (#1, 15.178s)",
+    "baselineRuntime":  {
+                            "cpu":  {
+                                        "samples":  536,
+                                        "average":  11.030597015770514,
+                                        "p95":  15.400000035762787,
+                                        "max":  1668.699999988079
+                                    },
+                            "frameGaps":  {
+                                              "samples":  535,
+                                              "average":  24.43102803742774,
+                                              "p95":  32.89999997615814,
+                                              "max":  1690.1000000238419
+                                          },
+                            "gpu":  {
+                                        "average":  26.11380242553192,
+                                        "p95":  24.452031,
+                                        "samples":  47
+                                    }
+                        },
+    "releaseRuntime":  {
+                           "cpu":  {
+                                       "samples":  452,
+                                       "average":  9.564823009271537,
+                                       "p95":  18.399999976158142,
+                                       "max":  57.30000001192093
+                                   },
+                           "frameGaps":  {
+                                             "samples":  451,
+                                             "average":  27.522394678545105,
+                                             "p95":  46.10000002384186,
+                                             "max":  130.10000002384186
+                                         },
+                           "gpu":  {
+                                       "average":  25.42491325,
+                                       "p95":  35.556093,
+                                       "samples":  40
+                                   }
+                       },
+    "brakingStability":  {
+                             "programsCreated":  0,
+                             "frameGaps":  {
+                                               "samples":  121,
+                                               "p95":  47,
+                                               "max":  65.5
+                                           },
+                             "cpu":  {
+                                         "samples":  122,
+                                         "p95":  31.30000001192093,
+                                         "max":  50.60000002384186
+                                     },
+                             "targetAllocations":  0,
+                             "spots":  [
+                                           {
+                                               "visible":  true,
+                                               "intensity":  0,
+                                               "parent":  true
+                                           },
+                                           {
+                                               "visible":  true,
+                                               "intensity":  0,
+                                               "parent":  true
+                                           }
+                                       ]
+                         },
+    "contactShadow":  {
+                          "available":  true,
+                          "visible":  true,
+                          "cars":  1,
+                          "receivers":  44,
+                          "broadQueries":  18
+                      },
+    "depthNumericsBaseline":  [
+                                  {
+                                      "far":  1000,
+                                      "valid":  [
+                                                    true,
+                                                    true,
+                                                    true,
+                                                    true,
+                                                    true,
+                                                    true
+                                                ]
+                                  },
+                                  {
+                                      "far":  10000,
+                                      "valid":  [
+                                                    true,
+                                                    true,
+                                                    true,
+                                                    true,
+                                                    true,
+                                                    true
+                                                ]
+                                  },
+                                  {
+                                      "far":  1000000000,
+                                      "valid":  [
+                                                    true,
+                                                    true,
+                                                    true,
+                                                    true,
+                                                    true,
+                                                    false
+                                                ]
+                                  }
+                              ],
+    "depthNumerics":  [
+                          {
+                              "far":  1000,
+                              "valid":  [
+                                            true,
+                                            true,
+                                            true,
+                                            true,
+                                            true,
+                                            true
+                                        ]
+                          },
+                          {
+                              "far":  10000,
+                              "valid":  [
+                                            true,
+                                            true,
+                                            true,
+                                            true,
+                                            true,
+                                            true
+                                        ]
+                          },
+                          {
+                              "far":  1000000000,
+                              "valid":  [
+                                            true,
+                                            true,
+                                            true,
+                                            true,
+                                            true,
+                                            true
+                                        ]
+                          }
+                      ],
+    "targets":  [
+                    {
+                        "name":  "scene",
+                        "width":  1280,
+                        "height":  720,
+                        "pixels":  921600,
+                        "samples":  0,
+                        "estimatedBytes":  11059200
+                    },
+                    {
+                        "name":  "grade",
+                        "width":  1280,
+                        "height":  720,
+                        "pixels":  921600,
+                        "samples":  0,
+                        "estimatedBytes":  3686400
+                    },
+                    {
+                        "name":  "ao",
+                        "width":  640,
+                        "height":  360,
+                        "pixels":  230400,
+                        "samples":  0,
+                        "estimatedBytes":  921600
+                    },
+                    {
+                        "name":  "ao-blur",
+                        "width":  640,
+                        "height":  360,
+                        "pixels":  230400,
+                        "samples":  0,
+                        "estimatedBytes":  921600
+                    },
+                    {
+                        "name":  "bloom",
+                        "width":  320,
+                        "height":  180,
+                        "pixels":  57600,
+                        "samples":  0,
+                        "estimatedBytes":  460800
+                    },
+                    {
+                        "name":  "bloom-blur",
+                        "width":  320,
+                        "height":  180,
+                        "pixels":  57600,
+                        "samples":  0,
+                        "estimatedBytes":  460800
+                    },
+                    {
+                        "name":  "sun-rays",
+                        "width":  1280,
+                        "height":  720,
+                        "pixels":  921600,
+                        "samples":  0,
+                        "estimatedBytes":  7372800
+                    },
+                    {
+                        "name":  "sun-mask",
+                        "width":  256,
+                        "height":  256,
+                        "pixels":  65536,
+                        "samples":  0,
+                        "estimatedBytes":  524288
+                    },
+                    {
+                        "name":  "volumetric",
+                        "width":  1280,
+                        "height":  720,
+                        "pixels":  921600,
+                        "samples":  0,
+                        "estimatedBytes":  7372800
+                    },
+                    {
+                        "name":  "sun-visibility",
+                        "width":  1,
+                        "height":  1,
+                        "pixels":  1,
+                        "samples":  0,
+                        "estimatedBytes":  4
+                    }
+                ],
+    "cameraRange":  [
+                        0.5,
+                        10000
+                    ],
+    "cascades":  [
+                     {
+                         "bias":  0.08,
+                         "size":  2048
+                     },
+                     {
+                         "bias":  0.21,
+                         "size":  2048
+                     },
+                     {
+                         "bias":  0.6,
+                         "size":  2048
+                     },
+                     {
+                         "bias":  1.9,
+                         "size":  2048
+                     }
+                 ],
+    "replayErrors":  [
+
+                     ],
+    "glError":  0,
+    "shaderWarnings":  [
+
+                       ],
+    "limitations":  "Screenshot sampling and OS/browser scheduling affect timings. Exact reported black boxes were not reproduced on this GPU. Full-resolution scattering adds GPU cost; results do not establish universal FPS improvement or zero stalls."
+}

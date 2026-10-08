@@ -32,7 +32,8 @@ float axis=0.35+float(i)*0.4;
 vec2 center=sunUv+(vec2(0.5)-sunUv)*axis;
 float d=length((uv-center)*vec2(aspect,1.0));
 float radius=0.016+float(i)*0.006;
-vec3 ring=exp(-pow((vec3(d)-radius+vec3(-1.0,0.0,1.0)*iridescence*0.012)/0.006,vec3(2.0)));
+vec3 ringDistance=(vec3(d)-radius+vec3(-1.0,0.0,1.0)*iridescence*0.012)/0.006;
+vec3 ring=exp(-ringDistance*ringDistance);
 f+=mix(vec3(dot(ring,vec3(0.333))),ring,iridescence)*ghostStrength*0.34;
 }
 f+=sunColor*exp(-abs(delta.x)*8.0-delta.y*delta.y/0.000008)*streakStrength*0.2*sky;

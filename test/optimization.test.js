@@ -121,7 +121,7 @@ test("zero-strength passes release targets and grade writes output directly with
     "grade-output",
   ]);
   const volume = post.pool.targets.get("volumetric");
-  assert.deepEqual([volume.width, volume.height], [640, 360]);
+  assert.deepEqual([volume.width, volume.height], [1280, 720]);
   assert.equal(
     post.materials.get("grade-output").uniforms.atmosphereStrength.value,
     s.atmosphereStrength * 0.8,

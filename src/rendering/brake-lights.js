@@ -7,6 +7,8 @@ export class BrakeLights {
     this.three = three;
     this.scene = scene;
     this.cars = new Map();
+    this.lightPool = [];
+    this.freePairs = [];
     this.position = new three.Vector3();
     this.sphere = three.Sphere ? new three.Sphere() : null;
     this.frustum = three.Frustum ? new three.Frustum() : null;
@@ -32,8 +34,7 @@ export class BrakeLights {
     this.scene.traverse((mesh) => {
       if (
         !mesh.isMesh ||
-        mesh.userData?.polyShadeOwned ||
-        mesh.visible === false
+        mesh.userData?.polyShadeOwned
       )
         return;
       const source = sceneState?.originalMaterials.get(mesh) ?? mesh.material;
@@ -56,9 +57,18 @@ export class BrakeLights {
         a.mesh.getWorldPosition(position).distanceToSquared(camera.position) -
         b.mesh.getWorldPosition(position).distanceToSquared(camera.position),
     );
-    const keep = new Set();
+    const selected = candidates.slice(0, 3);
+    const keep = new Set(selected.map(candidate => candidate.mesh));
+    // Retain/reassign vacant pairs at zero power. Removing an offscreen or
+    // fading car must not shrink the global lighting shader configuration.
+    for (const [mesh, car] of this.cars) {
+      if (keep.has(mesh)) continue;
+      for (const light of car.lights) light.intensity = 0;
+      this.freePairs.push(car.lights);
+      this.cars.delete(mesh);
+    }
     // At most six unshadowed cones: the three nearest opaque cars.
-    for (const candidate of candidates.slice(0, 3)) {
+    for (const candidate of selected) {
       const { mesh, material, index } = candidate;
       keep.add(mesh);
       if (this.cars.has(mesh)) {
@@ -100,9 +110,11 @@ export class BrakeLights {
         normal,
         Math.max(size.x, size.y, size.z) * 0.03 + 0.01,
       );
-      const offsets = size.x > 0.1 ? [-size.x * 0.25, size.x * 0.25] : [0];
-      const lights = offsets.map((offset) => {
-        const light = new this.three.SpotLight(
+      const axis = size.x >= size.z ? "x" : "z";
+      const offsets = [-size[axis] * 0.25, size[axis] * 0.25];
+      const reused = this.freePairs.pop();
+      const lights = offsets.map((offset, index) => {
+        const light = reused?.[index] ?? new this.three.SpotLight(
           0xff3020,
           0,
           settings.brakeLightDistance,
@@ -114,30 +126,25 @@ export class BrakeLights {
         light.name = "PolyShade brake spill";
         light.userData.polyShadeOwned = true;
         light.castShadow = false;
-        light.visible = false;
+        light.visible = true;
         light.position.copy(centre);
-        light.position.x += offset;
-        mesh.add(light);
+        light.position[axis] += offset;
+        if (!this.lightPool.includes(light)) this.lightPool.push(light);
+        this.scene.add(light);
         light.target.name = "PolyShade brake target";
         light.target.userData.polyShadeOwned = true;
-        // Both source and target are in the lamp mesh's coordinates. Banking,
-        // inversion and rotation therefore rotate the entire cone with the car.
+        // Save car-local geometry, but keep light objects in the scene so a
+        // hidden car/lamp cannot change NUM_SPOT_LIGHTS and compile a new shader.
         light.target.position.copy(light.position).add(direction);
-        mesh.add(light.target);
+        light.userData.localPosition = light.position.clone();
+        light.userData.localTarget = light.target.position.clone();
+        this.scene.add(light.target);
         return light;
       });
       this.cars.set(mesh, { material, lights });
     }
-    for (const [mesh, car] of this.cars)
-      if (!keep.has(mesh)) {
-        for (const light of car.lights) {
-          light.target.parent?.remove(light.target);
-          light.parent?.remove(light);
-          light.dispose?.();
-        }
-        this.cars.delete(mesh);
-      }
   }
+
   update(settings) {
     const camera = this.camera;
     if (this.frustum && camera?.projectionMatrix && camera?.matrixWorldInverse)
@@ -157,8 +164,12 @@ export class BrakeLights {
         !camera ||
         (this.position.distanceToSquared(camera.position) < 1600 &&
           (!this.frustum || this.frustum.intersectsSphere(this.sphere)));
+      let visible = true;
+      for (let node = mesh; node && node !== this.scene; node = node.parent)
+        if (!node.visible) { visible = false; break; }
       const enabled =
         relevant &&
+        visible &&
         settings.brakeLightsEnabled &&
         Math.max(
           material.emissive.r,
@@ -166,7 +177,13 @@ export class BrakeLights {
           material.emissive.b,
         ) > 0.05;
       for (const light of lights) {
-        light.visible = enabled;
+        // Zero power is a uniform update. Changing visible changes the global
+        // shader light count and can stall the driver for seconds on braking.
+        light.visible = true;
+        light.position.copy(light.userData.localPosition).applyMatrix4(mesh.matrixWorld);
+        light.target.position.copy(light.userData.localTarget).applyMatrix4(mesh.matrixWorld);
+        this.scene.worldToLocal(light.position);
+        this.scene.worldToLocal(light.target.position);
         light.intensity = enabled
           ? settings.brakeLightIntensity * (material.emissiveIntensity ?? 1)
           : 0;
@@ -177,21 +194,22 @@ export class BrakeLights {
   report() {
     return {
       cars: this.cars.size,
-      lights: [...this.cars.values()].reduce((n, c) => n + c.lights.length, 0),
+      lights: this.lightPool.length,
       active: [...this.cars.values()].some((c) =>
         c.lights.some((l) => l.intensity > 0),
       ),
       type: this.three.SpotLight ? "SpotLight" : "native-emissive-only",
-      targets: [...this.cars.values()].reduce((n, c) => n + c.lights.length, 0),
+      targets: this.lightPool.length,
     };
   }
   dispose() {
-    for (const { lights } of this.cars.values())
-      for (const light of lights) {
+    for (const light of this.lightPool) {
         light.target.parent?.remove(light.target);
         light.parent?.remove(light);
         light.dispose?.();
       }
     this.cars.clear();
+    this.lightPool.length = 0;
+    this.freePairs.length = 0;
   }
 }

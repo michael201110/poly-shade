@@ -1,7 +1,19 @@
 export const DEPTH_HELPERS = `
 uniform sampler2D tDepth;uniform mat4 inverseProjection;uniform vec2 nearFar;
-vec3 viewPosition(vec2 uv){float d=texture2D(tDepth,uv).x;vec4 p=inverseProjection*vec4(uv*2.0-1.0,d*2.0-1.0,1.0);return p.xyz/max(abs(p.w),1e-6)*sign(p.w);}
-float viewDistance(vec2 uv){float z=texture2D(tDepth,uv).x*2.0-1.0;return -(inverseProjection[2][2]*z+inverseProjection[3][2])/(inverseProjection[2][3]*z+inverseProjection[3][3]);}
+// Far-plane depth can make inverse-projection w round to zero. Clamp the
+// reciprocal to the camera range before any normalization or HDR storage.
+float linearDepth(float d){
+ float z=d*2.0-1.0;
+ float w=inverseProjection[2][3]*z+inverseProjection[3][3];
+ return clamp(-(inverseProjection[2][2]*z+inverseProjection[3][2])/max(w,1.0/max(nearFar.y,1.0)),nearFar.x,nearFar.y);
+}
+float viewDistance(vec2 uv){return linearDepth(texture2D(tDepth,uv).x);}
+vec3 viewPosition(vec2 uv){
+ float d=texture2D(tDepth,uv).x;
+ vec4 p=inverseProjection*vec4(uv*2.0-1.0,d*2.0-1.0,1.0);
+ return p.xyz*(linearDepth(d)/max(-p.z,1e-6));
+}
+
 `;
 export const ATMOSPHERE_HELPERS = `
 uniform mat4 cameraWorld;uniform vec3 horizon,sunDirection,sunColor;

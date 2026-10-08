@@ -171,15 +171,22 @@ export class RenderController {
         light.shadow.map = null;
         light.shadow.mapSize.set(size, size);
       }
-      light.shadow.bias = settings.shadowBias * (1 + index * 0.3);
-      light.shadow.normalBias =
-        index < 2
-          ? settings.shadowNormalBias * (1 + index)
-          : Math.max(
-              settings.shadowNormalBias,
-              this.sceneState.lightSnapshots.get(light)?.shadow?.normalBias ??
-                0.1,
-            );
+      // Native CSM biases are calibrated in world units for each split.
+      // Replacing them with the near-map bias creates distant self-shadow acne.
+      const original = this.sceneState.lightSnapshots.get(light)?.shadow;
+      // A -0.0001 bias moves depth by 1.5 metres in the native 15 km
+      // cascade frustum. Express the adjustment in local-map world units,
+      // cap its negative offset, then convert to this cascade's depth range.
+      const depthSpan = Math.max(1, light.shadow.camera.far - light.shadow.camera.near);
+      const localSpan = Math.max(100, (settings.shadowDistance ?? 30) * 4);
+      light.shadow.bias = (original?.bias ?? 0.000001) +
+        Math.max(-0.005, settings.shadowBias * localSpan) / depthSpan;
+      const resolutionRatio = Math.max(1,
+        (this.csmSnapshot.sizes[index]?.x ?? size) / Math.max(1, size));
+      light.shadow.normalBias = Math.max(
+        settings.shadowNormalBias,
+        (original?.normalBias ?? 0.1) * resolutionRatio,
+      );
       light.shadow.radius = settings.shadowSoftness;
       if (typeof light.shadow.intensity === "number")
         light.shadow.intensity = settings.shadowStrength;

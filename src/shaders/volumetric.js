@@ -4,7 +4,7 @@ import { DEPTH_HELPERS } from "./atmosphere.js";
 // This is a screen-space approximation: unknown offscreen occluders attenuate
 // rather than inventing illumination. No world fog or temporal history is added.
 export const VOLUMETRIC_FRAGMENT = `varying vec2 vUv;${DEPTH_HELPERS}
-uniform sampler2D tSunVisibility;uniform mat4 cameraProjection;
+uniform sampler2D tSunVisibility;uniform mat4 cameraProjection;uniform vec2 depthTexel;
 uniform vec3 sunViewDirection,sunColor;
 uniform float volumeDensity,volumeDecay,volumeMaxDistance;uniform int volumeSamples;
 float sunlit(vec3 p,float distance){
@@ -12,7 +12,12 @@ float sunlit(vec3 p,float distance){
  vec4 clip=cameraProjection*vec4(q,1.0);vec2 uv=clip.xy/max(clip.w,0.001)*0.5+0.5;
  if(any(lessThan(uv,vec2(0.0)))||any(greaterThan(uv,vec2(1.0))))return 0.0;
  float edge=min(min(uv.x,uv.y),min(1.0-uv.x,1.0-uv.y));
- return smoothstep(-0.75,0.75,viewDistance(uv)+0.08+q.z)*smoothstep(0.0,0.03,edge);
+ // Filter depth comparisons rather than depth values: interpolating a wall
+ // and sky depth invents leaks, while coverage filtering softens silhouettes.
+ vec2 texel=depthTexel*0.75;
+ float a=smoothstep(-0.45,0.45,viewDistance(uv+texel)+0.08+q.z);
+ float b=smoothstep(-0.45,0.45,viewDistance(uv-texel)+0.08+q.z);
+ return (a+b)*0.5*smoothstep(0.0,0.03,edge);
 }
 void main(){
  vec3 surface=viewPosition(vUv);float end=min(length(surface),volumeMaxDistance);
@@ -20,10 +25,12 @@ void main(){
  float cloudPartial=4.0*vis.b*(1.0-vis.b);
  float gate=(vis.g*0.82+vis.r*(0.14+cloudPartial*0.25))*mix(vis.b,1.0,cloudPartial*0.25);
  float total=0.0,stepLength=end/float(volumeSamples);
+ float attenuation=exp(-volumeDensity*stepLength*0.5);
+ float attenuationStep=exp(-volumeDensity*stepLength)*volumeDecay;
  if(gate>0.001){for(int i=0;i<16;i++){if(i>=volumeSamples)break;
  float distance=(float(i)+0.5)*stepLength;vec3 p=ray*distance;
  float light=min(sunlit(p,min(volumeMaxDistance*0.15,12.0)),sunlit(p,min(volumeMaxDistance*1.5,160.0)));
- total+=light*volumeDensity*stepLength*exp(-volumeDensity*distance)*pow(volumeDecay,float(i));}}
+ total+=light*volumeDensity*stepLength*attenuation;attenuation*=attenuationStep;}}
  float phase=0.1+0.9*pow(max(dot(ray,sunViewDirection),0.0),2.0);
  gl_FragColor=vec4(sunColor*total*phase*gate,end/volumeMaxDistance);
 }`;

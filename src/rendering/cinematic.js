@@ -29,7 +29,7 @@ export class CinematicRenderer {
   attachScene(scene) {
     this.detachScene();
     this.brakeLights = new BrakeLights(this.three, scene);
-    if (this.three.CircleGeometry && this.three.Raycaster && this.three.ShaderMaterial)
+    if (this.three.PlaneGeometry && this.three.Raycaster && this.three.ShaderMaterial)
       this.carContactShadow = new CarContactShadow(this.three, scene);
     if (this.three.ShaderMaterial && this.three.SphereGeometry)
       this.sky = new ProceduralSky(this.three, scene);
@@ -124,6 +124,7 @@ export class CinematicRenderer {
       failures: Object.fromEntries(this.guard.failures),
       profile: this.profiler?.report(),
       brakeLights: this.brakeLights?.report(),
+      contactShadow: this.carContactShadow?.report(),
       shadowCache: this.shadows.report(),
       shaderWarmup: this.warmup.report(),
       environment: this.environment

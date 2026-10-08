@@ -6,6 +6,7 @@ uniform float opacity;
 void main(){
   float r=length(vUv*2.0-1.0);
   float alpha=(1.0-smoothstep(0.12,1.0,r))*opacity;
+  if(alpha<0.002) discard;
   gl_FragColor=vec4(vec3(0.025,0.035,0.05),alpha);
 }`;
 
@@ -40,9 +41,17 @@ export class CarContactShadow {
     this.rayOrigin = new three.Vector3();
     this.down = new three.Vector3(0, -1, 0);
     this.normal = new three.Vector3();
-    this.planeNormal = new three.Vector3(0, 0, 1);
     this.raycaster = new three.Raycaster();
-    this.geometry = new three.CircleGeometry(1, 32);
+    this.geometry = new three.PlaneGeometry(2, 2);
+    this.instanceMatrix = new three.Matrix4();
+    this.carUp = new three.Vector3();
+    this.carQuaternion = new three.Quaternion();
+    this.groundPoint = new three.Vector3();
+    this.groundNormal = new three.Vector3();
+    this.hits = [];
+    this.hasGround = false;
+    this.receiver = null;
+    this.rayQueries = 0;
     this.material = new three.ShaderMaterial({
       name: "PolyShade car contact shadow",
       uniforms: { opacity: { value: 0.28 } },
@@ -53,6 +62,7 @@ export class CarContactShadow {
       depthWrite: false,
       toneMapped: false,
     });
+    this.proxy = new three.Mesh(this.geometry, this.material);
     this.mesh = new three.Mesh(this.geometry, this.material);
     this.mesh.name = "PolyShade car contact shadow";
     this.mesh.userData.polyShadeOwned = true;
@@ -63,7 +73,7 @@ export class CarContactShadow {
     this.mesh.scale.set(1.15, 1.75, 1);
     this.mesh.visible = false;
     scene.add(this.mesh);
-    this.lastRayAt = 0;
+    this.lastRayAt = -Infinity;
   }
 
   scan(camera, settings) {
@@ -89,7 +99,8 @@ export class CarContactShadow {
       if (materials.some((material) => material?.name === "BrakeLight"))
         this.candidates.push(object);
       if (
-        materials.some((material) => FLOOR_KINDS.has(classifyMaterial(object, material)))
+        !materials.some((material) => material?.name === "BrakeLight") &&
+        (object.isInstancedMesh || materials.some((material) => FLOOR_KINDS.has(classifyMaterial(object, material))))
       )
         this.floorMeshes.push(object);
     });
@@ -115,6 +126,7 @@ export class CarContactShadow {
         bestDistance = distance;
       }
     }
+    if (this.car !== best) { this.receiver = null; this.hasGround = false; this.lastRayAt = -Infinity; }
     this.car = best;
   }
 
@@ -123,31 +135,77 @@ export class CarContactShadow {
       this.mesh.visible = false;
       return;
     }
-    if (now - this.lastRayAt < 120) return;
-    this.lastRayAt = now;
     this.car.getWorldPosition(this.carPosition);
-    this.rayOrigin.copy(this.carPosition);
-    this.rayOrigin.y += 0.15;
+    this.car.getWorldQuaternion(this.carQuaternion);
+    this.carUp.set(0, 1, 0).applyQuaternion(this.carQuaternion);
+    this.down.copy(this.carUp).negate();
+    this.rayOrigin.copy(this.carPosition).addScaledVector(this.carUp, 0.3);
     this.raycaster.set(this.rayOrigin, this.down);
-    this.raycaster.far = 10;
-    const hits = this.raycaster.intersectObjects(this.floorMeshes, false);
+    this.raycaster.far = 3;
+    // Raycast the previously contacted instance first. This avoids testing the
+    // entire track on every moving frame and follows ramps without stale blobs.
+    this.hits.length = 0;
+    if (this.receiver?.parent) {
+      const { receiver, instanceId } = this;
+      if (receiver.isInstancedMesh && instanceId !== undefined) {
+        receiver.getMatrixAt(instanceId, this.instanceMatrix);
+        this.proxy.geometry = receiver.geometry;
+        this.proxy.material = receiver.material;
+        this.proxy.matrixWorld.multiplyMatrices(receiver.matrixWorld, this.instanceMatrix);
+        this.raycaster.intersectObject(this.proxy, false, this.hits);
+      } else this.raycaster.intersectObject(receiver, false, this.hits);
+    }
+    if (!this.hits.length && now - this.lastRayAt >= 60) {
+      this.lastRayAt = now;
+      this.rayQueries++;
+      this.raycaster.intersectObjects(this.floorMeshes, false, this.hits);
+    }
     let hit = null;
-    for (const entry of hits) {
+    for (const entry of this.hits) {
       if (belongsTo(entry.object, this.car) || entry.object.userData?.polyShadeOwned || !entry.face?.normal)
         continue;
-      this.normal.copy(entry.face.normal).transformDirection(entry.object.matrixWorld);
-      if (this.normal.y < 0.45) continue;
+      this.normal.copy(entry.face.normal);
+      if (entry.object.isInstancedMesh && entry.instanceId !== undefined) {
+        entry.object.getMatrixAt(entry.instanceId, this.instanceMatrix);
+        this.normal.transformDirection(this.instanceMatrix);
+      }
+      this.normal.transformDirection(entry.object.matrixWorld);
+      if (this.normal.dot(this.carUp) < 0.45) continue;
       hit = entry;
       break;
     }
-    if (!hit) {
+    if (hit) {
+      this.groundPoint.copy(hit.point);
+      this.groundNormal.copy(this.normal);
+      this.hasGround = true;
+      if (hit.object !== this.proxy) {
+        this.receiver = hit.object;
+        this.instanceId = hit.instanceId;
+      }
+    } else {
+      // No extrapolated shadow through gaps or while jumping.
+      this.hasGround = false;
       this.mesh.visible = false;
       return;
     }
-    this.mesh.position.copy(hit.point);
-    this.mesh.position.addScaledVector(this.normal, 0.018);
-    this.mesh.quaternion.setFromUnitVectors(this.planeNormal, this.normal);
-    this.mesh.visible = true;
+    const height = this.rayOrigin.copy(this.carPosition).sub(this.groundPoint).dot(this.groundNormal);
+    this.material.uniforms.opacity.value = 0.36 * (1 - Math.max(0, height - 0.5) / 2.2);
+    this.mesh.position.copy(this.groundPoint).addScaledVector(this.groundNormal, 0.018);
+    // Align the elliptical footprint with the car, including banked tracks.
+    const forward = (this.forward ??= new this.three.Vector3());
+    forward.set(1, 0, 0).applyQuaternion(this.carQuaternion);
+    forward.addScaledVector(this.groundNormal, -forward.dot(this.groundNormal)).normalize();
+    const basis = (this.basis ??= new this.three.Matrix4());
+    const right = (this.right ??= new this.three.Vector3());
+    right.crossVectors(forward, this.groundNormal).normalize();
+    basis.makeBasis(right, forward, this.groundNormal);
+    this.mesh.quaternion.setFromRotationMatrix(basis);
+    this.mesh.visible = this.material.uniforms.opacity.value > 0;
+  }
+
+  report() {
+    return { available: true, visible: this.mesh.visible, cars: this.candidates.length,
+      receivers: this.floorMeshes.length, broadQueries: this.rayQueries };
   }
 
   dispose() {

@@ -5,7 +5,7 @@ import { PNG } from "pngjs";
 import { mkdir } from "node:fs/promises";
 import { runOptimizationBenchmark } from "./optimization-benchmark.mjs";
 const output =
-  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.2.8");
+  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.3.0");
 await mkdir(output, { recursive: true });
 const report = { presets: {}, comparisons: {}, screenshots: [] };
 function imageStats(buffer) {
@@ -69,7 +69,7 @@ report.environment = {
   platform: process.platform,
   architecture: process.arch,
   viewport: [1280, 720],
-  release: process.env.POLYSHADE_RELEASE ?? "0.2.8",
+  release: process.env.POLYSHADE_RELEASE ?? "0.3.0",
   date: new Date().toISOString(),
 };
 const renderingErrors = [];
@@ -410,7 +410,7 @@ try {
     const shadow = window.__polyShadeController.sceneState.sun.shadow;
     return { softness: shadow.radius, strength: shadow.intensity };
   });
-  assert.deepEqual(report.shadowState, { softness: 3, strength: 0.68 });
+  assert.deepEqual(report.shadowState, { softness: 4, strength: 0.76 });
   await page.evaluate(() => {
     const c = window.__polyShadeController;
     Object.assign(c.getSettings().overrides, { shadowQuality: "off" });
@@ -781,7 +781,7 @@ try {
   );
   assert.deepEqual(
     [report.sunRays.target.width, report.sunRays.target.height],
-    [640, 360],
+    [1280, 720],
   );
   await page.evaluate(() => {
     const c = window.__polyShadeController;
@@ -972,7 +972,7 @@ try {
         angle: l.angle,
         penumbra: l.penumbra,
         shadow: l.castShadow,
-        localTarget: l.target.parent === mesh,
+        stableSceneParent: l.target.parent === c.activeScene,
       })),
     }));
   });
@@ -1199,7 +1199,7 @@ try {
       );
       assert.deepEqual(
         [report.volumetricTarget.width, report.volumetricTarget.height],
-        [640, 360],
+        [1280, 720],
       );
       await page.evaluate(() => {
         const c = window.__polyShadeController;
@@ -1279,6 +1279,37 @@ try {
     ),
   );
   assert.deepEqual(report.nativeCSMCapture, [2048, 2048, 2048, 2048]);
+  // First braking after native CSM starts used to change NUM_SPOT_LIGHTS,
+  // compiling the entire scene's lighting variants during driving.
+  await page.evaluate(() => {
+    document.activeElement?.blur();
+    const c=window.__polyShadeController,g=c.activeRenderer.getContext();
+    const create=g.createProgram,after=c.onFrame;
+    window.__freeze={programs:0,gaps:[],cpu:[],last:undefined,
+      allocated:c.cinematic.post.pool.allocations};
+    g.createProgram=function(...args){window.__freeze.programs++;return create.apply(this,args);};
+    c.onFrame=function(...args){const now=performance.now(),f=window.__freeze;
+      if(f.last!==undefined)f.gaps.push(now-f.last);f.last=now;f.cpu.push(args[2]);
+      return after.apply(this,args);};
+    window.__endFreeze=()=>{g.createProgram=create;c.onFrame=after;};
+  });
+  for(let cycle=0;cycle<6;cycle++) {
+    await page.keyboard.down("ArrowDown");
+    await page.waitForTimeout(220);
+    await page.keyboard.up("ArrowDown");
+    await page.waitForTimeout(220);
+  }
+  report.brakingStability=await page.evaluate(()=>{
+    const f=window.__freeze,c=window.__polyShadeController;
+    window.__endFreeze();
+    const stats=a=>{a=a.slice().sort((a,b)=>a-b);return{samples:a.length,
+      p95:a[Math.ceil(a.length*.95)-1],max:a.at(-1)}};
+    return {programsCreated:f.programs,frameGaps:stats(f.gaps),cpu:stats(f.cpu),
+      targetAllocations:c.cinematic.post.pool.allocations-f.allocated,
+      spots:[...c.cinematic.brakeLights.cars.values()].flatMap(car=>car.lights.map(l=>({visible:l.visible,intensity:l.intensity,parent:l.parent===c.activeScene})))};
+  });
+  assert.equal(report.brakingStability.programsCreated,0,"braking never compiles lighting shaders");
+  assert.equal(report.brakingStability.targetAllocations,0,"braking never allocates effect targets");
   await page.evaluate(() => document.activeElement?.blur());
   await page.keyboard.press("F7");
   await page.waitForTimeout(300);
@@ -1289,6 +1320,15 @@ try {
   await page.keyboard.press("F7");
   await page.waitForTimeout(500);
   assert.deepEqual(renderingErrors, []);
+  report.shaderWarnings = await page.evaluate(() => {
+    const r=window.__polyShadeCapturedRenderer,g=r.getContext();
+    return r.info.programs.flatMap(p=>{
+      const log=g.getProgramInfoLog(p.program);
+      if(!log?.includes("warning"))return [];
+      const sources=(g.getAttachedShaders(p.program)??[]).map(shader=>g.getShaderSource(shader));
+      return [{name:p.name,log,context:sources.filter(s=>s.includes("gl_FragColor")).map(s=>s.split("\n").slice(199,222).join("\n"))}];
+    });
+  });
   report.glError = await page.evaluate(() =>
     window.__polyShadeCapturedRenderer.getContext().getError(),
   );

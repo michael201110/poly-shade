@@ -148,7 +148,7 @@ test("shader warming restores light visibility and renderer state, including on 
   warmup.schedule(scene, camera, settings, { warmupMaterials: () => [] }, brakes, 1);
   warmup.run();
   warmup.run();
-  assert.deepEqual(observations, [[0, THREE.NoToneMapping, THREE.LinearSRGBColorSpace], [2, THREE.NoToneMapping, THREE.LinearSRGBColorSpace]]);
+  assert.deepEqual(observations, [[2, THREE.NoToneMapping, THREE.LinearSRGBColorSpace]]);
   assert.equal(renderer.target, target);
   assert.equal(renderer.toneMapping, THREE.ACESFilmicToneMapping);
   assert.equal(renderer.outputColorSpace, THREE.SRGBColorSpace);
@@ -159,7 +159,7 @@ test("shader warming restores light visibility and renderer state, including on 
   const replacementLights = lights.map(() => new THREE.SpotLight());
   brakes.cars = new Map([[{}, { lights: replacementLights }]]);
   warmup.schedule(scene, camera, settings, { warmupMaterials: () => [] }, brakes, 1);
-  assert.equal(warmup.jobs.length, 2, "replaced cars rewarm even with the same mesh and light counts");
+  assert.equal(warmup.jobs.length, 1, "replaced cars rewarm even with the same mesh and light counts");
   warmup.schedule(scene, camera, settings, { warmupMaterials: () => [] }, brakes, 1, true);
   assert.equal(warmup.jobs.length, 0, "native CSM owns its scene shader compilation state");
   warmup.clear();
@@ -170,4 +170,22 @@ test("shader warming restores light visibility and renderer state, including on 
   assert.equal(renderer.target, target);
   assert.ok(lights.every((light) => light.visible === false));
   assert.equal(warmup.supported, false);
+});
+
+
+test("CSM preserves world-scale native normal bias on every cascade", () => {
+  const controller = new RenderController(THREE, () => ({ enabled: true, preset: "cinematic", overrides: {} }));
+  const lights = [0.08, 0.21, 0.6, 1.9].map(bias => {
+    const light = new THREE.DirectionalLight(); light.shadow.normalBias = bias;
+    light.shadow.bias = 0.000001; light.shadow.camera.near = 10; light.shadow.camera.far = 15000;
+    light.shadow.mapSize.set(2048, 2048); return light;
+  });
+  controller.sceneState = { nativeCSM: true, lightSnapshots: new Map(lights.map(light => [light, { shadow: { normalBias: light.shadow.normalBias, bias: light.shadow.bias } }])) };
+  controller.nativeWrapper = { csm: { lightDirection: new THREE.Vector3(), lights, update() {} } };
+  controller.cinematic = { palette: { direction: new THREE.Vector3(1, 1, 1).normalize(), sun: new THREE.Color() }, capabilities: { maxTextureSize: 4096 } };
+  controller.updateCSM(PRESETS.cinematic);
+  assert.deepEqual(lights.map(l => l.shadow.normalBias), [0.08, 0.21, 0.6, 1.9]);
+  assert.ok(lights.every(l => l.shadow.bias > 0 && l.shadow.bias < 0.000001), "cascade depth bias stays positive and within its native scale");
+  controller.updateCSM({...PRESETS.cinematic, shadowQuality: "low"});
+  assert.deepEqual(lights.map(l => l.shadow.normalBias), [0.16, 0.42, 1.2, 3.8]);
 });

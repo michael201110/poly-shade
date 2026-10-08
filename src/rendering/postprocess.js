@@ -302,15 +302,14 @@ export class PostProcess {
       // Keep configured effect buffers resident across occlusion transitions.
       // Disabling the feature still releases them immediately.
       if (raysRequested) {
-        const scale = Math.min(0.5, 1024 / gl.drawingBufferWidth);
+        const scale = 1;
         this.prepareTarget(retain, "sun-rays", Math.round(gl.drawingBufferWidth * scale), Math.round(gl.drawingBufferHeight * scale));
         const maskSize = Math.min(512, Math.max(128,
           2 ** Math.ceil(Math.log2(gl.drawingBufferHeight * 0.24))));
         this.prepareTarget(retain, "sun-mask", maskSize, maskSize);
       }
       if (volumeRequested) {
-        const scale = Math.min(0.5, 1024 / w);
-        this.prepareTarget(retain, "volumetric", Math.round(w * scale), Math.round(h * scale));
+        this.prepareTarget(retain, "volumetric", w, h);
       }
       if (sunRequested) this.prepareTarget(retain, "sun-visibility", 1, 1);
       let visibilityTexture = sceneTarget.texture;
@@ -365,7 +364,7 @@ export class PostProcess {
             (debugRays ||
               this.sunVisibility.partial > 0.01)
           ) {
-            const scale = Math.min(0.5, 1024 / gl.drawingBufferWidth),
+            const scale = 1,
               target = this.pool.get(
                 "sun-rays",
                 Math.round(gl.drawingBufferWidth * scale),
@@ -416,9 +415,7 @@ export class PostProcess {
         (visibility > 0 || debugVolume) &&
         (this.sunVisibility.partial > 0.01 || debugVolume)
       ) {
-        const scale = Math.min(0.5, 1024 / w),
-          vw = Math.round(w * scale),
-          vh = Math.round(h * scale);
+        const vw = w, vh = h;
         const target = this.pool.get("volumetric", vw, vh);
         volumeTexel.set(1 / vw, 1 / vh);
         volumeActive = this.pass(
@@ -429,6 +426,7 @@ export class PostProcess {
             ...depthValues,
             tSunVisibility: visibilityTexture,
             cameraProjection: camera.projectionMatrix,
+            depthTexel: (this.volumeDepthTexel ??= new this.three.Vector2()).set(1 / w, 1 / h),
             sunViewDirection: this.sunView,
             sunColor: palette.sun,
             volumeDensity: s.volumetricDensity,

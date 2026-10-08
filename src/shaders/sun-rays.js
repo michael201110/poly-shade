@@ -30,16 +30,16 @@ void main(){
   vec3 sun=texture2D(tSunVisibility,vec2(0.5)).rgb;
   float rayVisibility=clamp(sun.r*0.15+sun.g*0.85,0.0,1.0)*sun.b;
   if(rayVisibility<0.001){gl_FragColor=vec4(0.0);return;}
-  vec2 uv=vec2(0.5),stepUv=(vUv-sunUv)*sunMaskScale*density/48.0;
+  vec2 uv=vec2(0.5),stepUv=(vUv-sunUv)*sunMaskScale*density/64.0;
   float sum=0.0,weight=1.0;
-  for(int i=0;i<48;i++){
+  for(int i=0;i<64;i++){
     uv+=stepUv;
     // Beyond this aperture the original Gaussian contributes less than 0.00013.
     // The ray travels monotonically away from the centre, so it cannot re-enter.
     if(any(lessThan(uv,vec2(0.0)))||any(greaterThan(uv,vec2(1.0))))break;
-    sum+=texture2D(tSunMask,uv).r*weight;weight*=decay;
+    sum+=texture2D(tSunMask,uv).r*weight;weight*=pow(decay,0.75);
   }
   float normalizer=max(1.0-pow(decay,48.0),0.001);
-  float shaft=sum/normalizer*rayVisibility*visibility*exposure;
+  float shaft=sum*0.75/normalizer*rayVisibility*visibility*exposure;
   gl_FragColor=vec4(sunColor*shaft,1.0);
 }`;

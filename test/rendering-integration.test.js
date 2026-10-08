@@ -33,11 +33,18 @@ test("car contact shadow remains on the road independently of sun shadowing", ()
   const camera = new THREE.PerspectiveCamera();
   camera.position.set(0, 4, 5);
   camera.updateMatrixWorld(true);
-  const contact = new CarContactShadow(THREE, scene);
+  const contact = new CarContactShadow({ ...THREE, CircleGeometry: undefined }, scene);
   contact.scan(camera, { carContactShadowEnabled: true });
   contact.update({ carContactShadowEnabled: true }, 120, camera);
+  assert.equal(contact.geometry.type, "PlaneGeometry");
   assert.equal(contact.mesh.visible, true);
   assert.ok(Math.abs(contact.mesh.position.y - 0.018) < 0.001);
+  const broadQueries = contact.rayQueries;
+  car.position.x = 0.25;
+  scene.updateMatrixWorld(true);
+  contact.update({ carContactShadowEnabled: true }, 130, camera);
+  assert.ok(Math.abs(contact.mesh.position.x - 0.25) < 0.001, "footprint follows every moving frame");
+  assert.equal(contact.rayQueries, broadQueries, "cached receiver avoids a whole-track raycast");
   contact.dispose();
   assert.equal(scene.children.includes(contact.mesh), false);
 });
@@ -216,4 +223,66 @@ test("paint updates made directly through a replacement material persist and res
   restoreMaterials(state);
   assert.equal(mesh.material, original);
   assert.ok(mesh.material.color.equals(paint));
+});
+
+
+test("instanced track receivers retain shadows regardless of their origin", () => {
+  const scene = new THREE.Scene();
+  const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(10, 1, 10), new THREE.MeshLambertMaterial(), 1);
+  mesh.setMatrixAt(0, new THREE.Matrix4().makeTranslation(500, 0, 500));
+  scene.add(mesh);
+  const camera = new THREE.PerspectiveCamera();
+  camera.position.set(500, 2, 500);
+  scene.updateMatrixWorld(true); camera.updateMatrixWorld(true);
+  const state = createSceneState(scene);
+  applySceneEffects(state, THREE, profile, camera, 2000);
+  assert.equal(mesh.receiveShadow, true);
+  assert.equal(mesh.castShadow, true);
+  restoreScene(state);
+  assert.equal(mesh.castShadow, false);
+});
+
+test("contact footprint follows banked instanced surfaces and disappears over gaps", () => {
+  const scene = new THREE.Scene();
+  const road = new THREE.InstancedMesh(new THREE.PlaneGeometry(10, 20), new THREE.MeshLambertMaterial(), 1);
+  const tilt = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0.4));
+  const origin = new THREE.Vector3(40, 3, 60);
+  road.setMatrixAt(0, new THREE.Matrix4().compose(origin, tilt, new THREE.Vector3(1, 1, 1)));
+  scene.add(road);
+  const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(tilt);
+  const brake = new THREE.MeshStandardMaterial(); brake.name = "BrakeLight";
+  const car = new THREE.Mesh(new THREE.BoxGeometry(2, 0.4, 1), brake);
+  car.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
+  car.position.copy(origin).addScaledVector(normal, 0.5);
+  scene.add(car); scene.updateMatrixWorld(true);
+  const camera = new THREE.PerspectiveCamera(); camera.position.copy(car.position); camera.updateMatrixWorld(true);
+  const contact = new CarContactShadow(THREE, scene);
+  contact.scan(camera, profile); contact.update(profile, 120, camera);
+  assert.equal(contact.mesh.visible, true);
+  assert.ok(contact.groundNormal.dot(normal) > 0.999);
+  assert.ok(contact.mesh.position.distanceTo(origin.clone().addScaledVector(normal, 0.018)) < 0.001);
+  car.position.x += 100; scene.updateMatrixWorld(true);
+  contact.update(profile, 200, camera);
+  assert.equal(contact.mesh.visible, false);
+  contact.dispose();
+});
+
+
+test("native paint and CSM shader handles retain their identity while surface uniforms improve", () => {
+  const scene = new THREE.Scene();
+  const material = new THREE.MeshStandardMaterial({roughness: 0.8, metalness: 0});
+  material.name = "Main"; material.defines.USE_CSM = 1;
+  const callback = () => {}; material.onBeforeCompile = callback;
+  const car = new THREE.Mesh(new THREE.BoxGeometry(), material); car.name = "Body";
+  scene.add(car);
+  const state = createSceneState(scene);
+  applyMaterialTuning(state, THREE, profile);
+  assert.equal(car.material, material);
+  assert.equal(material.onBeforeCompile, callback);
+  assert.equal(material.defines.USE_CSM, 1);
+  assert.equal(material.roughness, 0.22);
+  assert.equal(material.envMapIntensity, profile.environmentIntensity * profile.carReflection);
+  restoreMaterials(state);
+  assert.equal(material.roughness, 0.8);
+  assert.equal(material.metalness, 0);
 });

@@ -9,8 +9,11 @@ vec3 softenedRays(vec2 uv){vec2 t=rayTexel*1.1;return (texture2D(tRays,uv).rgb*4
 uniform int debugView;
 vec3 shoulder(vec3 c){return clamp((c*(2.51*c+0.03))/(c*(2.43*c+0.59)+0.14),0.0,1.0);}
 void main(){
- vec3 c=texture2D(tInput,vUv).rgb;
- if(aoActive>0.5)c*=texture2D(tAO,vUv).r;
+ vec3 sceneColor=texture2D(tInput,vUv).rgb;vec3 c=sceneColor;
+ if(aoActive>0.5){float ao=texture2D(tAO,vUv).r;
+ // Neutral AO is safer than propagating invalid depth-derived samples.
+ if(ao>=0.0&&ao<=1.0)c*=max(ao,0.55);
+ }
  if(atmosphereActive>0.5)c=aerial(c,vUv);
  if(bloomStrength>0.0)c+=texture2D(tBloom,vUv).rgb*bloomStrength;
  if(rayStrength>0.0)c+=softenedRays(vUv)*rayStrength;
@@ -36,5 +39,8 @@ void main(){
  if(debugView==5)c=texture2D(tSunVisibility,vec2(0.5)).rgb;
  if(debugView==6)c=softenedRays(vUv)*4.0;
  if(debugView==7)c=texture2D(tVolume,vUv).rgb*4.0;
+ // Unordered (NaN) comparisons fail this check: preserve the lit scene if an
+ // optional effect produces an invalid sample on a different GPU driver.
+ if(!all(greaterThanEqual(c,vec3(0.0))))c=shoulder(max(sceneColor,0.0)*exposure);
  gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
 }`;
