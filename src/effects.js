@@ -564,12 +564,12 @@ export function updateShadowFocus(sceneState, settings, camera) {
   sun.updateMatrixWorld?.();
 }
 
-// The local shadow map is tightly focused on gameplay. Letting distant
-// receivers use it exposes its finite resolution as large square patches at
-// the horizon, so limit the mod-managed shadow work to the stable focus area.
+// The local shadow map only has stable detail near the camera. Distant
+// receivers expose its finite resolution as large square patches, so restrict
+// mod-managed shadow work to the configured coverage radius.
 function updateShadowRange(sceneState, settings, camera, three) {
   if (!camera?.getWorldPosition || !three?.Vector3) return;
-  const range = Math.max(20, (settings.shadowDistance ?? 30) * 2);
+  const range = Math.max(15, settings.shadowDistance ?? 30);
   const rangeSquared = range * range;
   const cameraPosition = (sceneState.shadowRangeCamera ??= new three.Vector3());
   const meshPosition = (sceneState.shadowRangeMesh ??= new three.Vector3());
