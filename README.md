@@ -7,10 +7,10 @@ A graphics mod for **PolyTrack 0.6.3**, loaded through PolyModLoader. Warm direc
 Install [PolyModLoader](https://polymodloader.com/), then paste this **versioned 0.3.2 install link** into its mod manager:
 
 ```text
-https://cdn.polymodloader.com/gh/michael201110/poly-shade/623981aa1b0d6d4707361bf4a9e3107b42949433/
+https://cdn.polymodloader.com/gh/michael201110/poly-shade/2608991c477433e16fb829b4e40b9aeeb2213e21/
 ```
 
-[Install PolyShade 0.3.2](https://cdn.polymodloader.com/gh/michael201110/poly-shade/623981aa1b0d6d4707361bf4a9e3107b42949433/)
+[Install PolyShade 0.3.2](https://cdn.polymodloader.com/gh/michael201110/poly-shade/2608991c477433e16fb829b4e40b9aeeb2213e21/)
 
 Select **0.3.2 / latest**, move the mod to Loaded, and reload the game. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
 
