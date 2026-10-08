@@ -1,4 +1,4 @@
-import { SUN_RAYS_FRAGMENT } from "../shaders/sun-rays.js";
+import { SUN_MASK_FRAGMENT, SUN_RAYS_FRAGMENT } from "../shaders/sun-rays.js";
 import { SUN_VISIBILITY_FRAGMENT } from "../shaders/sun-optics.js";
 import { SunVisibility, sunScreenVisibility } from "./sun-visibility.js";
 import { VOLUMETRIC_FRAGMENT } from "../shaders/volumetric.js";
@@ -33,7 +33,11 @@ export class PostProcess {
     this.state = new RenderState(three);
     this.scene = new three.Scene();
     this.camera = new three.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    this.geometry = new three.PlaneGeometry(2, 2);
+    this.geometry = new three.BufferGeometry();
+    this.geometry.setAttribute("position", new three.BufferAttribute(
+      new Float32Array([-1, -1, 0, 3, -1, 0, -1, 3, 0]), 3));
+    this.geometry.setAttribute("uv", new three.BufferAttribute(
+      new Float32Array([0, 0, 2, 0, 0, 2]), 2));
     this.quad = new three.Mesh(this.geometry);
     this.quad.frustumCulled = false;
     this.scene.add(this.quad);
@@ -66,11 +70,37 @@ export class PostProcess {
     if (entry) entry.value = value;
     else material.uniforms[key] = { value };
   }
+  warmupMaterials(s) {
+    const passes = [];
+    const add = (name, fragment, linear = true) => passes.push({ material: this.material(name, fragment), linear });
+    if (s.aoEnabled && s.aoStrength > 0) {
+      add("ao", SSAO_FRAGMENT); add("ao-blur", AO_BLUR_FRAGMENT);
+    }
+    if (s.bloomEnabled && s.bloomStrength > 0) {
+      add("bloom", BLOOM_FRAGMENT); add("bloom-blur", BLOOM_BLUR_FRAGMENT);
+    }
+    if (s.sunRaysEnabled || s.lensFlareEnabled || s.volumetricEnabled)
+      add("sun-visibility", SUN_VISIBILITY_FRAGMENT);
+    if (s.sunRaysEnabled) { add("sun-mask", SUN_MASK_FRAGMENT); add("sun-rays", SUN_RAYS_FRAGMENT); }
+    if (s.volumetricEnabled) add("volumetric", VOLUMETRIC_FRAGMENT);
+    if (s.fxaaEnabled || (s.sharpenEnabled && s.sharpenStrength > 0)) {
+      add("grade", GRADE_FRAGMENT); add("finish", FINISH_FRAGMENT, false);
+    } else add("grade-output", GRADE_OUTPUT_FRAGMENT, false);
+    return passes;
+  }
+  prepareTarget(retain, name, width, height) {
+    retain.add(name);
+    const existing = this.pool.targets.get(name);
+    const changed = !existing || existing.width !== width || existing.height !== height;
+    const target = this.pool.get(name, width, height);
+    // Reserve GPU attachments at configuration/resize time, rather than
+    // during the first brief glimpse of sunlight while driving.
+    if (changed) this.renderer.initRenderTarget?.(target);
+  }
   pass(name, fragment, target, values, draw, profileName = name) {
     if (this.guard.failures.has(name)) return false;
     const m = this.material(name, fragment);
-    for (const [key, value] of Object.entries(values))
-      this.uniform(m, key, value);
+    for (const key in values) this.uniform(m, key, values[key]);
     this.quad.material = m;
     this.guard.pass = name;
     this.renderer.setRenderTarget(target);
@@ -130,6 +160,9 @@ export class PostProcess {
       this.guard.pass = "scene";
       if (this.profiler) this.profiler.scene(() => draw(scene, camera));
       else draw(scene, camera);
+      // Every fullscreen pass overwrites every pixel; clearing it first only
+      // repeats memory writes and driver submissions.
+      r.autoClear = false;
       if (this.profiler && sceneTarget.samples)
         this.profiler.measure("scene-msaa-resolve", () =>
           r.setRenderTarget(null),
@@ -254,6 +287,9 @@ export class PostProcess {
         s.debugView === "volumetric";
       const debugRays = s.debugView === "sun-rays";
       const debugVolume = s.debugView === "volumetric";
+      const raysRequested =
+        ((s.sunRaysEnabled && s.sunRayStrength > 0 && s.sunRayExposure > 0) || debugRays) &&
+        !this.guard.failures.has("sun-rays") && !this.guard.failures.has("sun-mask");
       const volumeRequested =
         ((s.volumetricEnabled &&
           s.volumetricStrength > 0 &&
@@ -261,12 +297,25 @@ export class PostProcess {
           debugVolume) &&
         !this.guard.failures.has("volumetric");
       const sunUv = (this.sunUv ??= new this.three.Vector2());
+      const sunRequested = raysRequested ||
+        (s.lensFlareEnabled && s.lensFlareStrength > 0) || volumeRequested || debugSun;
+      // Keep configured effect buffers resident across occlusion transitions.
+      // Disabling the feature still releases them immediately.
+      if (raysRequested) {
+        const scale = Math.min(0.5, 1024 / gl.drawingBufferWidth);
+        this.prepareTarget(retain, "sun-rays", Math.round(gl.drawingBufferWidth * scale), Math.round(gl.drawingBufferHeight * scale));
+        const maskSize = Math.min(512, Math.max(128,
+          2 ** Math.ceil(Math.log2(gl.drawingBufferHeight * 0.24))));
+        this.prepareTarget(retain, "sun-mask", maskSize, maskSize);
+      }
+      if (volumeRequested) {
+        const scale = Math.min(0.5, 1024 / w);
+        this.prepareTarget(retain, "volumetric", Math.round(w * scale), Math.round(h * scale));
+      }
+      if (sunRequested) this.prepareTarget(retain, "sun-visibility", 1, 1);
       let visibilityTexture = sceneTarget.texture;
       if (
-        ((s.sunRaysEnabled && s.sunRayStrength > 0 && s.sunRayExposure > 0) ||
-          (s.lensFlareEnabled && s.lensFlareStrength > 0) ||
-          volumeRequested ||
-          debugSun) &&
+        sunRequested &&
         depth
       ) {
         const direction = (this.sunView ??= new this.three.Vector3());
@@ -312,10 +361,7 @@ export class PostProcess {
             s.lensFlareStrength > 0 &&
             this.sunVisibility.clear > 0.01;
           if (
-            ((s.sunRaysEnabled &&
-              s.sunRayStrength > 0 &&
-              s.sunRayExposure > 0) ||
-              debugRays) &&
+            raysRequested &&
             (debugRays ||
               this.sunVisibility.partial > 0.01)
           ) {
@@ -325,14 +371,27 @@ export class PostProcess {
                 Math.round(gl.drawingBufferWidth * scale),
                 Math.round(gl.drawingBufferHeight * scale),
               );
+            const maskSize = Math.min(512, Math.max(128,
+              2 ** Math.ceil(Math.log2(gl.drawingBufferHeight * 0.24))));
+            const mask = this.pool.get("sun-mask", maskSize, maskSize);
+            const extent = (this.sunMaskExtent ??= new this.three.Vector2());
+            extent.set(0.24 / (w / h), 0.24);
+            const maskScale = (this.sunMaskScale ??= new this.three.Vector2());
+            maskScale.set(1 / extent.x, 1 / extent.y);
+            const depthTexel = (this.depthTexel ??= new this.three.Vector2());
+            depthTexel.set(1 / w, 1 / h);
+            const maskActive = this.pass("sun-mask", SUN_MASK_FRAGMENT, mask, {
+              tDepth: depth, sunUv, sunMaskExtent: extent, depthTexel, aspect: w / h,
+            }, draw);
             rayTexel.set(1 / target.width, 1 / target.height);
             retain.add("sun-rays");
-            raysActive = this.pass(
+            raysActive = maskActive && this.pass(
               "sun-rays",
               SUN_RAYS_FRAGMENT,
               target,
               {
-                tDepth: depth,
+                tSunMask: mask.texture,
+                sunMaskScale: maskScale,
                 tSunVisibility: visibilityTexture,
                 sunUv,
                 sunColor: palette.sun,
@@ -387,7 +446,6 @@ export class PostProcess {
           volume = target.texture;
         }
       }
-      if (!raysActive) retain.delete("sun-rays");
       if (!aoActive) {
         retain.delete("ao");
         retain.delete("ao-blur");

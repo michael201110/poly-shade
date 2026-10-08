@@ -19,6 +19,7 @@ export const FLARE_HELPERS = `
 uniform sampler2D tSunVisibility;uniform vec2 sunUv;
 uniform float flareStrength,ghostStrength,iridescence,streakStrength,sunVisibility,aspect;
 vec3 lensFlare(vec2 uv){
+if(flareStrength<=0.0)return vec3(0.0);
 vec3 mask=texture2D(tSunVisibility,vec2(0.5)).rgb;
 float visible=clamp(mask.r+mask.g*0.2,0.0,1.0)*mix(mask.b,1.0,0.18)*sunVisibility;
 if(flareStrength<=0.0||visible<0.001)return vec3(0.0);

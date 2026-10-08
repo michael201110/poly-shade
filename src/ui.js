@@ -336,6 +336,7 @@ export function mountPanel(document, callbacks, initialSettings) {
       metrics.hidden = !settings.values.debugEnabled;
     },
     setMetrics(data) {
+      if (metrics.hidden) return;
       const shadowSize = SHADOW_MAP_SIZES[data.shadowQuality] || "off";
       metrics.textContent = [
         `FPS (render calls): ${data.fps.toFixed(0)}`,

@@ -66,6 +66,7 @@ function rememberLight(sceneState, light) {
     position: light.position?.clone?.(),
     targetPosition: light.target?.position?.clone?.(),
     castShadow: light.castShadow,
+    visible: light.visible,
     shadow: light.shadow
       ? {
           mapSize: light.shadow.mapSize?.clone?.(),
@@ -86,6 +87,18 @@ function rememberLight(sceneState, light) {
         }
       : null,
   });
+}
+
+function muteLight(sceneState, light) {
+  rememberLight(sceneState, light);
+  if (light.castShadow && light.shadow?.map) {
+    light.shadow.map.dispose();
+    light.shadow.map = null;
+  }
+  light.intensity = 0;
+  if (typeof light.visible === "boolean") light.visible = false;
+  light.castShadow = false;
+  sceneState.mutedLights.add(light);
 }
 
 function restoreShadowSettings(light, snapshot) {
@@ -306,11 +319,14 @@ export function createSceneState(scene) {
     originalMaterials: new Map(),
     processedMeshes: new Map(),
     attachedTargets: new Set(),
+    mutedLights: new Set(),
   };
 }
 
 export function applySceneEffects(sceneState, three, settings, camera, now) {
-  if (now - sceneState.lastBoundsAt >= 5000 || !sceneState.bounds) {
+  // Camera-focused sunlight needs no whole-track bounds. Only fallback fog
+  // uses the radius; avoid a periodic recursive bounds walk during gameplay.
+  if (settings.fogEnabled && (now - sceneState.lastBoundsAt >= 5000 || !sceneState.bounds)) {
     safelyApply(sceneState, "scene bounds", () => {
       sceneState.bounds = getSceneBounds(three, sceneState.scene);
     });
@@ -349,6 +365,11 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
           light.castShadow = false;
           return;
         }
+        // CSM indexes every native directional light; undo local-sun muting
+        // before the game's cascade shader sees this scene.
+        sceneState.mutedLights.delete(light);
+        if (typeof snapshot.visible === "boolean") light.visible = snapshot.visible;
+        if (typeof snapshot.castShadow === "boolean") light.castShadow = snapshot.castShadow;
         light.intensity = snapshot.intensity * settings.sunIntensity;
         light.color.copy(
           (sceneState.palette ?? skyPalette(three, settings)).sun,
@@ -361,8 +382,7 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
     sceneState.sun = sun;
     sceneState.scene.traverse((light) => {
       if (light !== sun && light.isDirectionalLight) {
-        rememberLight(sceneState, light);
-        light.intensity = 0;
+        muteLight(sceneState, light);
       }
     });
   });
@@ -371,8 +391,7 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
     configureLight(sceneState, three, fill, settings, sceneState.bounds);
     sceneState.scene.traverse((light) => {
       if (light !== fill && (light.isAmbientLight || light.isHemisphereLight)) {
-        rememberLight(sceneState, light);
-        light.intensity = 0;
+        muteLight(sceneState, light);
       }
     });
   });
@@ -410,16 +429,10 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
         }
 
         object.receiveShadow = true;
-        const kind = materials
-          .map((material) => classifyMaterial(object, material))
-          .find((materialKind) =>
-            ["car", "barrier", "concrete", "architecture"].includes(
-              materialKind,
-            ),
-          );
         if (
           !materials.some((material) => material?.wireframe) &&
-          (kind || object.geometry?.attributes?.normal)
+          (object.geometry?.attributes?.normal || materials.some((material) =>
+            ["car", "barrier", "concrete", "architecture"].includes(classifyMaterial(object, material))))
         ) {
           object.castShadow = true;
         }
@@ -458,11 +471,11 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
 }
 
 export function usesNativeCSM(scene) {
-  return (
-    (scene.children ?? []).filter(
-      (light) => light.isDirectionalLight && !light.userData?.[OWNED_LIGHT],
-    ).length > 1
-  );
+  let count = 0;
+  for (const light of scene.children ?? [])
+    if (light.isDirectionalLight && !light.userData?.[OWNED_LIGHT] && ++count > 1)
+      return true;
+  return false;
 }
 
 // Keep a fixed-size, texel-aligned shadow region around the visible action.
@@ -549,6 +562,11 @@ export function refreshFrameEffects(
 ) {
   // The native renderer's update() rewrites shadowMap.enabled before every render.
   applyRendererEffects(rendererState, three, settings);
+  for (const light of sceneState.mutedLights) {
+    if (typeof light.visible === "boolean") light.visible = false;
+    light.castShadow = false;
+    light.intensity = 0;
+  }
   if (!sceneState.nativeCSM && sceneState.sun) {
     sceneState.sun.castShadow = SHADOW_MAP_SIZES[settings.shadowQuality] > 0;
   }
@@ -661,6 +679,7 @@ export function restoreScene(sceneState) {
 
   for (const [light, snapshot] of sceneState.lightSnapshots) {
     light.intensity = snapshot.intensity;
+    if (typeof snapshot.visible === "boolean") light.visible = snapshot.visible;
     if (snapshot.color && light.color?.copy) light.color.copy(snapshot.color);
     if (snapshot.groundColor && light.groundColor?.copy)
       light.groundColor.copy(snapshot.groundColor);
@@ -684,5 +703,6 @@ export function restoreScene(sceneState) {
   sceneState.attachedTargets.clear();
   sceneState.ownedLights.clear();
   sceneState.lightSnapshots.clear();
+  sceneState.mutedLights.clear();
   sceneState.fog = null;
 }

@@ -46,11 +46,30 @@ export class RenderController {
     if (!this.getSettings().enabled) this.restore();
   }
 
+  resolveSettings() {
+    const source = this.getSettings();
+    if (
+      this.settingsRevision !== this.revision ||
+      this.settingsSource !== source ||
+      this.settingsPreset !== source.preset ||
+      this.settingsEnabled !== source.enabled ||
+      this.settingsOverrides !== source.overrides
+    ) {
+      this.resolvedSettings = resolvePresetSettings(source);
+      this.settingsSource = source;
+      this.settingsRevision = this.revision;
+      this.settingsPreset = source.preset;
+      this.settingsEnabled = source.enabled;
+      this.settingsOverrides = source.overrides;
+    }
+    return this.resolvedSettings;
+  }
+
   onRender(renderer, scene, camera) {
     const now = performance.now();
     this.camera = camera;
     if (!scene?.isScene) return;
-    const settings = resolvePresetSettings(this.getSettings());
+    const settings = this.resolveSettings();
     if (!settings.enabled) {
       if (this.sceneState || this.rendererState) this.restore();
       return;
@@ -85,6 +104,9 @@ export class RenderController {
       applyRendererEffects(this.rendererState, this.three, settings);
       this.cinematic.update(this.sceneState, settings, now, camera);
       applySceneEffects(this.sceneState, this.three, settings, camera, now);
+      this.cinematic.shadows.scan(scene);
+      this.cinematic.warmup.schedule(scene, camera, settings, this.cinematic.post,
+        this.cinematic.brakeLights, this.sceneState.processedMeshes.size, this.sceneState.nativeCSM);
       this.modifiedMaterials = this.sceneState.originalMaterials.size;
       this.appliedRevision = this.revision;
     }
@@ -171,14 +193,14 @@ export class RenderController {
     return this.cinematic.render(
       scene,
       camera,
-      resolvePresetSettings(this.getSettings()),
+      this.resolveSettings(),
       draw,
     );
   }
 
   onFrame(renderer, scene, duration) {
     if (scene !== this.activeScene || renderer !== this.activeRenderer) return;
-    const settings = resolvePresetSettings(this.getSettings());
+    const settings = this.resolveSettings();
     if (settings.enabled) {
       this.renderCount += 1;
       this.recordFrame(duration, performance.now(), settings);
@@ -197,6 +219,7 @@ export class RenderController {
   }
 
   attachRenderer(renderer) {
+    this.settingsRevision = -1;
     if (this.sceneState) restoreScene(this.sceneState);
     this.sceneState = null;
     this.activeScene = null;

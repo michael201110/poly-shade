@@ -3,8 +3,9 @@ import { readFile, writeFile } from "node:fs/promises";
 import assert from "node:assert/strict";
 import { PNG } from "pngjs";
 import { mkdir } from "node:fs/promises";
+import { runOptimizationBenchmark } from "./optimization-benchmark.mjs";
 const output =
-  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.2.4");
+  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.2.5");
 await mkdir(output, { recursive: true });
 const report = { presets: {}, comparisons: {}, screenshots: [] };
 function imageStats(buffer) {
@@ -68,7 +69,7 @@ report.environment = {
   platform: process.platform,
   architecture: process.arch,
   viewport: [1280, 720],
-  release: process.env.POLYSHADE_RELEASE ?? "0.2.4",
+  release: process.env.POLYSHADE_RELEASE ?? "0.2.5",
   date: new Date().toISOString(),
 };
 const renderingErrors = [];
@@ -120,6 +121,9 @@ try {
             "instances.set(renderer, { original, wrapper });",
             "globalThis.__polyShadeCapturedRenderer = renderer; instances.set(renderer, { original, wrapper });",
           );
+      if (path.endsWith(".js") && process.env.POLYSHADE_OPTIMIZATION)
+        body = body.replace("this.sky.uniforms.time.value = now / 1e3;", "this.sky.uniforms.time.value = 0;")
+          .replace("cloudTime: performance.now() / 1e3", "cloudTime: 0");
       await route.fulfill({
         body,
         headers: { "access-control-allow-origin": "*" },
@@ -283,6 +287,74 @@ try {
   await page.waitForFunction(
     () => window.__polyShadeController?.cinematic?.post?.frames > 3,
   );
+  if (process.env.POLYSHADE_GL_DEBUG) {
+    await page.evaluate((all) => {
+      const g = window.__polyShadeCapturedRenderer.getContext();
+      window.__glErrors = [];
+      const initial = g.getError();
+      if (initial) { window.__glErrors.push({ name:"before instrumentation", code:initial }); console.log("PolyShade GL debug initial",initial); }
+      for (let prototype = Object.getPrototypeOf(g); prototype && prototype !== Object.prototype; prototype = Object.getPrototypeOf(prototype)) {
+        for (const name of Object.getOwnPropertyNames(prototype)) {
+          if (name === "getError" || name === "constructor" || typeof g[name] !== "function" || Object.hasOwn(g,name)) continue;
+          if (!all && !/^(?:bufferData|bufferSubData|getBufferSubData|readPixels|texImage.*|texStorage.*|texSubImage.*|viewport|scissor|delete.*|clientWaitSync|fenceSync|bindVertexArray|enableVertexAttribArray|disableVertexAttribArray|vertexAttrib.*|bindAttribLocation|useProgram|draw.*)$/.test(name)) continue;
+          const original = g[name];
+          g[name] = function (...args) {
+            const valid = name === "deleteBuffer" ? g.isBuffer(args[0]) : name === "deleteVertexArray" ? g.isVertexArray(args[0]) : undefined;
+            const result = original.apply(this,args), code = g.getError();
+            if (code && window.__glErrors.length < 20) {
+              const error = { name, code, valid, args:args.map((value)=>typeof value === "number" || typeof value === "string" ? value : value?.constructor?.name), stack:new Error().stack };
+              window.__glErrors.push(error); console.log("PolyShade GL debug",JSON.stringify(error));
+            }
+            return result;
+          };
+        }
+      }
+    }, !!process.env.POLYSHADE_CSM_DEBUG);
+  }
+  if (process.env.POLYSHADE_CSM_DEBUG) {
+    for (let cycle = 0; cycle < 3; cycle++) {
+      await page.evaluate(() => {
+        const pml = window.polyModLoader;
+        pml.settingClass.updateSettings([[pml.getFromPolyTrack("P.A.ShadowQuality"),"3"]]);
+      });
+      await page.waitForTimeout(1200);
+      await page.locator("#polyshade-panel select").first().selectOption("recording");
+      await page.waitForTimeout(700);
+      await page.evaluate(() => document.activeElement?.blur());
+      await page.keyboard.press("F7"); await page.waitForTimeout(200);
+      await page.keyboard.press("F7"); await page.waitForTimeout(700);
+      await page.evaluate(() => {
+        const pml = window.polyModLoader;
+        pml.settingClass.updateSettings([[pml.getFromPolyTrack("P.A.ShadowQuality"),"0"]]);
+      });
+      await page.waitForTimeout(700);
+    }
+    const errors = await page.evaluate(() => window.__glErrors);
+    await writeFile(output + "/gl-errors.json",JSON.stringify(errors,null,2));
+    assert.deepEqual(errors,[]);
+    await browser.close(); process.exit(0);
+  }
+  if (process.env.POLYSHADE_WARMUP_DEBUG) {
+    await page.waitForTimeout(1500);
+    const probe = await page.evaluate(() => {
+      const c = window.__polyShadeController, r = c.activeRenderer;
+      const jobs = [], original = r.compile;
+      r.compile = function (...args) {
+        const lights = [];
+        args[0].traverseVisible((n) => { if (n.isLight) lights.push({ name:n.name, intensity:n.intensity, layers:n.layers.mask }); });
+        const result = original.apply(this,args);
+        jobs.push({ lights, keys:r.info.programs.map((p) => p.cacheKey) });
+        return result;
+      };
+      c.cinematic.warmup.clear();
+      c.cinematic.warmup.schedule(c.activeScene,c.camera,c.resolveSettings(),c.cinematic.post,c.cinematic.brakeLights,c.sceneState.processedMeshes.size);
+      while(c.cinematic.warmup.jobs.length) c.cinematic.warmup.run();
+      r.compile = original;
+      return { compile:original.toString(), jobs, lights:c.cinematic.brakeLights.report(), source:r.info.programs.map((p)=>({key:p.cacheKey, name:p.name})) };
+    });
+    await writeFile(output + "/warmup-debug.json",JSON.stringify(probe,null,2));
+    await browser.close(); process.exit(0);
+  }
   for (const id of ["cinematic-lite", "cinematic", "recording"]) {
     await page.locator("#polyshade-panel select").first().selectOption(id);
     await page.waitForFunction(
@@ -303,6 +375,36 @@ try {
       report.comparisons.enhanced = difference(baseline, image);
   }
   assert.ok(report.comparisons.enhanced.meanAbsolute > 3);
+  if (process.env.POLYSHADE_OPTIMIZATION) {
+    if (process.env.POLYSHADE_CACHE_DEBUG) {
+      const probe = await page.evaluate(() => {
+        const c = window.__polyShadeController, s = c.cinematic.shadows;
+        const animated = [];
+        c.activeScene.traverse((n) => {
+          if (!n.isMesh || !n.castShadow) return;
+          const materials = Array.isArray(n.material) ? n.material : [n.material];
+          if (n.isSkinnedMesh || n.morphTargetInfluences?.length ||
+            n.onBeforeRender !== Object.getPrototypeOf(n).onBeforeRender || materials.some((m) => m?.displacementMap))
+            animated.push({ name:n.name, skinned:n.isSkinnedMesh, morph:n.morphTargetInfluences,
+              callback:n.onBeforeRender.toString(), material:materials.map((m) => m?.name) });
+        });
+        return { cache:s.report(), animated,
+          lights:s.lights.map(({node:n}) => ({name:n.name, needs:n.shadow.needsUpdate,
+            auto:n.shadow.autoUpdate, map:!!n.shadow.map})),
+          topology:s.topology.filter((row) => row.children !== row.node.children.length).map((row) => row.node.name),
+          rendererAuto:c.activeRenderer.shadowMap.autoUpdate, rendererNeeds:c.activeRenderer.shadowMap.needsUpdate,
+          rendererSource:c.activeRenderer.shadowMap.render.toString(),
+        };
+      });
+      await writeFile(output + "/cache-debug.json", JSON.stringify(probe,null,2));
+      console.log(JSON.stringify(probe,null,2));
+      await browser.close(); process.exit(0);
+    }
+    await runOptimizationBenchmark(page, shot, output, report.environment);
+    console.log("PASS optimization benchmark", output);
+    await browser.close();
+    process.exit(0);
+  }
   report.shadowArtifactIsolation = {};
   report.shadowState = await page.evaluate(() => {
     const shadow = window.__polyShadeController.sceneState.sun.shadow;
@@ -556,18 +658,15 @@ try {
     .selectOption("cinematic");
   await page.evaluate(() => document.activeElement?.blur());
   await page.keyboard.down("ArrowUp");
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(1000);
   await page.keyboard.up("ArrowUp");
   await shot("slow-brake-off");
+  // Arm capture before braking so a brief native lamp pulse cannot finish
+  // between a polling assertion and the screenshot command.
+  const slowBrakeCapture = shot("slow-brake-on", true);
   await page.keyboard.down("ArrowDown");
-  await page.waitForTimeout(200);
-  assert.equal(
-    await page.evaluate(
-      () => window.__polyShadeController.cinematic.brakeLights.report().active,
-    ),
-    true,
-  );
-  await shot("slow-brake-on");
+  await slowBrakeCapture;
+  assert.equal(await page.evaluate(() => window.__capturedBrakeState.active), true);
   await page.keyboard.up("ArrowDown");
   await page.keyboard.press("r");
   await page.waitForTimeout(1000);
@@ -961,7 +1060,9 @@ try {
     assert.ok(row.skies <= 1);
     assert.ok(row.lights <= 6);
     assert.equal(row.lights, row.brakeTargets);
-    assert.ok((row.resources?.live ?? 0) <= 9);
+    // The filtered sun aperture adds one reusable target; configured shaft
+    // buffers now remain resident through occlusion instead of being churned.
+    assert.ok((row.resources?.live ?? 0) <= 10);
     if (row.preset === "vanilla")
       assert.equal(row.skies + row.lights + row.brakeTargets, 0);
   }
@@ -1192,6 +1293,11 @@ try {
     window.__polyShadeCapturedRenderer.getContext().getError(),
   );
   assert.equal(report.glError, 0);
+  if (process.env.POLYSHADE_GL_DEBUG) {
+    report.glErrors = await page.evaluate(() => window.__glErrors);
+    await writeFile(output + "/gl-errors.json",JSON.stringify(report.glErrors,null,2));
+    assert.deepEqual(report.glErrors, []);
+  }
   await writeFile(output + "/report.json", JSON.stringify(report, null, 2));
   console.log(
     JSON.stringify(

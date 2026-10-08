@@ -22,20 +22,15 @@ function ancestorNames(mesh) {
   return names.join(" ");
 }
 
+const GHOST_MARKER = /ghost|replay|swarm|training/i;
 export function isReplayGhost(mesh, material) {
-  const descriptors = [
-    mesh?.name,
-    mesh?.userData?.type,
-    material?.name,
-    material?.userData?.type,
-    ancestorNames(mesh),
-  ]
-    .filter((value) => typeof value === "string")
-    .join(" ")
-    .toLowerCase();
-  return ["ghost", "replay", "swarm", "training"].some((marker) =>
-    descriptors.includes(marker),
-  );
+  const marker = GHOST_MARKER;
+  if (marker.test(material?.name ?? "") || marker.test(material?.userData?.type ?? ""))
+    return true;
+  for (let node = mesh; node && !node.isScene; node = node.parent)
+    if (marker.test(node.name ?? "") || marker.test(node.userData?.type ?? ""))
+      return true;
+  return false;
 }
 
 export function describeMaterial(mesh, material) {
@@ -250,21 +245,22 @@ const SURFACE_PROPERTIES = [
   "morphNormals",
 ];
 
+const SYNC_PROPERTIES = ["opacity", "transparent", "visible", "depthWrite", "map", "alphaMap", "alphaTest", "vertexColors"];
 export function syncMaterialColors(sceneState, settings = {}) {
   const snapshots = (sceneState.materialSyncSnapshots ??= new WeakMap());
   for (const [source, byKind] of sceneState.materialClones) {
     for (const [kind, clone] of byKind) {
       const previous = snapshots.get(clone);
-      for (const key of [
-        "opacity",
-        "transparent",
-        "visible",
-        "depthWrite",
-        "map",
-        "alphaMap",
-        "alphaTest",
-        "vertexColors",
-      ]) {
+      const warmth = settings.surfaceWarmth ?? 0;
+      if (previous && previous.warmth === warmth && source.color && clone.color &&
+        source.color.r === previous.sourceR && source.color.g === previous.sourceG && source.color.b === previous.sourceB &&
+        clone.color.r === previous.outputR && clone.color.g === previous.outputG && clone.color.b === previous.outputB) {
+        let unchanged = true;
+        for (const key of SYNC_PROPERTIES)
+          if (source[key] !== previous[key] || clone[key] !== previous[key]) { unchanged = false; break; }
+        if (unchanged) continue;
+      }
+      for (const key of SYNC_PROPERTIES) {
         if (
           previous &&
           source[key] === previous[key] &&
@@ -303,12 +299,13 @@ export function syncMaterialColors(sceneState, settings = {}) {
         !source.map &&
         !source.vertexColors
       ) {
-        const warmth = settings.surfaceWarmth ?? 0;
         clone.color.r *= 1 - warmth * 0.04;
         clone.color.g *= 1 - warmth * 0.16;
         clone.color.b *= 1 - warmth * 0.32;
       }
-      snapshots.set(clone, {
+      const snapshot = previous ?? {};
+      Object.assign(snapshot, {
+        warmth,
         sourceR: source.color.r,
         sourceG: source.color.g,
         sourceB: source.color.b,
@@ -324,6 +321,7 @@ export function syncMaterialColors(sceneState, settings = {}) {
         alphaTest: source.alphaTest,
         vertexColors: source.vertexColors,
       });
+      if (!previous) snapshots.set(clone, snapshot);
     }
   }
 }
@@ -386,6 +384,9 @@ export function applyMaterialTuning(sceneState, three = {}, settings = {}) {
       });
       sceneState.inspectorRecords.set(mesh, records.slice(-materials.length));
       if (!material || typeof material.clone !== "function") return material;
+      // Native code keeps an emissive-material handle for the brake lamps.
+      // Replacing that material separates visible lamps from braking state.
+      if (material.name === "BrakeLight") return material;
       if (replayGhost || material.transparent || material.opacity < 0.98)
         return material;
       if (

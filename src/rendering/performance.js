@@ -24,7 +24,7 @@ export class GpuTimer {
     this.collect();
   }
   collect() {
-    if (!this.ext) return;
+    if (!this.ext || !this.pending.length) return;
     const gl = this.gl,
       disjoint = gl.getParameter(this.ext.GPU_DISJOINT_EXT);
     if (disjoint) {

@@ -12,7 +12,7 @@ export class BrakeLights {
     this.frustum = three.Frustum ? new three.Frustum() : null;
     this.projection = three.Matrix4 ? new three.Matrix4() : null;
   }
-  scan(settings, camera) {
+  scan(settings, camera, sceneState) {
     this.camera = camera;
     if (!settings.brakeLightsEnabled || !this.three.SpotLight) {
       if (
@@ -36,9 +36,8 @@ export class BrakeLights {
         mesh.visible === false
       )
         return;
-      const materials = Array.isArray(mesh.material)
-        ? mesh.material
-        : [mesh.material];
+      const source = sceneState?.originalMaterials.get(mesh) ?? mesh.material;
+      const materials = Array.isArray(source) ? source : [source];
       const index = materials.findIndex(
         (m) => m?.name === "BrakeLight" && m.emissive,
       );

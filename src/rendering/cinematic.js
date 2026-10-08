@@ -5,6 +5,8 @@ import { SkyEnvironment } from "./environment.js";
 import { ShaderGuard } from "./shader-guard.js";
 import { PostProcess } from "./postprocess.js";
 import { GpuTimer, PassProfiler } from "./performance.js";
+import { ShadowCache } from "./shadow-cache.js";
+import { ShaderWarmup } from "./shader-warmup.js";
 
 export class CinematicRenderer {
   constructor(three, renderer) {
@@ -13,6 +15,8 @@ export class CinematicRenderer {
     this.guard = new ShaderGuard(renderer);
     this.timer = new GpuTimer(renderer, this.capabilities);
     this.renderer = renderer;
+    this.shadows = new ShadowCache();
+    this.warmup = new ShaderWarmup(three, renderer);
     if (this.capabilities.features.postprocess)
       this.post = new PostProcess(
         three,
@@ -35,7 +39,7 @@ export class CinematicRenderer {
   }
   update(state, settings, now, camera) {
     this.configureProfiler(settings);
-    this.brakeLights?.scan(settings, camera);
+    this.brakeLights?.scan(settings, camera, state);
     this.brakeLights?.update(settings);
     this.palette = skyPalette(this.three, settings);
     this.sky?.update(settings, now);
@@ -64,7 +68,8 @@ export class CinematicRenderer {
       this.sky.uniforms.time.value = now / 1000;
   }
   configureProfiler(settings) {
-    if (settings.debugProfile) {
+    if (settings.debugProfile && this.profileSettings !== settings) {
+      this.profileSettings = settings;
       const key = JSON.stringify(settings);
       if (this.profileKey !== key) {
         this.profiler?.dispose();
@@ -83,12 +88,16 @@ export class CinematicRenderer {
     this.configureProfiler(settings);
     if (this.post) this.post.profiler = this.profiler;
     if (!this.profiler) this.timer.begin();
+    if (settings.shadowQuality !== "off") this.shadows.prepare(camera);
     try {
       return this.post
         ? this.post.render(scene, camera, settings, draw, this.palette)
         : draw();
     } finally {
+      if (settings.shadowQuality !== "off") this.shadows.commit();
       if (!this.profiler) this.timer.end();
+      if (this.renderer.getRenderTarget() === null && !this.renderer.xr.isPresenting)
+        this.warmup.run();
     }
   }
   report() {
@@ -109,6 +118,8 @@ export class CinematicRenderer {
       failures: Object.fromEntries(this.guard.failures),
       profile: this.profiler?.report(),
       brakeLights: this.brakeLights?.report(),
+      shadowCache: this.shadows.report(),
+      shaderWarmup: this.warmup.report(),
       environment: this.environment
         ? {
             generations: this.environment.generations,
@@ -118,6 +129,8 @@ export class CinematicRenderer {
     };
   }
   detachScene() {
+    this.warmup.clear();
+    this.shadows.dispose();
     this.brakeLights?.dispose();
     this.brakeLights = null;
     this.sky?.dispose();

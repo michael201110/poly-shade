@@ -1,0 +1,984 @@
+{
+  "before": {
+    "environment": {
+      "browser": "154.0.4258.62",
+      "platform": "win32",
+      "architecture": "x64",
+      "viewport": [
+        1280,
+        720
+      ],
+      "release": "0.2.4",
+      "date": "2026-10-08T00:45:02.553Z"
+    },
+    "scenarios": {
+      "cinematic-lite-stationary": {
+        "cpu": {
+          "average": 4.819791665052374,
+          "p50": 4.299999952316284,
+          "p95": 8,
+          "p99": 13.5,
+          "max": 37.200000047683716,
+          "samples": 480
+        },
+        "update": {
+          "average": 0.2397916658471028,
+          "p50": 0.19999998807907104,
+          "p95": 0.30000001192092896,
+          "p99": 2,
+          "max": 3.300000011920929,
+          "samples": 480
+        },
+        "intervals": {
+          "average": 16.701043841336123,
+          "p50": 16.69999999999709,
+          "p95": 16.900000000001455,
+          "p99": 17,
+          "max": 33.29999999999927,
+          "samples": 479
+        },
+        "framesOver25ms": 1,
+        "framesOver50ms": 0,
+        "gpu": {
+          "average": 7.8161246,
+          "p95": 8.407135,
+          "samples": 40
+        },
+        "shadersCreated": 0,
+        "targetAllocations": 0,
+        "targetDisposals": 0,
+        "shadowUpdates": null,
+        "shadowReuses": null,
+        "active": {
+          "post": true,
+          "depth": true,
+          "ao": false,
+          "bloom": false,
+          "sunRays": false,
+          "volumetric": false,
+          "lensFlare": false,
+          "sunUv": [
+            0.9122644237862345,
+            1.0318392045376168
+          ],
+          "sunScreenVisibility": 0,
+          "sunClear": 1,
+          "sunPartial": 1,
+          "cloudTransmission": 1,
+          "samples": 0,
+          "fxaa": true,
+          "sceneSize": [
+            1280,
+            720
+          ],
+          "targets": 2
+        },
+        "failures": {}
+      },
+      "cinematic-stationary": {
+        "cpu": {
+          "average": 6.521621620332873,
+          "p50": 6.300000011920929,
+          "p95": 10.600000023841858,
+          "p99": 13.899999976158142,
+          "max": 17.399999976158142,
+          "samples": 481
+        },
+        "update": {
+          "average": 0.2798336795114926,
+          "p50": 0.19999998807907104,
+          "p95": 0.6000000238418579,
+          "p99": 2.400000035762787,
+          "max": 3.800000011920929,
+          "samples": 481
+        },
+        "intervals": {
+          "average": 16.666666666666668,
+          "p50": 16.69999999999709,
+          "p95": 16.80000000000291,
+          "p99": 17,
+          "max": 17.19999999999709,
+          "samples": 480
+        },
+        "framesOver25ms": 0,
+        "framesOver50ms": 0,
+        "gpu": {
+          "average": 11.494388536585365,
+          "p95": 12.92901,
+          "samples": 41
+        },
+        "shadersCreated": 0,
+        "targetAllocations": 0,
+        "targetDisposals": 0,
+        "shadowUpdates": null,
+        "shadowReuses": null,
+        "active": {
+          "post": true,
+          "depth": true,
+          "ao": true,
+          "bloom": true,
+          "sunRays": false,
+          "volumetric": false,
+          "lensFlare": false,
+          "sunUv": [
+            0.9122644237862345,
+            1.0318392045376168
+          ],
+          "sunScreenVisibility": 0,
+          "sunClear": 1,
+          "sunPartial": 1,
+          "cloudTransmission": 1,
+          "samples": 0,
+          "fxaa": true,
+          "sceneSize": [
+            1280,
+            720
+          ],
+          "targets": 6
+        },
+        "failures": {}
+      },
+      "recording-stationary": {
+        "cpu": {
+          "average": 10.167755101286636,
+          "p50": 10,
+          "p95": 15.199999988079071,
+          "p99": 17.399999976158142,
+          "max": 19.600000023841858,
+          "samples": 490
+        },
+        "update": {
+          "average": 0.4771428564373328,
+          "p50": 0.30000001192092896,
+          "p95": 1.0999999642372131,
+          "p99": 3.100000023841858,
+          "max": 4.600000023841858,
+          "samples": 490
+        },
+        "intervals": {
+          "average": 16.70184049079754,
+          "p50": 16.69999999999709,
+          "p95": 17.400000000001455,
+          "p99": 19.19999999999709,
+          "max": 33.599999999998545,
+          "samples": 489
+        },
+        "framesOver25ms": 1,
+        "framesOver50ms": 0,
+        "gpu": {
+          "average": 13.107673512195122,
+          "p95": 14.239687,
+          "samples": 41
+        },
+        "shadersCreated": 0,
+        "targetAllocations": 0,
+        "targetDisposals": 0,
+        "shadowUpdates": null,
+        "shadowReuses": null,
+        "active": {
+          "post": true,
+          "depth": true,
+          "ao": true,
+          "bloom": true,
+          "sunRays": false,
+          "volumetric": false,
+          "lensFlare": false,
+          "sunUv": [
+            0.9122644237862345,
+            1.0318392045376168
+          ],
+          "sunScreenVisibility": 0,
+          "sunClear": 1,
+          "sunPartial": 1,
+          "cloudTransmission": 1,
+          "samples": 0,
+          "fxaa": true,
+          "sceneSize": [
+            1280,
+            720
+          ],
+          "targets": 6
+        },
+        "failures": {}
+      },
+      "capture-driving": {
+        "cpu": {
+          "average": 12.0777777771431,
+          "p50": 11.5,
+          "p95": 16.899999976158142,
+          "p99": 19.5,
+          "max": 173.19999998807907,
+          "samples": 432
+        },
+        "update": {
+          "average": 0.45231481406975677,
+          "p50": 0.30000001192092896,
+          "p95": 1.2000000476837158,
+          "p99": 2.400000035762787,
+          "max": 5.199999988079071,
+          "samples": 432
+        },
+        "intervals": {
+          "average": 18.679118329466366,
+          "p50": 16.69999999999709,
+          "p95": 33.19999999999709,
+          "p99": 33.80000000000291,
+          "max": 183.20000000000437,
+          "samples": 431
+        },
+        "framesOver25ms": 43,
+        "framesOver50ms": 1,
+        "gpu": {
+          "average": 14.46350647222222,
+          "p95": 17.38302,
+          "samples": 36
+        },
+        "shadersCreated": 3,
+        "targetAllocations": 26,
+        "targetDisposals": 25,
+        "shadowUpdates": null,
+        "shadowReuses": null,
+        "active": {
+          "post": true,
+          "depth": true,
+          "ao": true,
+          "bloom": true,
+          "sunRays": false,
+          "volumetric": false,
+          "lensFlare": true,
+          "sunUv": [
+            0.6791916023321194,
+            0.947674708115297
+          ],
+          "sunScreenVisibility": 0.9173243996459632,
+          "sunClear": 1,
+          "sunPartial": 0,
+          "cloudTransmission": 0.9529411764705882,
+          "samples": 0,
+          "fxaa": true,
+          "sceneSize": [
+            1280,
+            720
+          ],
+          "targets": 7
+        },
+        "failures": {}
+      },
+      "capture-braking": {
+        "cpu": {
+          "average": 10.332048193087061,
+          "p50": 6.800000011920929,
+          "p95": 10.699999988079071,
+          "p99": 13.200000047683716,
+          "max": 1434.5,
+          "samples": 415
+        },
+        "update": {
+          "average": 0.33542168657463717,
+          "p50": 0.20000004768371582,
+          "p95": 0.8999999761581421,
+          "p99": 2.5,
+          "max": 4.100000023841858,
+          "samples": 415
+        },
+        "intervals": {
+          "average": 20.087922705314032,
+          "p50": 16.69999999999709,
+          "p95": 16.90000000000873,
+          "p99": 17.19999999999709,
+          "max": 1433.4000000000087,
+          "samples": 414
+        },
+        "framesOver25ms": 1,
+        "framesOver50ms": 1,
+        "gpu": {
+          "average": 11.78985805714286,
+          "p95": 14.251197,
+          "samples": 35
+        },
+        "shadersCreated": 13,
+        "targetAllocations": 3,
+        "targetDisposals": 3,
+        "shadowUpdates": null,
+        "shadowReuses": null,
+        "active": {
+          "post": true,
+          "depth": true,
+          "ao": true,
+          "bloom": true,
+          "sunRays": false,
+          "volumetric": false,
+          "lensFlare": false,
+          "sunUv": [
+            0.9364501120652202,
+            -0.17412151439922463
+          ],
+          "sunScreenVisibility": 0,
+          "sunClear": 1,
+          "sunPartial": 1,
+          "cloudTransmission": 1,
+          "samples": 0,
+          "fxaa": true,
+          "sceneSize": [
+            1280,
+            720
+          ],
+          "targets": 6
+        },
+        "failures": {}
+      },
+      "capture-partial-sun": {
+        "cpu": {
+          "average": 7.0624999985098835,
+          "p50": 6.300000011920929,
+          "p95": 12.699999988079071,
+          "p99": 15.800000011920929,
+          "max": 21.80000001192093,
+          "samples": 480
+        },
+        "update": {
+          "average": 0.41354166753590105,
+          "p50": 0.30000001192092896,
+          "p95": 1.300000011920929,
+          "p99": 2.300000011920929,
+          "max": 2.900000035762787,
+          "samples": 480
+        },
+        "intervals": {
+          "average": 16.70125260960333,
+          "p50": 16.69999999999709,
+          "p95": 17.09999999999127,
+          "p99": 17.39999999999418,
+          "max": 33.69999999999709,
+          "samples": 479
+        },
+        "framesOver25ms": 1,
+        "framesOver50ms": 0,
+        "gpu": {
+          "average": 13.617397902439027,
+          "p95": 14.474322,
+          "samples": 41
+        },
+        "shadersCreated": 0,
+        "targetAllocations": 0,
+        "targetDisposals": 0,
+        "shadowUpdates": null,
+        "shadowReuses": null,
+        "active": {
+          "post": true,
+          "depth": true,
+          "ao": true,
+          "bloom": true,
+          "sunRays": true,
+          "volumetric": true,
+          "lensFlare": true,
+          "sunUv": [
+            0.49999999979470816,
+            0.6791320261448555
+          ],
+          "sunScreenVisibility": 1,
+          "sunClear": 0.5607843137254902,
+          "sunPartial": 0.984313725490196,
+          "cloudTransmission": 1,
+          "samples": 0,
+          "fxaa": true,
+          "sceneSize": [
+            1280,
+            720
+          ],
+          "targets": 9
+        },
+        "failures": {}
+      },
+      "capture-occlusion-transitions": {
+        "cpu": {
+          "average": 7.532640332615549,
+          "p50": 7.100000023841858,
+          "p95": 12.300000011920929,
+          "p99": 15.100000023841858,
+          "max": 18.69999998807907,
+          "samples": 481
+        },
+        "update": {
+          "average": 0.3193347198799593,
+          "p50": 0.20000004768371582,
+          "p95": 0.7000000476837158,
+          "p99": 2.100000023841858,
+          "max": 3.600000023841858,
+          "samples": 481
+        },
+        "intervals": {
+          "average": 16.666249999999977,
+          "p50": 16.69999999999709,
+          "p95": 17,
+          "p99": 17.30000000000291,
+          "max": 17.69999999999709,
+          "samples": 480
+        },
+        "framesOver25ms": 0,
+        "framesOver50ms": 0,
+        "gpu": {
+          "average": 11.953515175,
+          "p95": 13.847239,
+          "samples": 40
+        },
+        "shadersCreated": 0,
+        "targetAllocations": 30,
+        "targetDisposals": 32,
+        "shadowUpdates": null,
+        "shadowReuses": null,
+        "active": {
+          "post": true,
+          "depth": true,
+          "ao": true,
+          "bloom": true,
+          "sunRays": false,
+          "volumetric": false,
+          "lensFlare": true,
+          "sunUv": [
+            0.49999999979470816,
+            0.6791320261448555
+          ],
+          "sunScreenVisibility": 1,
+          "sunClear": 1,
+          "sunPartial": 0,
+          "cloudTransmission": 1,
+          "samples": 0,
+          "fxaa": true,
+          "sceneSize": [
+            1280,
+            720
+          ],
+          "targets": 7
+        },
+        "failures": {}
+      }
+    }
+  },
+  "after": {
+    "environment": {
+      "browser": "154.0.4258.62",
+      "platform": "win32",
+      "architecture": "x64",
+      "viewport": [
+        1280,
+        720
+      ],
+      "release": "0.2.5",
+      "date": "2026-10-08T01:10:09.089Z"
+    },
+    "scenarios": {
+      "cinematic-lite-stationary": {
+        "cpu": {
+          "average": 4.2376299379025575,
+          "p50": 4,
+          "p95": 7.199999988079071,
+          "p99": 8.300000011920929,
+          "max": 9.5,
+          "samples": 481
+        },
+        "update": {
+          "average": 0.1740124720049995,
+          "p50": 0.10000002384185791,
+          "p95": 0.30000001192092896,
+          "p99": 1,
+          "max": 2.399999976158142,
+          "samples": 481
+        },
+        "intervals": {
+          "average": 16.666249999999998,
+          "p50": 16.69999999999709,
+          "p95": 16.899999999997817,
+          "p99": 16.900000000001455,
+          "max": 17.10000000000582,
+          "samples": 480
+        },
+        "framesOver25ms": 0,
+        "framesOver50ms": 0,
+        "gpu": {
+          "average": 6.2645581,
+          "p95": 6.967968,
+          "samples": 40
+        },
+        "shadersCreated": 0,
+        "targetAllocations": 0,
+        "targetDisposals": 0,
+        "shadowUpdates": 481,
+        "shadowReuses": 0,
+        "shadowCache": {
+          "updated": 1375,
+          "reused": 0,
+          "animated": false
+        },
+        "active": {
+          "post": true,
+          "depth": true,
+          "ao": false,
+          "bloom": false,
+          "sunRays": false,
+          "volumetric": false,
+          "lensFlare": false,
+          "sunUv": [
+            0.9122644237862345,
+            1.0318392045376168
+          ],
+          "sunScreenVisibility": 0,
+          "sunClear": 1,
+          "sunPartial": 1,
+          "cloudTransmission": 1,
+          "samples": 0,
+          "fxaa": true,
+          "sceneSize": [
+            1280,
+            720
+          ],
+          "targets": 2
+        },
+        "warmup": {
+          "supported": true,
+          "submitted": 41,
+          "queued": 0
+        },
+        "failures": {}
+      },
+      "cinematic-stationary": {
+        "cpu": {
+          "average": 5.272141372835314,
+          "p50": 5.100000023841858,
+          "p95": 8.400000035762787,
+          "p99": 10,
+          "max": 28.400000035762787,
+          "samples": 481
+        },
+        "update": {
+          "average": 0.17879417953768786,
+          "p50": 0.19999998807907104,
+          "p95": 0.30000001192092896,
+          "p99": 0.8999999761581421,
+          "max": 2.399999976158142,
+          "samples": 481
+        },
+        "intervals": {
+          "average": 16.666250000000005,
+          "p50": 16.69999999999709,
+          "p95": 16.89999999999418,
+          "p99": 17.099999999998545,
+          "max": 17.599999999998545,
+          "samples": 480
+        },
+        "framesOver25ms": 0,
+        "framesOver50ms": 0,
+        "gpu": {
+          "average": 8.55009585,
+          "p95": 9.937968,
+          "samples": 40
+        },
+        "shadersCreated": 0,
+        "targetAllocations": 0,
+        "targetDisposals": 0,
+        "shadowUpdates": 481,
+        "shadowReuses": 0,
+        "shadowCache": {
+          "updated": 2001,
+          "reused": 0,
+          "animated": false
+        },
+        "active": {
+          "post": true,
+          "depth": true,
+          "ao": true,
+          "bloom": true,
+          "sunRays": false,
+          "volumetric": false,
+          "lensFlare": false,
+          "sunUv": [
+            0.9122644237862345,
+            1.0318392045376168
+          ],
+          "sunScreenVisibility": 0,
+          "sunClear": 1,
+          "sunPartial": 1,
+          "cloudTransmission": 1,
+          "samples": 0,
+          "fxaa": true,
+          "sceneSize": [
+            1280,
+            720
+          ],
+          "targets": 9
+        },
+        "warmup": {
+          "supported": true,
+          "submitted": 52,
+          "queued": 0
+        },
+        "failures": {}
+      },
+      "recording-stationary": {
+        "cpu": {
+          "average": 4.998544699560828,
+          "p50": 4.699999988079071,
+          "p95": 8.5,
+          "p99": 10.5,
+          "max": 14.199999988079071,
+          "samples": 481
+        },
+        "update": {
+          "average": 0.2093555126765166,
+          "p50": 0.19999998807907104,
+          "p95": 0.3999999761581421,
+          "p99": 1,
+          "max": 3.200000047683716,
+          "samples": 481
+        },
+        "intervals": {
+          "average": 16.666458333333335,
+          "p50": 16.69999999999709,
+          "p95": 16.80000000000291,
+          "p99": 17,
+          "max": 17.200000000004366,
+          "samples": 480
+        },
+        "framesOver25ms": 0,
+        "framesOver50ms": 0,
+        "gpu": {
+          "average": 8.650703949999997,
+          "p95": 9.751822,
+          "samples": 40
+        },
+        "shadersCreated": 0,
+        "targetAllocations": 0,
+        "targetDisposals": 0,
+        "shadowUpdates": 481,
+        "shadowReuses": 0,
+        "shadowCache": {
+          "updated": 2646,
+          "reused": 0,
+          "animated": false
+        },
+        "active": {
+          "post": true,
+          "depth": true,
+          "ao": true,
+          "bloom": true,
+          "sunRays": false,
+          "volumetric": false,
+          "lensFlare": false,
+          "sunUv": [
+            0.9122644237862345,
+            1.0318392045376168
+          ],
+          "sunScreenVisibility": 0,
+          "sunClear": 1,
+          "sunPartial": 1,
+          "cloudTransmission": 1,
+          "samples": 0,
+          "fxaa": true,
+          "sceneSize": [
+            1280,
+            720
+          ],
+          "targets": 10
+        },
+        "warmup": {
+          "supported": true,
+          "submitted": 64,
+          "queued": 0
+        },
+        "failures": {}
+      },
+      "capture-driving": {
+        "cpu": {
+          "average": 8.5447698746765,
+          "p50": 8.600000023841858,
+          "p95": 13.699999988079071,
+          "p99": 16.100000023841858,
+          "max": 29.899999976158142,
+          "samples": 478
+        },
+        "update": {
+          "average": 0.2889121326941327,
+          "p50": 0.19999998807907104,
+          "p95": 0.800000011920929,
+          "p99": 1.199999988079071,
+          "max": 1.4000000357627869,
+          "samples": 478
+        },
+        "intervals": {
+          "average": 16.806289308176083,
+          "p50": 16.69999999999709,
+          "p95": 17.10000000000582,
+          "p99": 19.30000000000291,
+          "max": 33.80000000000291,
+          "samples": 477
+        },
+        "framesOver25ms": 4,
+        "framesOver50ms": 0,
+        "gpu": {
+          "average": 11.180187025,
+          "p95": 13.01026,
+          "samples": 40
+        },
+        "shadersCreated": 0,
+        "targetAllocations": 0,
+        "targetDisposals": 0,
+        "shadowUpdates": 478,
+        "shadowReuses": 0,
+        "shadowCache": {
+          "updated": 3290,
+          "reused": 0,
+          "animated": false
+        },
+        "active": {
+          "post": true,
+          "depth": true,
+          "ao": true,
+          "bloom": true,
+          "sunRays": false,
+          "volumetric": false,
+          "lensFlare": true,
+          "sunUv": [
+            0.6801788804828789,
+            0.9473932125428963
+          ],
+          "sunScreenVisibility": 0.919766570217252,
+          "sunClear": 1,
+          "sunPartial": 0,
+          "cloudTransmission": 0.9529411764705882,
+          "samples": 0,
+          "fxaa": true,
+          "sceneSize": [
+            1280,
+            720
+          ],
+          "targets": 10
+        },
+        "warmup": {
+          "supported": true,
+          "submitted": 76,
+          "queued": 0
+        },
+        "failures": {}
+      },
+      "capture-braking": {
+        "cpu": {
+          "average": 6.78703703717501,
+          "p50": 6.5,
+          "p95": 11.5,
+          "p99": 15.800000011920929,
+          "max": 25.900000035762787,
+          "samples": 432
+        },
+        "update": {
+          "average": 0.25694444375457587,
+          "p50": 0.19999998807907104,
+          "p95": 0.699999988079071,
+          "p99": 1.199999988079071,
+          "max": 2.199999988079071,
+          "samples": 432
+        },
+        "intervals": {
+          "average": 16.82134570765661,
+          "p50": 16.69999999999709,
+          "p95": 17,
+          "p99": 17.70000000001164,
+          "max": 49.80000000000291,
+          "samples": 431
+        },
+        "framesOver25ms": 3,
+        "framesOver50ms": 0,
+        "gpu": {
+          "average": 9.773503499999999,
+          "p95": 12.780937,
+          "samples": 36
+        },
+        "shadersCreated": 0,
+        "targetAllocations": 0,
+        "targetDisposals": 0,
+        "shadowUpdates": 432,
+        "shadowReuses": 0,
+        "shadowCache": {
+          "updated": 3845,
+          "reused": 0,
+          "animated": false
+        },
+        "active": {
+          "post": true,
+          "depth": true,
+          "ao": true,
+          "bloom": true,
+          "sunRays": false,
+          "volumetric": false,
+          "lensFlare": true,
+          "sunUv": [
+            0.8317341573103637,
+            0.9764334443535151
+          ],
+          "sunScreenVisibility": 0.5534075992448843,
+          "sunClear": 1,
+          "sunPartial": 0,
+          "cloudTransmission": 0.9529411764705882,
+          "samples": 0,
+          "fxaa": true,
+          "sceneSize": [
+            1280,
+            720
+          ],
+          "targets": 10
+        },
+        "warmup": {
+          "supported": true,
+          "submitted": 88,
+          "queued": 0
+        },
+        "failures": {}
+      },
+      "capture-partial-sun": {
+        "cpu": {
+          "average": 5.820000001912316,
+          "p50": 5,
+          "p95": 11,
+          "p99": 16.30000001192093,
+          "max": 24.400000035762787,
+          "samples": 480
+        },
+        "update": {
+          "average": 0.2039583361397187,
+          "p50": 0.19999998807907104,
+          "p95": 0.40000003576278687,
+          "p99": 1.100000023841858,
+          "max": 2,
+          "samples": 480
+        },
+        "intervals": {
+          "average": 16.701461377870565,
+          "p50": 16.69999999999709,
+          "p95": 16.90000000000873,
+          "p99": 17.19999999999709,
+          "max": 33.70000000001164,
+          "samples": 479
+        },
+        "framesOver25ms": 1,
+        "framesOver50ms": 0,
+        "gpu": {
+          "average": 9.985012625000001,
+          "p95": 11.691093,
+          "samples": 40
+        },
+        "shadersCreated": 0,
+        "targetAllocations": 0,
+        "targetDisposals": 0,
+        "shadowUpdates": 480,
+        "shadowReuses": 0,
+        "shadowCache": {
+          "updated": 4490,
+          "reused": 0,
+          "animated": false
+        },
+        "active": {
+          "post": true,
+          "depth": true,
+          "ao": true,
+          "bloom": true,
+          "sunRays": true,
+          "volumetric": true,
+          "lensFlare": true,
+          "sunUv": [
+            0.49999999979470816,
+            0.6791320261448555
+          ],
+          "sunScreenVisibility": 1,
+          "sunClear": 0.5607843137254902,
+          "sunPartial": 0.984313725490196,
+          "cloudTransmission": 1,
+          "samples": 0,
+          "fxaa": true,
+          "sceneSize": [
+            1280,
+            720
+          ],
+          "targets": 10
+        },
+        "warmup": {
+          "supported": true,
+          "submitted": 100,
+          "queued": 0
+        },
+        "failures": {}
+      },
+      "capture-occlusion-transitions": {
+        "cpu": {
+          "average": 7.49166666654249,
+          "p50": 7.600000023841858,
+          "p95": 12,
+          "p99": 14,
+          "max": 21.599999964237213,
+          "samples": 480
+        },
+        "update": {
+          "average": 0.2810416664928198,
+          "p50": 0.19999998807907104,
+          "p95": 0.7999999523162842,
+          "p99": 1.4000000357627869,
+          "max": 1.9000000357627869,
+          "samples": 480
+        },
+        "intervals": {
+          "average": 16.736534446764068,
+          "p50": 16.69999999999709,
+          "p95": 17,
+          "p99": 17.69999999999709,
+          "max": 33.39999999999418,
+          "samples": 479
+        },
+        "framesOver25ms": 2,
+        "framesOver50ms": 0,
+        "gpu": {
+          "average": 10.6039578,
+          "p95": 12.374166,
+          "samples": 40
+        },
+        "shadersCreated": 0,
+        "targetAllocations": 0,
+        "targetDisposals": 0,
+        "shadowUpdates": 480,
+        "shadowReuses": 0,
+        "shadowCache": {
+          "updated": 5140,
+          "reused": 0,
+          "animated": false
+        },
+        "active": {
+          "post": true,
+          "depth": true,
+          "ao": true,
+          "bloom": true,
+          "sunRays": true,
+          "volumetric": true,
+          "lensFlare": true,
+          "sunUv": [
+            0.49999999979470816,
+            0.6791320261448555
+          ],
+          "sunScreenVisibility": 1,
+          "sunClear": 0.5607843137254902,
+          "sunPartial": 0.984313725490196,
+          "cloudTransmission": 1,
+          "samples": 0,
+          "fxaa": true,
+          "sceneSize": [
+            1280,
+            720
+          ],
+          "targets": 10
+        },
+        "warmup": {
+          "supported": true,
+          "submitted": 100,
+          "queued": 0
+        },
+        "failures": {}
+      }
+    }
+  }
+}

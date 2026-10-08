@@ -43,6 +43,8 @@ test("zero-strength passes release targets and grade writes output directly with
     toneMappingExposure: 1,
     outputColorSpace: THREE.SRGBColorSpace,
     autoClear: true,
+    initialized: [],
+    initRenderTarget(target) { this.initialized.push(target); },
     getContext: () => ({ drawingBufferWidth: 1280, drawingBufferHeight: 720 }),
     getRenderTarget() {
       return this.target ?? null;
@@ -89,6 +91,11 @@ test("zero-strength passes release targets and grade writes output directly with
     post.pool.get("scene", 1280, 720, { depth: true, samples: 0 }).samples,
     0,
   );
+  post.render(new THREE.Scene(), camera,
+    { ...s, volumetricStrength: 0.08, sunRayStrength: 0.24 }, draw, palette);
+  assert.deepEqual(post.passOrder, ["scene", "grade-output"], "behind-camera sun skips shaft rendering");
+  assert.equal(renderer.initialized.length, 4, "configured buffers are initialized before the sun enters view");
+  const preparedAllocations = post.pool.allocations;
   palette.direction.set(0, 0.03, -1).normalize();
   post.render(
     new THREE.Scene(),
@@ -98,6 +105,8 @@ test("zero-strength passes release targets and grade writes output directly with
     palette,
   );
   assert.equal(post.active.volumetric, true);
+  assert.equal(post.pool.allocations, preparedAllocations, "first partial occlusion allocates no buffers");
+  assert.equal(renderer.initialized.length, 4);
   assert.equal(
     post.active.sunRays,
     true,
@@ -106,6 +115,7 @@ test("zero-strength passes release targets and grade writes output directly with
   assert.deepEqual(post.passOrder, [
     "scene",
     "sun-visibility",
+    "sun-mask",
     "sun-rays",
     "volumetric",
     "grade-output",
@@ -117,6 +127,7 @@ test("zero-strength passes release targets and grade writes output directly with
     s.atmosphereStrength * 0.8,
   );
   post.sunVisibility.partial = 0;
+  const rays = post.pool.targets.get("sun-rays"), allocations = post.pool.allocations;
   post.render(
     new THREE.Scene(),
     camera,
@@ -129,6 +140,9 @@ test("zero-strength passes release targets and grade writes output directly with
     ["scene", "sun-visibility", "grade-output"],
     "fully visible sun skips costly shaft passes",
   );
+  assert.equal(post.pool.targets.get("sun-rays"), rays, "occlusion transitions retain shaft buffers");
+  assert.equal(post.pool.targets.get("volumetric"), volume);
+  assert.equal(post.pool.allocations, allocations);
   post.render(new THREE.Scene(), camera, s, draw, palette);
   assert.deepEqual([...post.pool.targets.keys()], ["scene"]);
   post.render(
