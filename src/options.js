@@ -74,7 +74,7 @@ export const OPTIONS = {
     postEnabled: ["Post processing", true],
     gradeEnabled: ["Colour grade", true],
     motionBlurEnabled: ["Motion blur", false],
-    motionBlurExposureMs: ["Motion blur exposure (ms)", 20, 0, 64],
+    motionBlurExposureMs: ["Motion blur exposure (ms)", 22, 0, 64],
     motionBlurMaxPixels: ["Motion blur limit (pixels)", 32, 2, 64],
     exposure: ["Exposure", 1.08, 0.7, 1.4],
     contrast: ["Contrast", 1.075, 0.8, 1.2],

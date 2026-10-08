@@ -56,7 +56,7 @@ All enhanced presets use 1x scene resolution by default. Manual render scale and
 
 **F7** toggles PolyShade. The panel exposes sky, sun direction, environment, shadows, materials, atmosphere, rays, volumetric strength/density/decay/samples/distance, colour grading and quality. Vanilla, Disable and F7 restore original materials, surface uniforms, lighting, background, environment, shadow settings and renderer state. Track changes dispose owned effects.
 
-Motion blur tracks screen movement, with depth-aware boundaries and a pixel limit. Under Post Processing, **Motion blur exposure (ms)** sets shutter duration directly: enhanced presets use 20 ms, and the maximum is 64 ms. The default trail limit is 32 pixels; use 32-48 ms / 64 pixels for a stronger visible effect. Saved shutter overrides are converted to their previous exposure duration, so selecting a preset again applies the stronger defaults.
+Motion blur tracks screen movement, with depth-aware boundaries and a pixel limit. Under Post Processing, **Motion blur exposure (ms)** sets shutter duration directly: enhanced presets use 22 ms, and the maximum is 64 ms. The default trail limit is 32 pixels; use 32-48 ms / 64 pixels for a stronger visible effect. Saved shutter overrides are converted to their previous exposure duration, so selecting a preset again applies the stronger defaults.
 
 A single sun direction drives the procedural disc, shadows, sky glow, cloud illumination, generated environment, aerial perspective and shafts. Clouds use broad smooth shapes. The environment is generated/cached from that sky; no photographic HDRI or external art asset is loaded.
 
