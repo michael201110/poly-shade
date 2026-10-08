@@ -5,7 +5,7 @@ import { PNG } from "pngjs";
 import { mkdir } from "node:fs/promises";
 import { runOptimizationBenchmark } from "./optimization-benchmark.mjs";
 const output =
-  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.3.1");
+  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.3.2");
 await mkdir(output, { recursive: true });
 const report = { presets: {}, comparisons: {}, screenshots: [] };
 function imageStats(buffer) {
@@ -69,7 +69,7 @@ report.environment = {
   platform: process.platform,
   architecture: process.arch,
   viewport: [1280, 720],
-  release: process.env.POLYSHADE_RELEASE ?? "0.3.1",
+  release: process.env.POLYSHADE_RELEASE ?? "0.3.2",
   date: new Date().toISOString(),
 };
 const renderingErrors = [];

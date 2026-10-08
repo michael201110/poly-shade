@@ -47,6 +47,47 @@ export class PostProcess {
     this.frames = 0;
     this.active = {};
     this.sunVisibility = new SunVisibility(renderer);
+    this.motionCurrentViewProjection = new three.Matrix4();
+    this.motionLastViewProjection = new three.Matrix4();
+    this.motionBlurViewProjection = new three.Matrix4();
+    this.motionPreviousWorld = new three.Matrix4();
+    this.motionPreviousProjection = new three.Matrix4();
+    this.motionPreviousCamera = null;
+    this.motionPreviousAt = 0;
+    this.motionFrameValid = false;
+  }
+  prepareCameraMotion(camera) {
+    camera.updateMatrixWorld?.();
+    const current = this.motionCurrentViewProjection.multiplyMatrices(
+      camera.projectionMatrix,
+      camera.matrixWorldInverse,
+    );
+    const now = performance.now();
+    let valid = !!this.motionPreviousCamera &&
+      this.motionPreviousCamera === camera &&
+      now - this.motionPreviousAt < 120;
+    const world = camera.matrixWorld.elements;
+    const oldWorld = this.motionPreviousWorld.elements;
+    if (valid) {
+      const dx = world[12] - oldWorld[12];
+      const dy = world[13] - oldWorld[13];
+      const dz = world[14] - oldWorld[14];
+      const forwardDot = world[8] * oldWorld[8] +
+        world[9] * oldWorld[9] + world[10] * oldWorld[10];
+      valid = dx * dx + dy * dy + dz * dz < 64 && forwardDot > 0.5;
+      const projection = camera.projectionMatrix.elements;
+      const oldProjection = this.motionPreviousProjection.elements;
+      for (let i = 0; valid && i < 16; i++)
+        if (Math.abs(projection[i] - oldProjection[i]) > 0.001) valid = false;
+    }
+    this.motionFrameValid = valid;
+    this.motionBlurViewProjection.copy(valid ? this.motionLastViewProjection : current);
+    this.motionLastViewProjection.copy(current);
+    this.motionPreviousWorld.copy(camera.matrixWorld);
+    this.motionPreviousProjection.copy(camera.projectionMatrix);
+    this.motionPreviousCamera = camera;
+    this.motionPreviousAt = now;
+    return valid;
   }
   material(name, fragment) {
     if (!this.materials.has(name))
@@ -117,11 +158,15 @@ export class PostProcess {
     if (this.disabled || !s.postEnabled || s.postQuality === "off") {
       this.pool.dispose();
       this.sunVisibility.dispose();
+      this.motionPreviousCamera = null;
       this.active = { post: false };
       return draw(scene, camera);
     }
-    if (r.getRenderTarget() !== null || r.xr.isPresenting)
+    if (r.getRenderTarget() !== null || r.xr.isPresenting) {
+      this.motionPreviousCamera = null;
       return draw(scene, camera);
+    }
+    const motionFrameValid = this.prepareCameraMotion(camera);
     this.state.capture(r);
     this.passOrder.length = 0;
     try {
@@ -169,6 +214,9 @@ export class PostProcess {
         );
       this.passOrder.push("scene");
       const depth = sceneTarget.depthTexture;
+      const motionTexel = (this.motionTexel ??= new this.three.Vector2()).set(1 / w, 1 / h);
+      const motionBlurActive = s.motionBlurEnabled && s.motionBlurStrength > 0 &&
+        depth && motionFrameValid;
       const depthValues = {
         tDepth: depth,
         inverseProjection: camera.projectionMatrixInverse,
@@ -459,6 +507,10 @@ export class PostProcess {
         tBloom: bloom,
         tRays: rays,
         rayTexel,
+        motionTexel,
+        previousViewProjection: this.motionBlurViewProjection,
+        motionBlurStrength: motionBlurActive ? s.motionBlurStrength : 0,
+        motionBlurMaxPixels: s.motionBlurMaxPixels,
         tVolume: volume,
         volumeTexel,
         volumeMaxDistance: s.volumetricMaxDistance,
@@ -549,6 +601,7 @@ export class PostProcess {
         bloom: bloomActive,
         sunRays: raysActive,
         volumetric: volumeActive,
+        motionBlur: !!motionBlurActive,
         lensFlare: opticsActive,
         sunUv: [sunUv.x, sunUv.y],
         sunScreenVisibility: visibility,

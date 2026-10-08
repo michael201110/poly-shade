@@ -1,20 +1,26 @@
-# PolyShade 0.3.1
+# PolyShade 0.3.2
 
 A graphics mod for **PolyTrack 0.6.3**, loaded through PolyModLoader. Warm directional sunlight, cool shaded faces, glossy car paint and broad soft clouds give the low-poly world a cinematic racing-game look.
 
 ## Install
 
-Install [PolyModLoader](https://polymodloader.com/), then paste this **versioned 0.3.1 install link** into its mod manager:
+Install [PolyModLoader](https://polymodloader.com/), then paste this **versioned 0.3.2 install link** into its mod manager:
 
 ```text
-https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.3.1/
+https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.3.2/
 ```
 
-[Install PolyShade 0.3.1](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.3.1/)
+[Install PolyShade 0.3.2](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.3.2/)
 
-Select **0.3.1 / latest**, move the mod to Loaded, and reload the game. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
+Select **0.3.2 / latest**, move the mod to Loaded, and reload the game. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
 
-For automatic future updates, use the [main install link](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/). PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.3.1/version.json` and `0.3.1/main.mod.js`; historical bundles are preserved.
+For automatic future updates, use the [main install link](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/). PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.3.2/version.json` and `0.3.2/main.mod.js`; historical bundles are preserved.
+
+## What's changed in 0.3.2
+
+Added depth-aware camera motion blur with an enable switch, strength and pixel limit. It is enabled subtly in the enhanced presets, skipped during camera cuts and capped to protect track readability. Vanilla and Lite keep it off. Motion blur is integrated into the existing colour pass and adds no render target.
+
+See the [0.3.2 implementation notes](docs/0.3.2.md).
 
 ## What's changed in 0.3.1
 
@@ -38,17 +44,19 @@ See [verification, measurements and limitations](docs/0.3.0-overhaul.md).
 | Preset | Shadow map | Effects |
 | --- | --- | --- |
 | Vanilla | Native | Restore native rendering |
-| Clear Day | 2048 | Higher white sun, blue sky, sparse clouds, modest optical effects |
-| Soft Overcast | 2048 | Diffuse cool light, broad cloud cover, soft shadows; optics off |
-| Golden Hour Lite | 1024 | Stylized sky/environment, car grounding, FXAA; AO/bloom/optics off |
-| Golden Hour | 2048 | Broad clouds, medium AO, subtle bloom, stronger rays, restrained flare; volumetrics off |
-| Golden Hour Capture | 2048 | High AO/environment, full-resolution volumetric sunlight, stronger rays and FXAA |
+| Clear Day | 2048 | Higher white sun, blue sky, sparse clouds, modest optical effects, subtle motion blur |
+| Soft Overcast | 2048 | Diffuse cool light, broad cloud cover, soft shadows; optics off, subtle motion blur |
+| Golden Hour Lite | 1024 | Stylized sky/environment, car grounding, FXAA; AO/bloom/optics/motion blur off |
+| Golden Hour | 2048 | Broad clouds, medium AO, subtle bloom, stronger rays, restrained flare and motion blur; volumetrics off |
+| Golden Hour Capture | 2048 | High AO/environment, full-resolution volumetric sunlight, stronger rays, FXAA and subtle motion blur |
 
 All enhanced presets use 1x scene resolution by default. Manual render scale and MSAA are available. Increasing resolution adds GPU cost, particularly when Capture's sun is partially occluded; Lite and Golden keep volumetric sunlight off by default. Full-resolution buffers are allocated once and retained through occlusion transitions, and shaft passes skip blocked/behind-camera/irrelevant views.
 
 ## Controls and lighting
 
 **F7** toggles PolyShade. The panel exposes sky, sun direction, environment, shadows, materials, atmosphere, rays, volumetric strength/density/decay/samples/distance, colour grading and quality. Vanilla, Disable and F7 restore original materials, surface uniforms, lighting, background, environment, shadow settings and renderer state. Track changes dispose owned effects.
+
+Camera motion blur is depth aware and capped by a pixel limit. Adjust its toggle, strength and maximum trail length under Post Processing. It follows camera movement; moving objects do not receive individual object velocity blur.
 
 A single sun direction drives the procedural disc, shadows, sky glow, cloud illumination, generated environment, aerial perspective and shafts. Clouds use broad smooth shapes. The environment is generated/cached from that sky; no photographic HDRI or external art asset is loaded.
 
@@ -73,4 +81,4 @@ npm run verify:replay
 
 Development-only dependencies include Three.js, Playwright and PNG tooling. Live verification uses Microsoft Edge and the official PML CDN with a fresh profile. It checks presets, restoration, resizing, braking, cameras, driving, native CSM, occlusion and resource cycles. The replay verifier watches Summer 2's #1 replay and runs a GPU near/far/sky-depth regression; its public replay API bridge exists only in the test harness.
 
-Reports/screenshots are written under `%TEMP%/polyshade-0.3.1/` and `%TEMP%/polyshade-replay-0.3.1/`. `POLYSHADE_RELEASE`, `POLYSHADE_OUTPUT`, `POLYSHADE_PRESET` and `POLYSHADE_CSM` select replay comparison settings. Older release calibration/optimization reports remain in [docs](docs/).
+Reports/screenshots are written under `%TEMP%/polyshade-0.3.2/` and `%TEMP%/polyshade-replay-0.3.2/`. `POLYSHADE_RELEASE`, `POLYSHADE_OUTPUT`, `POLYSHADE_PRESET` and `POLYSHADE_CSM` select replay comparison settings. Older release calibration/optimization reports remain in [docs](docs/).
