@@ -102,8 +102,7 @@ export class CinematicRenderer {
     } finally {
       if (settings.shadowQuality !== "off") this.shadows.commit();
       if (!this.profiler) this.timer.end();
-      if (this.renderer.getRenderTarget() === null && !this.renderer.xr.isPresenting)
-        this.warmup.run();
+
     }
   }
   report() {

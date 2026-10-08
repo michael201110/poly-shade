@@ -136,7 +136,7 @@ export function mountPanel(document, callbacks, initialSettings) {
   panel.dataset.collapsed = "false";
 
   const header = document.createElement("header");
-  header.appendChild(createElement(document, "h2", "", "PolyShade"));
+  header.appendChild(createElement(document, "h2", "", initialSettings.version ? `PolyShade ${initialSettings.version}` : "PolyShade"));
   const collapse = createElement(document, "button", "", "Hide");
   collapse.type = "button";
   collapse.addEventListener("click", () => {

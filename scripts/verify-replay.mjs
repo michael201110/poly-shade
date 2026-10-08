@@ -2,16 +2,18 @@ import { chromium } from '@playwright/test';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { PNG } from 'pngjs';
+import { verifyStability } from './verify-stability.mjs';
+import { verifyShadowGpu } from './shadow-gpu.mjs';
 import { verifyMotionGpu } from './motion-gpu.mjs';
 import { GRADE_FRAGMENT } from '../src/shaders/grade.js';
 import { DEPTH_HELPERS } from '../src/shaders/atmosphere.js';
-const release = process.env.POLYSHADE_RELEASE ?? '0.3.2';
-const testedHelpers = release === '0.3.2' ? DEPTH_HELPERS :
+const release = process.env.POLYSHADE_RELEASE ?? '0.3.3';
+const testedHelpers = release === '0.3.3' ? DEPTH_HELPERS :
   (await readFile(`${release}/main.mod.js`,'utf8')).match(/var DEPTH_HELPERS = `([\s\S]*?)`;/)?.[1];
 assert.ok(testedHelpers, 'depth helpers extracted from the tested release');
 const output = `${process.env.TEMP}/${process.env.POLYSHADE_OUTPUT ?? `polyshade-replay-${release}`}`;
 await mkdir(output, {recursive:true});
-const browser = await chromium.launch({channel:'msedge', headless:true});
+const browser = await chromium.launch({channel:'msedge', headless:true,args:process.env.POLYSHADE_GPU==='nvidia'?['--force_high_performance_gpu']:[]});
 const errors = [], report = {release, track:'Summer 2', replay:'SpeedySebas (#1, 15.178s)', screenshots:[]};
 try {
   const page = await browser.newPage({viewport:{width:1280,height:720}});
@@ -75,6 +77,7 @@ try {
   });
   await page.goto('https://cdn.polymodloader.com/cb/PolyTrackMods/PolyModLoader/0.6.3/index.html');
   await page.waitForFunction(()=>window.__renderer?.info.render.frame>3,undefined,{timeout:60000});
+  if(release==='0.3.3') assert.equal(await page.locator('#polyshade-panel h2').textContent(),'PolyShade 0.3.3');
   await page.locator('#polyshade-panel button').filter({hasText:/^Hide$/}).click();
   await page.getByText('Next Track',{exact:true}).click();
   await page.getByText('Exit',{exact:true}).click();
@@ -83,6 +86,7 @@ try {
   await page.evaluate(()=>document.activeElement?.blur());
   await page.getByText('SpeedySebas',{exact:true}).waitFor({timeout:60000});
   await page.getByText('SpeedySebas',{exact:true}).click();
+  await page.evaluate(value=>{window.__shadowQuality=value;},process.env.POLYSHADE_SHADOW_QUALITY);
   await page.evaluate(quality => {
     const p=window.polyModLoader;p.settingClass.updateSettings([[p.getFromPolyTrack('P.A.ShadowQuality'),quality]]);
   },process.env.POLYSHADE_CSM??'3');
@@ -91,8 +95,10 @@ try {
   await page.waitForFunction(()=>window.__controller?.activeScene?.getObjectByName('Body'),undefined,{timeout:60000});
   await page.evaluate(quality => {
     const p=window.polyModLoader;p.settingClass.updateSettings([[p.getFromPolyTrack('P.A.ShadowQuality'),quality]]);
+    if(globalThis.__shadowQuality){window.__controller.getSettings().overrides.shadowQuality=globalThis.__shadowQuality;window.__controller.notifySettingsChanged();}
     window.__measure=true;window.__cpu=[];window.__gaps=[];
   },process.env.POLYSHADE_CSM??'3');
+  report.device=await page.evaluate(()=>{const g=window.__controller.activeRenderer.getContext(),d=g.getExtension('WEBGL_debug_renderer_info');return {renderer:d?g.getParameter(d.UNMASKED_RENDERER_WEBGL):g.getParameter(g.RENDERER)};});
   for(let i=0;i<14;i++) {
     await page.waitForTimeout(700);
     await page.evaluate(compare=>{window.__compareBlur=compare;window.__blurPair=null;window.__capture=true;},process.env.POLYSHADE_COMPARE_BLUR==='1' && [1,3,6].includes(i));
@@ -144,6 +150,7 @@ try {
     }
     if(i===3)report.moving=await page.evaluate(()=>({contact:window.__controller.cinematic.report().contactShadow,position:window.__controller.camera.position.toArray()}));
   }
+  if(process.env.POLYSHADE_STABILITY) report.stability=await verifyStability(page,release);
   report.runtime=await page.evaluate(()=>{
     const c=window.__controller;window.__measure=false;
     const stats=a=>{a=a.slice().sort((a,b)=>a-b);return{samples:a.length,average:a.reduce((s,x)=>s+x,0)/a.length,p95:a[Math.ceil(a.length*.95)-1],max:a.at(-1)}};
@@ -179,13 +186,14 @@ try {
     }
     return rows;
   }, testedHelpers);
-  if(release==='0.3.2') {
+  if(release==='0.3.3') {
     assert.ok(report.depthNumerics.every(r=>r.valid.every(Boolean)), 'near/far/sky reconstruction stays finite on the GPU');
     assert.equal(report.moving.contact?.available,true,'contact shadow exists through PML discovery');
   }
+  if(release === "0.3.3") report.shadowGpu = await verifyShadowGpu(page);
   const volume=report.runtime.graphics.resources.targets.find(t=>t.name==='volumetric');
-  if(release==='0.3.2'&&volume)assert.deepEqual([volume.width,volume.height],[1280,720]);
-  if(release==='0.3.2') {
+  if(release==='0.3.3'&&volume)assert.deepEqual([volume.width,volume.height],[1280,720]);
+  if(release==='0.3.3') {
     report.motionGpu=await verifyMotionGpu(page,GRADE_FRAGMENT);
     assert.ok(report.motionGpu.changedFraction>0.8,'long shutter visibly blurs a receding textured road');
     assert.ok(report.motionGpu.contrastEnergyRatio<0.35,'road blur retains enough samples to reduce contrast');
@@ -200,5 +208,5 @@ try {
   assert.deepEqual(errors,[]);
   report.errors=errors;
   await writeFile(`${output}/report.json`,JSON.stringify(report,null,2));
-  console.log(JSON.stringify({output,depthNumerics:report.depthNumerics,cpu:report.runtime.cpu,frameGaps:report.runtime.frameGaps,gpu:report.runtime.gpu,motionGpu:report.motionGpu,blurComparisons:report.blurComparisons,motion:report.motion,contact:report.moving.contact,errors},null,2));
+  console.log(JSON.stringify({output,device:report.device,stability:report.stability,shadowGpu:report.shadowGpu,depthNumerics:report.depthNumerics,cpu:report.runtime.cpu,frameGaps:report.runtime.frameGaps,gpu:report.runtime.gpu,motionGpu:report.motionGpu,blurComparisons:report.blurComparisons,motion:report.motion,contact:report.moving.contact,errors},null,2));
 } finally {await browser.close();}

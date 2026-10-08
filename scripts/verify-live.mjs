@@ -5,7 +5,7 @@ import { PNG } from "pngjs";
 import { mkdir } from "node:fs/promises";
 import { runOptimizationBenchmark } from "./optimization-benchmark.mjs";
 const output =
-  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.3.2");
+  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.3.3");
 await mkdir(output, { recursive: true });
 const report = { presets: {}, comparisons: {}, screenshots: [] };
 function imageStats(buffer) {
@@ -63,13 +63,13 @@ function difference(a, b, staticRoad = false) {
     meanBrightness: brightness / n,
   };
 }
-const browser = await chromium.launch({ channel: "msedge", headless: true });
+const browser = await chromium.launch({ channel: "msedge", headless: true, args:process.env.POLYSHADE_GPU === "nvidia" ? ["--force_high_performance_gpu"] : [] });
 report.environment = {
   browser: browser.version(),
   platform: process.platform,
   architecture: process.arch,
   viewport: [1280, 720],
-  release: process.env.POLYSHADE_RELEASE ?? "0.3.2",
+  release: process.env.POLYSHADE_RELEASE ?? "0.3.3",
   date: new Date().toISOString(),
 };
 const renderingErrors = [];

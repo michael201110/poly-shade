@@ -22,6 +22,7 @@ export function installRenderHook(three, onRender) {
   function invoke(original, renderer, scene, camera, args) {
     if (depth) return original.call(renderer, scene, camera, ...args);
     depth++;
+    const started = performance.now();
     try {
       for (const listener of listeners) {
         try {
@@ -33,7 +34,6 @@ export function installRenderHook(three, onRender) {
           );
         }
       }
-      const started = performance.now();
       try {
         const draw = (renderScene = scene, renderCamera = camera) =>
           original.call(renderer, renderScene, renderCamera, ...args);

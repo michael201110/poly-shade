@@ -14,7 +14,8 @@ test("PML metadata and built release target PolyTrack 0.6.3", async () => {
     ),
   );
   assert.equal(manifest.id, "polyshade");
-  assert.equal(release, "0.3.2");
+  const pkg = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
+  assert.equal(release, pkg.version);
   assert.equal(version.main, "main.mod.js");
   assert.deepEqual(version.targets, ["0.6.3"]);
 });

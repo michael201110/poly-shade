@@ -67,7 +67,6 @@ export class RenderController {
 
   onRender(renderer, scene, camera) {
     const now = performance.now();
-    this.camera = camera;
     if (!scene?.isScene) return;
     const settings = this.resolveSettings();
     if (!settings.enabled) {
@@ -75,6 +74,11 @@ export class RenderController {
       return;
     }
 
+    // Auxiliary canvases and offscreen utility scenes must not tear down the
+    // main scene's shaders and render targets.
+    if (renderer.getRenderTarget?.() != null) return;
+    if (scene !== this.activeScene && countMeshes(scene) < 3) return;
+    this.camera = camera;
     if (renderer !== this.activeRenderer) this.attachRenderer(renderer);
     if (
       settings.atmosphereEnabled &&
@@ -98,7 +102,13 @@ export class RenderController {
       now - this.sceneState.lastScanAt >= 1000
     ) {
       if (this.revision !== this.appliedRevision) {
-        restoreMaterials(this.sceneState);
+        const materialDefinition = JSON.stringify([settings.materialDetail, settings.materialOverrides]);
+        if (this.sceneState.materialDefinition !== materialDefinition) {
+          restoreMaterials(this.sceneState);
+          this.sceneState.materialDefinition = materialDefinition;
+        }
+        // Exposure, optics and blur are uniforms. Rebuilding every material on
+        // each slider input discards linked shaders and can stall the driver.
         this.sceneState.lastScanAt = 0;
       }
       applyRendererEffects(this.rendererState, this.three, settings);
@@ -123,6 +133,8 @@ export class RenderController {
       settings,
       camera,
     );
+    if (renderer.getRenderTarget() === null && !renderer.xr.isPresenting)
+      this.cinematic.warmup.run();
     syncMaterialColors(this.sceneState, settings);
   }
 
@@ -196,7 +208,8 @@ export class RenderController {
   }
 
   aroundRender(renderer, scene, camera, draw) {
-    if (scene !== this.activeScene || !this.cinematic) return draw();
+    if (scene !== this.activeScene || renderer !== this.activeRenderer ||
+        renderer.getRenderTarget?.() != null || !this.cinematic) return draw();
     return this.cinematic.render(
       scene,
       camera,

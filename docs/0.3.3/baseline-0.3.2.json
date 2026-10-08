@@ -1,0 +1,32 @@
+{
+  "release": "0.3.2",
+  "track": "Summer 2",
+  "replay": "SpeedySebas (#1, 15.178s)",
+  "device": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA T500 (0x00001FBB) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "stability": {
+    "edits": {
+      "programs": 40,
+      "textures": 0,
+      "framebuffers": 0
+    },
+    "totalPrograms": 42,
+    "totalTextures": 0,
+    "totalFramebuffers": 0,
+    "gaps": {
+      "samples": 1126,
+      "p95": 41.5,
+      "max": 408.60000002384186
+    },
+    "cpu": {
+      "samples": 1127,
+      "p95": 17.5,
+      "max": 288.30000001192093
+    },
+    "lost": 0,
+    "restored": 0,
+    "allocations": 0,
+    "disposals": 0
+  }
+}

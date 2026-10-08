@@ -1,0 +1,273 @@
+{
+  "release": "0.3.3",
+  "track": "Summer 2",
+  "replay": "SpeedySebas (#1, 15.178s)",
+  "device": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA T500 (0x00001FBB) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "stability": {
+    "edits": {
+      "programs": 0,
+      "textures": 0,
+      "framebuffers": 0
+    },
+    "totalPrograms": 0,
+    "totalTextures": 0,
+    "totalFramebuffers": 0,
+    "gaps": {
+      "samples": 1208,
+      "p95": 21.899999976158142,
+      "max": 235.80000001192093
+    },
+    "cpu": {
+      "samples": 1209,
+      "p95": 4.900000035762787,
+      "max": 52.39999997615814
+    },
+    "lost": 0,
+    "restored": 0,
+    "allocations": 0,
+    "disposals": 0
+  },
+  "shadowGpu": {
+    "cases": [
+      {
+        "name": "valid occluder",
+        "coord": [
+          0.5,
+          0.5,
+          0.5,
+          1
+        ],
+        "lit": false,
+        "pixel": [
+          0,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "name": "behind light",
+        "coord": [
+          -0.5,
+          -0.5,
+          -0.5,
+          -1
+        ],
+        "lit": true,
+        "pixel": [
+          255,
+          255,
+          255,
+          255
+        ]
+      },
+      {
+        "name": "zero w",
+        "coord": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "lit": true,
+        "pixel": [
+          255,
+          255,
+          255,
+          255
+        ]
+      },
+      {
+        "name": "before near plane",
+        "coord": [
+          0.5,
+          0.5,
+          -0.1,
+          1
+        ],
+        "lit": true,
+        "pixel": [
+          255,
+          255,
+          255,
+          255
+        ]
+      },
+      {
+        "name": "beyond far plane",
+        "coord": [
+          0.5,
+          0.5,
+          1.1,
+          1
+        ],
+        "lit": true,
+        "pixel": [
+          255,
+          255,
+          255,
+          255
+        ]
+      },
+      {
+        "name": "outside x",
+        "coord": [
+          1.1,
+          0.5,
+          0.5,
+          1
+        ],
+        "lit": true,
+        "pixel": [
+          255,
+          255,
+          255,
+          255
+        ]
+      },
+      {
+        "name": "outside y",
+        "coord": [
+          0.5,
+          -0.1,
+          0.5,
+          1
+        ],
+        "lit": true,
+        "pixel": [
+          255,
+          255,
+          255,
+          255
+        ]
+      }
+    ],
+    "receivers": 22
+  },
+  "moving": {
+    "contact": {
+      "available": true,
+      "visible": false,
+      "cars": 1,
+      "receivers": 44,
+      "broadQueries": 12,
+      "narrowQueries": 16,
+      "indexedInstances": 1087
+    },
+    "position": [
+      -10.497745443588826,
+      12.360486587407536,
+      -186.4015047644369
+    ]
+  },
+  "errors": [],
+  "runtime": {
+    "cpu": {
+      "samples": 1858,
+      "average": 2.8827233583986183,
+      "p95": 4.800000011920929,
+      "max": 481.0999999642372
+    },
+    "frameGaps": {
+      "samples": 1857,
+      "average": 17.40635433496168,
+      "p95": 22.69999998807907,
+      "max": 525.3999999761581
+    },
+    "gpu": {
+      "average": 3.504609600000001,
+      "p95": 9.596928,
+      "samples": 120
+    }
+  },
+  "targets": {
+    "allocated": 10,
+    "disposed": 0,
+    "resized": 0,
+    "live": 10,
+    "targets": [
+      {
+        "name": "scene",
+        "width": 1280,
+        "height": 720,
+        "pixels": 921600,
+        "samples": 0,
+        "estimatedBytes": 11059200
+      },
+      {
+        "name": "grade",
+        "width": 1280,
+        "height": 720,
+        "pixels": 921600,
+        "samples": 0,
+        "estimatedBytes": 3686400
+      },
+      {
+        "name": "ao",
+        "width": 512,
+        "height": 288,
+        "pixels": 147456,
+        "samples": 0,
+        "estimatedBytes": 589824
+      },
+      {
+        "name": "ao-blur",
+        "width": 512,
+        "height": 288,
+        "pixels": 147456,
+        "samples": 0,
+        "estimatedBytes": 589824
+      },
+      {
+        "name": "bloom",
+        "width": 320,
+        "height": 180,
+        "pixels": 57600,
+        "samples": 0,
+        "estimatedBytes": 460800
+      },
+      {
+        "name": "bloom-blur",
+        "width": 320,
+        "height": 180,
+        "pixels": 57600,
+        "samples": 0,
+        "estimatedBytes": 460800
+      },
+      {
+        "name": "sun-rays",
+        "width": 1280,
+        "height": 720,
+        "pixels": 921600,
+        "samples": 0,
+        "estimatedBytes": 7372800
+      },
+      {
+        "name": "sun-mask",
+        "width": 256,
+        "height": 256,
+        "pixels": 65536,
+        "samples": 0,
+        "estimatedBytes": 524288
+      },
+      {
+        "name": "sun-visibility",
+        "width": 1,
+        "height": 1,
+        "pixels": 1,
+        "samples": 0,
+        "estimatedBytes": 4
+      },
+      {
+        "name": "object-motion",
+        "width": 1280,
+        "height": 720,
+        "pixels": 921600,
+        "samples": 0,
+        "estimatedBytes": 7372800
+      }
+    ]
+  }
+}

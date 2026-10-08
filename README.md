@@ -1,20 +1,28 @@
-# PolyShade 0.3.2
+# PolyShade 0.3.3
 
 A graphics mod for **PolyTrack 0.6.3**, loaded through PolyModLoader. Warm directional sunlight, cool shaded faces, glossy car paint and broad soft clouds give the low-poly world a cinematic racing-game look.
 
 ## Install
 
-Install [PolyModLoader](https://polymodloader.com/), then paste this **versioned 0.3.2 install link** into its mod manager:
+Install [PolyModLoader](https://polymodloader.com/), then paste this **versioned 0.3.3 install link** into its mod manager:
 
 ```text
-https://cdn.polymodloader.com/gh/michael201110/poly-shade/0c8d4b96d6ef45136a78d4c689ee5006f1231ff4/
+https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.3.3/
 ```
 
-[Install PolyShade 0.3.2](https://cdn.polymodloader.com/gh/michael201110/poly-shade/0c8d4b96d6ef45136a78d4c689ee5006f1231ff4/)
+[Install PolyShade 0.3.3](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.3.3/)
 
-Select **0.3.2 / latest**, move the mod to Loaded, and reload the game. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
+Select **0.3.3 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.3.3**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
 
-For automatic future updates, use the [main install link](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/). PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.3.2/version.json` and `0.3.2/main.mod.js`; historical bundles are preserved.
+For automatic future updates, use the [main install link](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/). PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.3.3/version.json` and `0.3.3/main.mod.js`; historical bundles are preserved.
+
+## What's changed in 0.3.3
+
+Shadow receivers now reject invalid or out-of-range light projections before sampling a shadow map, and native cascade fades avoid division by zero. Native shadow callbacks and material handles remain connected to the game. Contact-shadow searches use an incremental spatial index instead of raycasting every track instance.
+
+Exposure, blur and other uniform controls retain linked materials; hidden native cascade shaders are warmed, and auxiliary render scenes no longer discard the main scene's GPU resources. Full-resolution shafts and the existing visual presets are preserved.
+
+Tested in Edge on an NVIDIA T500 with Summer 2's #1 replay, including Golden Hour / High shadows. See [the fixes, GPU tests and verification limits](docs/0.3.3.md). The exact reported black-box screenshot could not be reproduced, so this release does not establish that every cause of that symptom is resolved.
 
 ## What's changed in 0.3.2
 

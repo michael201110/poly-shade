@@ -275,7 +275,7 @@ test("contact footprint follows banked instanced surfaces and disappears over ga
 });
 
 
-test("native paint and CSM shader handles retain their identity while surface uniforms improve", () => {
+test("native paint handles remain intact and CSM callbacks restore after shadow safety", () => {
   const scene = new THREE.Scene();
   const material = new THREE.MeshStandardMaterial({roughness: 0.8, metalness: 0});
   material.name = "Main"; material.defines.USE_CSM = 1;
@@ -285,11 +285,12 @@ test("native paint and CSM shader handles retain their identity while surface un
   const state = createSceneState(scene);
   applyMaterialTuning(state, THREE, profile);
   assert.equal(car.material, material);
-  assert.equal(material.onBeforeCompile, callback);
+  assert.notEqual(material.onBeforeCompile, callback);
   assert.equal(material.defines.USE_CSM, 1);
   assert.equal(material.roughness, 0.22);
   assert.equal(material.envMapIntensity, profile.environmentIntensity * profile.carReflection);
   restoreMaterials(state);
   assert.equal(material.roughness, 0.8);
   assert.equal(material.metalness, 0);
+  assert.equal(material.onBeforeCompile, callback);
 });

@@ -141,6 +141,8 @@ export function discoverThree(pml) {
     for (const name of Object.keys(ENUMS))
       if (exports[name] !== undefined) three[name] = exports[name];
   }
+  three.ShaderChunk = exportValues.find(value => value &&
+    typeof value.shadowmap_pars_fragment === "string");
   for (const name of CLASS_NAMES) {
     const candidate = exportValues.find((value) => matches(value, name));
     if (candidate) {

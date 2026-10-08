@@ -170,6 +170,7 @@ function makePanel() {
       },
     },
     {
+      version: polyMod.modVersion,
       preset: settings.preset,
       enabled: settings.enabled && settings.preset !== "vanilla",
       values: resolvePresetSettings(settings),
@@ -197,7 +198,7 @@ class PolyShadeMod extends PolyMod {}
 export const polyMod = Object.assign(new PolyShadeMod(), {
   modName: "PolyShade",
   modID: "polyshade",
-  modVersion: "0.3.2",
+  modVersion: "0.3.3",
   modAuthor: "PolyShade",
   modDescription:
     "<p>Lighting, shadows, material response, and atmosphere for PolyTrack's live Three.js scene. Rendering only; no physics or simulation changes.</p>",

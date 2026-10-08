@@ -1,3 +1,4 @@
+import { applyShadowSafety, restoreShadowSafety } from "./rendering/shadow-safety.js";
 const MATERIAL_KEYWORDS = Object.freeze({
   tire: /(?:^|[^a-z0-9])(tire|tyre|wheel|rubber)(?:$|[^a-z0-9])/,
   glass: /(?:^|[^a-z0-9])(glass|window|windscreen|windshield)(?:$|[^a-z0-9])/,
@@ -195,14 +196,12 @@ function tuneMaterial(material, kind, settings = {}) {
             : kind === "tire"
               ? 0.08
               : 0.2);
-      material.needsUpdate = true;
       return true;
     }
   }
 
   if (typeof material.shininess === "number") {
     material.shininess = kind === "car" ? 65 : kind === "tire" ? 4 : 12;
-    material.needsUpdate = true;
     return true;
   }
   return false;
@@ -525,11 +524,15 @@ export function applyMaterialTuning(sceneState, three = {}, settings = {}) {
     Object.assign(material, values);
     sceneState.paintSurfaceSnapshots.delete(material);
   }
+  for (const byKind of materialClones.values())
+    for (const [kind, clone] of byKind) tuneMaterial(clone, kind, settings);
+  applyShadowSafety(sceneState, three);
   syncMaterialColors(sceneState, settings);
   return modified;
 }
 
 export function restoreMaterials(sceneState) {
+  restoreShadowSafety(sceneState);
   for (const [material, values] of sceneState.paintSurfaceSnapshots ?? [])
     Object.assign(material, values);
   sceneState.paintSurfaceSnapshots?.clear();

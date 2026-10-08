@@ -156,12 +156,14 @@ test("shader warming restores light visibility and renderer state, including on 
   assert.equal(lamp.visible, false);
   warmup.schedule(scene, camera, settings, { warmupMaterials: () => [] }, brakes, 1);
   assert.equal(warmup.jobs.length, 0, "unchanged scans do not rewarm shaders");
+  warmup.schedule(scene, camera, {...settings, exposure:1.2, motionBlurExposureMs:32}, {warmupMaterials:()=>[]}, brakes, 1);
+  assert.equal(warmup.jobs.length,0,"uniform-only changes do not requeue shader compilation");
   const replacementLights = lights.map(() => new THREE.SpotLight());
   brakes.cars = new Map([[{}, { lights: replacementLights }]]);
   warmup.schedule(scene, camera, settings, { warmupMaterials: () => [] }, brakes, 1);
   assert.equal(warmup.jobs.length, 1, "replaced cars rewarm even with the same mesh and light counts");
   warmup.schedule(scene, camera, settings, { warmupMaterials: () => [] }, brakes, 1, true);
-  assert.equal(warmup.jobs.length, 0, "native CSM owns its scene shader compilation state");
+  assert.equal(warmup.jobs.length, 1, "hidden native CSM receivers are warmed before they enter view");
   warmup.clear();
   warmup.schedule(scene, camera, settings, { warmupMaterials: () => [] }, brakes, 1);
   renderer.compile = () => { throw new Error("unavailable"); };

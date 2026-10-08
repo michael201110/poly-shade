@@ -337,13 +337,7 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
     if (!light.parent && !sceneState.ownedLights.has(light))
       sceneState.lightSnapshots.delete(light);
   sceneState.nativeCSM = usesNativeCSM(sceneState.scene);
-  sceneState.scene.traverse((object) => {
-    const materials = Array.isArray(object.material)
-      ? object.material
-      : [object.material];
-    if (materials.some((material) => material?.defines?.USE_CSM !== undefined))
-      sceneState.nativeCSM = true;
-  });
+
   safelyApply(sceneState, "directional sunlight", () => {
     if (sceneState.nativeCSM) {
       // CSM indexes directional lights as cascades; an extra sun breaks its shader arrays.
@@ -476,7 +470,13 @@ export function usesNativeCSM(scene) {
   for (const light of scene.children ?? [])
     if (light.isDirectionalLight && !light.userData?.[OWNED_LIGHT] && ++count > 1)
       return true;
-  return false;
+  let csm = false;
+  scene.traverse?.(object => {
+    if (csm || object.userData?.polyShadeOwned) return;
+    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    csm = materials.some(material => material?.defines?.USE_CSM !== undefined);
+  });
+  return csm;
 }
 
 // Keep a fixed-size, texel-aligned shadow region around the visible action.

@@ -1,3 +1,4 @@
+import { ReceiverIndex } from "./receiver-index.js";
 import { classifyMaterial, isReplayGhost } from "../materials.js";
 
 const SHADOW_FRAGMENT = `
@@ -52,6 +53,8 @@ export class CarContactShadow {
     this.hasGround = false;
     this.receiver = null;
     this.rayQueries = 0;
+    this.narrowQueries = 0;
+    this.receiverIndex = new ReceiverIndex(three);
     this.material = new three.ShaderMaterial({
       name: "PolyShade car contact shadow",
       uniforms: { opacity: { value: 0 } },
@@ -104,6 +107,7 @@ export class CarContactShadow {
       )
         this.floorMeshes.push(object);
     });
+    this.receiverIndex.scan(this.floorMeshes);
     this.selectCar(camera);
   }
 
@@ -135,6 +139,7 @@ export class CarContactShadow {
       this.mesh.visible = false;
       return;
     }
+    this.receiverIndex.build();
     this.car.getWorldPosition(this.carPosition);
     this.car.getWorldQuaternion(this.carQuaternion);
     this.carUp.set(0, 1, 0).applyQuaternion(this.carQuaternion);
@@ -158,7 +163,30 @@ export class CarContactShadow {
     if (!this.hits.length && now - this.lastRayAt >= 60) {
       this.lastRayAt = now;
       this.rayQueries++;
-      this.raycaster.intersectObjects(this.floorMeshes, false, this.hits);
+      const nearby = this.receiverIndex.query(this.raycaster.ray, this.raycaster.far);
+      const start = performance.now();
+      // Resume a crowded cell across queries. Bound narrow-phase work so even
+      // overlapping custom-track instances cannot monopolize a moving frame.
+      if (!this.previousNearby || nearby.length !== this.previousNearby.length ||
+          nearby.some((value, i) => value.entry !== this.previousNearby[i])) this.searchCursor = 0;
+      this.previousNearby = nearby.map(value => value.entry);
+      for (let tested = 0; tested < Math.min(32, nearby.length); tested++) {
+        if (tested && performance.now() - start >= 2) break;
+        const { mesh, instanceId } = nearby[this.searchCursor % nearby.length].entry;
+        this.searchCursor = (this.searchCursor + 1) % nearby.length;
+        this.narrowQueries++;
+        const begin = this.hits.length;
+        if (mesh.isInstancedMesh) {
+          mesh.getMatrixAt(instanceId, this.instanceMatrix);
+          this.proxy.geometry = mesh.geometry; this.proxy.material = mesh.material;
+          this.proxy.matrixWorld.multiplyMatrices(mesh.matrixWorld, this.instanceMatrix);
+          this.raycaster.intersectObject(this.proxy, false, this.hits);
+          for (let i = begin; i < this.hits.length; i++) {
+            this.hits[i].object = mesh; this.hits[i].instanceId = instanceId;
+          }
+        } else this.raycaster.intersectObject(mesh, false, this.hits);
+      }
+      this.hits.sort((a,b) => a.distance-b.distance);
     }
     let hit = null;
     for (const entry of this.hits) {
@@ -209,7 +237,8 @@ export class CarContactShadow {
 
   report() {
     return { available: true, visible: this.mesh.visible, cars: this.candidates.length,
-      receivers: this.floorMeshes.length, broadQueries: this.rayQueries };
+      receivers: this.floorMeshes.length, broadQueries: this.rayQueries,
+      narrowQueries: this.narrowQueries, indexedInstances: this.receiverIndex.built };
   }
 
   dispose() {
@@ -219,5 +248,6 @@ export class CarContactShadow {
     this.candidates.length = 0;
     this.floorMeshes.length = 0;
     this.car = null;
+    this.receiverIndex.dispose();
   }
 }

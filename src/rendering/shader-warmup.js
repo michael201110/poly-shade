@@ -15,15 +15,26 @@ export class ShaderWarmup {
     const lights = [];
     if (brakes?.lightPool) lights.push(...brakes.lightPool);
     else for (const { lights: lamps } of brakes?.cars.values() ?? []) lights.push(...lamps);
-    if (this.settings === settings && this.meshCount === meshCount && this.nativeCSM === nativeCSM &&
+    const configuration = JSON.stringify([
+      settings.postEnabled, settings.postQuality, settings.fogEnabled,
+      settings.shadowQuality === "off", settings.materialDetail, settings.materialOverrides,
+      settings.environmentEnabled, settings.environmentQuality,
+      settings.aoEnabled && settings.aoStrength > 0,
+      settings.bloomEnabled && settings.bloomStrength > 0,
+      settings.sunRaysEnabled, settings.lensFlareEnabled, settings.volumetricEnabled,
+      settings.fxaaEnabled, settings.sharpenEnabled && settings.sharpenStrength > 0,
+    ]);
+    const directionals = scene.children.filter(node => node.isDirectionalLight && node.castShadow).length;
+    if (this.configuration === configuration && this.directionals === directionals && this.meshCount === meshCount && this.nativeCSM === nativeCSM &&
       this.lights?.length === lights.length && lights.every((light, i) => this.lights[i] === light))
       return;
-    this.settings = settings; this.meshCount = meshCount; this.lights = lights; this.nativeCSM = nativeCSM;
+    this.configuration = configuration; this.directionals = directionals; this.settings = settings; this.meshCount = meshCount; this.lights = lights; this.nativeCSM = nativeCSM;
     this.jobs.length = 0;
     // Brake lights keep a stable visible count, including at zero power.
     // Only the actual configuration needs warming; avoid unused permutations.
-    // Native CSM owns mutable scene compilation state, so only warm its post.
-    if (!nativeCSM) this.jobs.push({ scene, camera, lights, count: lights.length,
+    // Include hidden native CSM receivers too: otherwise entering a new part
+    // of the track can synchronously compile a cold cascade shader mid-drive.
+    this.jobs.push({ scene, camera, lights, count: lights.length,
       linear: !!post && settings.postEnabled && settings.postQuality !== "off" });
     if (post && settings.postEnabled && settings.postQuality !== "off") {
       for (const { material, linear } of post.warmupMaterials(settings)) {
@@ -72,5 +83,5 @@ export class ShaderWarmup {
     }
   }
   report() { return { supported: this.supported, submitted: this.submitted, queued: this.jobs.length }; }
-  clear() { this.jobs.length = 0; this.settings = null; this.lights = null; }
+  clear() { this.jobs.length = 0; this.settings = null; this.configuration = null; this.lights = null; }
 }

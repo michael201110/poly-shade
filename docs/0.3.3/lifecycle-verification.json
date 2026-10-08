@@ -1,0 +1,1461 @@
+{
+  "environment": {
+    "browser": "154.0.4258.62",
+    "platform": "win32",
+    "architecture": "x64",
+    "viewport": [
+      1280,
+      720
+    ],
+    "release": "0.3.3",
+    "date": "2026-10-08T21:01:28.013Z"
+  },
+  "comparisons": {
+    "enhanced": {
+      "meanAbsolute": 48.905078125,
+      "rmse": 58.61319056507325,
+      "changedFraction": 0.9957389322916667,
+      "meanBrightness": 169.40721788194443
+    },
+    "restorationFull": {
+      "meanAbsolute": 6.42173900462963,
+      "rmse": 16.363470637254686,
+      "changedFraction": 0.24430230034722222,
+      "meanBrightness": 136.39196180555555
+    },
+    "restoration": {
+      "meanAbsolute": 0,
+      "rmse": 0,
+      "changedFraction": 0,
+      "meanBrightness": 96.98789931842056
+    }
+  },
+  "cameraSwitch": "130c5719-456f-4745-837c-f23d8c9483d2",
+  "trackReload": {
+    "skyCount": 1,
+    "ownedLights": 2,
+    "materials": 51,
+    "labels": [
+      "Summer 2"
+    ]
+  },
+  "transitions": [
+    {
+      "preset": "cinematic-lite",
+      "resources": {
+        "allocated": 12,
+        "disposed": 10,
+        "resized": 18,
+        "live": 2,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 11059200
+          },
+          {
+            "name": "grade",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 3686400
+          }
+        ]
+      },
+      "skies": 1,
+      "lights": 2,
+      "brakeTargets": 2,
+      "materials": 51,
+      "memory": {
+        "geometries": 84,
+        "textures": 12
+      }
+    },
+    {
+      "preset": "cinematic",
+      "resources": {
+        "allocated": 20,
+        "disposed": 10,
+        "resized": 18,
+        "live": 10,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 11059200
+          },
+          {
+            "name": "grade",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 3686400
+          },
+          {
+            "name": "object-motion",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "ao",
+            "width": 512,
+            "height": 288,
+            "pixels": 147456,
+            "samples": 0,
+            "estimatedBytes": 589824
+          },
+          {
+            "name": "ao-blur",
+            "width": 512,
+            "height": 288,
+            "pixels": 147456,
+            "samples": 0,
+            "estimatedBytes": 589824
+          },
+          {
+            "name": "bloom",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "bloom-blur",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "sun-rays",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "sun-mask",
+            "width": 256,
+            "height": 256,
+            "pixels": 65536,
+            "samples": 0,
+            "estimatedBytes": 524288
+          },
+          {
+            "name": "sun-visibility",
+            "width": 1,
+            "height": 1,
+            "pixels": 1,
+            "samples": 0,
+            "estimatedBytes": 4
+          }
+        ]
+      },
+      "skies": 1,
+      "lights": 2,
+      "brakeTargets": 2,
+      "materials": 51,
+      "memory": {
+        "geometries": 85,
+        "textures": 20
+      }
+    },
+    {
+      "preset": "recording",
+      "resources": {
+        "allocated": 21,
+        "disposed": 10,
+        "resized": 20,
+        "live": 11,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 11059200
+          },
+          {
+            "name": "grade",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 3686400
+          },
+          {
+            "name": "object-motion",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "ao",
+            "width": 640,
+            "height": 360,
+            "pixels": 230400,
+            "samples": 0,
+            "estimatedBytes": 921600
+          },
+          {
+            "name": "ao-blur",
+            "width": 640,
+            "height": 360,
+            "pixels": 230400,
+            "samples": 0,
+            "estimatedBytes": 921600
+          },
+          {
+            "name": "bloom",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "bloom-blur",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "sun-rays",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "sun-mask",
+            "width": 256,
+            "height": 256,
+            "pixels": 65536,
+            "samples": 0,
+            "estimatedBytes": 524288
+          },
+          {
+            "name": "sun-visibility",
+            "width": 1,
+            "height": 1,
+            "pixels": 1,
+            "samples": 0,
+            "estimatedBytes": 4
+          },
+          {
+            "name": "volumetric",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          }
+        ]
+      },
+      "skies": 1,
+      "lights": 2,
+      "brakeTargets": 2,
+      "materials": 51,
+      "memory": {
+        "geometries": 86,
+        "textures": 21
+      }
+    },
+    {
+      "preset": "vanilla",
+      "skies": 0,
+      "lights": 0,
+      "brakeTargets": 0,
+      "materials": 0,
+      "memory": {
+        "geometries": 83,
+        "textures": 7
+      }
+    },
+    {
+      "preset": "cinematic",
+      "resources": {
+        "allocated": 10,
+        "disposed": 0,
+        "resized": 0,
+        "live": 10,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 11059200
+          },
+          {
+            "name": "grade",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 3686400
+          },
+          {
+            "name": "object-motion",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "ao",
+            "width": 512,
+            "height": 288,
+            "pixels": 147456,
+            "samples": 0,
+            "estimatedBytes": 589824
+          },
+          {
+            "name": "ao-blur",
+            "width": 512,
+            "height": 288,
+            "pixels": 147456,
+            "samples": 0,
+            "estimatedBytes": 589824
+          },
+          {
+            "name": "bloom",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "bloom-blur",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "sun-rays",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "sun-mask",
+            "width": 256,
+            "height": 256,
+            "pixels": 65536,
+            "samples": 0,
+            "estimatedBytes": 524288
+          },
+          {
+            "name": "sun-visibility",
+            "width": 1,
+            "height": 1,
+            "pixels": 1,
+            "samples": 0,
+            "estimatedBytes": 4
+          }
+        ]
+      },
+      "skies": 1,
+      "lights": 2,
+      "brakeTargets": 2,
+      "materials": 51,
+      "memory": {
+        "geometries": 85,
+        "textures": 20
+      }
+    },
+    {
+      "preset": "recording",
+      "resources": {
+        "allocated": 11,
+        "disposed": 0,
+        "resized": 2,
+        "live": 11,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 11059200
+          },
+          {
+            "name": "grade",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 3686400
+          },
+          {
+            "name": "object-motion",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "ao",
+            "width": 640,
+            "height": 360,
+            "pixels": 230400,
+            "samples": 0,
+            "estimatedBytes": 921600
+          },
+          {
+            "name": "ao-blur",
+            "width": 640,
+            "height": 360,
+            "pixels": 230400,
+            "samples": 0,
+            "estimatedBytes": 921600
+          },
+          {
+            "name": "bloom",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "bloom-blur",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "sun-rays",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "sun-mask",
+            "width": 256,
+            "height": 256,
+            "pixels": 65536,
+            "samples": 0,
+            "estimatedBytes": 524288
+          },
+          {
+            "name": "sun-visibility",
+            "width": 1,
+            "height": 1,
+            "pixels": 1,
+            "samples": 0,
+            "estimatedBytes": 4
+          },
+          {
+            "name": "volumetric",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          }
+        ]
+      },
+      "skies": 1,
+      "lights": 2,
+      "brakeTargets": 2,
+      "materials": 51,
+      "memory": {
+        "geometries": 86,
+        "textures": 21
+      }
+    },
+    {
+      "preset": "cinematic-lite",
+      "resources": {
+        "allocated": 11,
+        "disposed": 9,
+        "resized": 2,
+        "live": 2,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 11059200
+          },
+          {
+            "name": "grade",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 3686400
+          }
+        ]
+      },
+      "skies": 1,
+      "lights": 2,
+      "brakeTargets": 2,
+      "materials": 51,
+      "memory": {
+        "geometries": 84,
+        "textures": 12
+      }
+    },
+    {
+      "preset": "cinematic",
+      "resources": {
+        "allocated": 19,
+        "disposed": 9,
+        "resized": 2,
+        "live": 10,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 11059200
+          },
+          {
+            "name": "grade",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 3686400
+          },
+          {
+            "name": "object-motion",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "ao",
+            "width": 512,
+            "height": 288,
+            "pixels": 147456,
+            "samples": 0,
+            "estimatedBytes": 589824
+          },
+          {
+            "name": "ao-blur",
+            "width": 512,
+            "height": 288,
+            "pixels": 147456,
+            "samples": 0,
+            "estimatedBytes": 589824
+          },
+          {
+            "name": "bloom",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "bloom-blur",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "sun-rays",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "sun-mask",
+            "width": 256,
+            "height": 256,
+            "pixels": 65536,
+            "samples": 0,
+            "estimatedBytes": 524288
+          },
+          {
+            "name": "sun-visibility",
+            "width": 1,
+            "height": 1,
+            "pixels": 1,
+            "samples": 0,
+            "estimatedBytes": 4
+          }
+        ]
+      },
+      "skies": 1,
+      "lights": 2,
+      "brakeTargets": 2,
+      "materials": 51,
+      "memory": {
+        "geometries": 85,
+        "textures": 20
+      }
+    },
+    {
+      "preset": "recording",
+      "resources": {
+        "allocated": 20,
+        "disposed": 9,
+        "resized": 4,
+        "live": 11,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 11059200
+          },
+          {
+            "name": "grade",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 3686400
+          },
+          {
+            "name": "object-motion",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "ao",
+            "width": 640,
+            "height": 360,
+            "pixels": 230400,
+            "samples": 0,
+            "estimatedBytes": 921600
+          },
+          {
+            "name": "ao-blur",
+            "width": 640,
+            "height": 360,
+            "pixels": 230400,
+            "samples": 0,
+            "estimatedBytes": 921600
+          },
+          {
+            "name": "bloom",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "bloom-blur",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "sun-rays",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "sun-mask",
+            "width": 256,
+            "height": 256,
+            "pixels": 65536,
+            "samples": 0,
+            "estimatedBytes": 524288
+          },
+          {
+            "name": "sun-visibility",
+            "width": 1,
+            "height": 1,
+            "pixels": 1,
+            "samples": 0,
+            "estimatedBytes": 4
+          },
+          {
+            "name": "volumetric",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          }
+        ]
+      },
+      "skies": 1,
+      "lights": 2,
+      "brakeTargets": 2,
+      "materials": 51,
+      "memory": {
+        "geometries": 86,
+        "textures": 21
+      }
+    },
+    {
+      "preset": "vanilla",
+      "skies": 0,
+      "lights": 0,
+      "brakeTargets": 0,
+      "materials": 0,
+      "memory": {
+        "geometries": 83,
+        "textures": 7
+      }
+    },
+    {
+      "preset": "cinematic",
+      "resources": {
+        "allocated": 10,
+        "disposed": 0,
+        "resized": 0,
+        "live": 10,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 11059200
+          },
+          {
+            "name": "grade",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 3686400
+          },
+          {
+            "name": "object-motion",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "ao",
+            "width": 512,
+            "height": 288,
+            "pixels": 147456,
+            "samples": 0,
+            "estimatedBytes": 589824
+          },
+          {
+            "name": "ao-blur",
+            "width": 512,
+            "height": 288,
+            "pixels": 147456,
+            "samples": 0,
+            "estimatedBytes": 589824
+          },
+          {
+            "name": "bloom",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "bloom-blur",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "sun-rays",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "sun-mask",
+            "width": 256,
+            "height": 256,
+            "pixels": 65536,
+            "samples": 0,
+            "estimatedBytes": 524288
+          },
+          {
+            "name": "sun-visibility",
+            "width": 1,
+            "height": 1,
+            "pixels": 1,
+            "samples": 0,
+            "estimatedBytes": 4
+          }
+        ]
+      },
+      "skies": 1,
+      "lights": 2,
+      "brakeTargets": 2,
+      "materials": 51,
+      "memory": {
+        "geometries": 85,
+        "textures": 20
+      }
+    },
+    {
+      "preset": "recording",
+      "resources": {
+        "allocated": 11,
+        "disposed": 0,
+        "resized": 2,
+        "live": 11,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 11059200
+          },
+          {
+            "name": "grade",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 3686400
+          },
+          {
+            "name": "object-motion",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "ao",
+            "width": 640,
+            "height": 360,
+            "pixels": 230400,
+            "samples": 0,
+            "estimatedBytes": 921600
+          },
+          {
+            "name": "ao-blur",
+            "width": 640,
+            "height": 360,
+            "pixels": 230400,
+            "samples": 0,
+            "estimatedBytes": 921600
+          },
+          {
+            "name": "bloom",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "bloom-blur",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "sun-rays",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "sun-mask",
+            "width": 256,
+            "height": 256,
+            "pixels": 65536,
+            "samples": 0,
+            "estimatedBytes": 524288
+          },
+          {
+            "name": "sun-visibility",
+            "width": 1,
+            "height": 1,
+            "pixels": 1,
+            "samples": 0,
+            "estimatedBytes": 4
+          },
+          {
+            "name": "volumetric",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          }
+        ]
+      },
+      "skies": 1,
+      "lights": 2,
+      "brakeTargets": 2,
+      "materials": 51,
+      "memory": {
+        "geometries": 86,
+        "textures": 21
+      }
+    },
+    {
+      "preset": "cinematic-lite",
+      "resources": {
+        "allocated": 11,
+        "disposed": 9,
+        "resized": 2,
+        "live": 2,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 11059200
+          },
+          {
+            "name": "grade",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 3686400
+          }
+        ]
+      },
+      "skies": 1,
+      "lights": 2,
+      "brakeTargets": 2,
+      "materials": 51,
+      "memory": {
+        "geometries": 84,
+        "textures": 12
+      }
+    },
+    {
+      "preset": "cinematic",
+      "resources": {
+        "allocated": 19,
+        "disposed": 9,
+        "resized": 2,
+        "live": 10,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 11059200
+          },
+          {
+            "name": "grade",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 3686400
+          },
+          {
+            "name": "object-motion",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "ao",
+            "width": 512,
+            "height": 288,
+            "pixels": 147456,
+            "samples": 0,
+            "estimatedBytes": 589824
+          },
+          {
+            "name": "ao-blur",
+            "width": 512,
+            "height": 288,
+            "pixels": 147456,
+            "samples": 0,
+            "estimatedBytes": 589824
+          },
+          {
+            "name": "bloom",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "bloom-blur",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "sun-rays",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "sun-mask",
+            "width": 256,
+            "height": 256,
+            "pixels": 65536,
+            "samples": 0,
+            "estimatedBytes": 524288
+          },
+          {
+            "name": "sun-visibility",
+            "width": 1,
+            "height": 1,
+            "pixels": 1,
+            "samples": 0,
+            "estimatedBytes": 4
+          }
+        ]
+      },
+      "skies": 1,
+      "lights": 2,
+      "brakeTargets": 2,
+      "materials": 51,
+      "memory": {
+        "geometries": 85,
+        "textures": 20
+      }
+    },
+    {
+      "preset": "recording",
+      "resources": {
+        "allocated": 20,
+        "disposed": 9,
+        "resized": 4,
+        "live": 11,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 11059200
+          },
+          {
+            "name": "grade",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 3686400
+          },
+          {
+            "name": "object-motion",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "ao",
+            "width": 640,
+            "height": 360,
+            "pixels": 230400,
+            "samples": 0,
+            "estimatedBytes": 921600
+          },
+          {
+            "name": "ao-blur",
+            "width": 640,
+            "height": 360,
+            "pixels": 230400,
+            "samples": 0,
+            "estimatedBytes": 921600
+          },
+          {
+            "name": "bloom",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "bloom-blur",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "sun-rays",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "sun-mask",
+            "width": 256,
+            "height": 256,
+            "pixels": 65536,
+            "samples": 0,
+            "estimatedBytes": 524288
+          },
+          {
+            "name": "sun-visibility",
+            "width": 1,
+            "height": 1,
+            "pixels": 1,
+            "samples": 0,
+            "estimatedBytes": 4
+          },
+          {
+            "name": "volumetric",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          }
+        ]
+      },
+      "skies": 1,
+      "lights": 2,
+      "brakeTargets": 2,
+      "materials": 51,
+      "memory": {
+        "geometries": 86,
+        "textures": 21
+      }
+    },
+    {
+      "preset": "vanilla",
+      "skies": 0,
+      "lights": 0,
+      "brakeTargets": 0,
+      "materials": 0,
+      "memory": {
+        "geometries": 83,
+        "textures": 7
+      }
+    },
+    {
+      "preset": "cinematic",
+      "resources": {
+        "allocated": 10,
+        "disposed": 0,
+        "resized": 0,
+        "live": 10,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 11059200
+          },
+          {
+            "name": "grade",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 3686400
+          },
+          {
+            "name": "object-motion",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "ao",
+            "width": 512,
+            "height": 288,
+            "pixels": 147456,
+            "samples": 0,
+            "estimatedBytes": 589824
+          },
+          {
+            "name": "ao-blur",
+            "width": 512,
+            "height": 288,
+            "pixels": 147456,
+            "samples": 0,
+            "estimatedBytes": 589824
+          },
+          {
+            "name": "bloom",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "bloom-blur",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "sun-rays",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "sun-mask",
+            "width": 256,
+            "height": 256,
+            "pixels": 65536,
+            "samples": 0,
+            "estimatedBytes": 524288
+          },
+          {
+            "name": "sun-visibility",
+            "width": 1,
+            "height": 1,
+            "pixels": 1,
+            "samples": 0,
+            "estimatedBytes": 4
+          }
+        ]
+      },
+      "skies": 1,
+      "lights": 2,
+      "brakeTargets": 2,
+      "materials": 51,
+      "memory": {
+        "geometries": 85,
+        "textures": 20
+      }
+    },
+    {
+      "preset": "recording",
+      "resources": {
+        "allocated": 11,
+        "disposed": 0,
+        "resized": 2,
+        "live": 11,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 11059200
+          },
+          {
+            "name": "grade",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 3686400
+          },
+          {
+            "name": "object-motion",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "ao",
+            "width": 640,
+            "height": 360,
+            "pixels": 230400,
+            "samples": 0,
+            "estimatedBytes": 921600
+          },
+          {
+            "name": "ao-blur",
+            "width": 640,
+            "height": 360,
+            "pixels": 230400,
+            "samples": 0,
+            "estimatedBytes": 921600
+          },
+          {
+            "name": "bloom",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "bloom-blur",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "sun-rays",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "sun-mask",
+            "width": 256,
+            "height": 256,
+            "pixels": 65536,
+            "samples": 0,
+            "estimatedBytes": 524288
+          },
+          {
+            "name": "sun-visibility",
+            "width": 1,
+            "height": 1,
+            "pixels": 1,
+            "samples": 0,
+            "estimatedBytes": 4
+          },
+          {
+            "name": "volumetric",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          }
+        ]
+      },
+      "skies": 1,
+      "lights": 2,
+      "brakeTargets": 2,
+      "materials": 51,
+      "memory": {
+        "geometries": 86,
+        "textures": 21
+      }
+    }
+  ],
+  "nativeCSM": {
+    "lightCount": 4,
+    "sizes": [
+      2048,
+      2048,
+      2048,
+      2048
+    ],
+    "failures": {}
+  },
+  "nativeCSMCapture": [
+    2048,
+    2048,
+    2048,
+    2048
+  ],
+  "brakingStability": {
+    "programsCreated": 0,
+    "frameGaps": {
+      "samples": 157,
+      "p95": 32.30000001192093,
+      "max": 460.80000001192093
+    },
+    "cpu": {
+      "samples": 158,
+      "p95": 26,
+      "max": 108
+    },
+    "targetAllocations": 0,
+    "spots": [
+      {
+        "visible": true,
+        "intensity": 0,
+        "parent": true
+      },
+      {
+        "visible": true,
+        "intensity": 0,
+        "parent": true
+      }
+    ]
+  },
+  "glError": 0
+}
