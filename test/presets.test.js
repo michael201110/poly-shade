@@ -6,6 +6,8 @@ import { createDefaultSettings, selectPreset } from "../src/settings.js";
 test("all requested presets have independent quality profiles", () => {
   assert.deepEqual(Object.keys(PRESETS), [
     "vanilla",
+    "clear-day",
+    "overcast",
     "cinematic-lite",
     "cinematic",
     "recording",
@@ -16,6 +18,11 @@ test("all requested presets have independent quality profiles", () => {
   assert.equal(PRESETS.recording.shadowQuality, "medium");
   assert.equal(PRESETS.recording.renderScale, 1);
   assert.equal(PRESETS.recording.fxaaEnabled, true);
+  assert.equal(PRESETS["clear-day"].sunElevation > PRESETS.cinematic.sunElevation, true);
+  assert.equal(PRESETS.overcast.sunRaysEnabled, false);
+  assert.equal(PRESETS.overcast.volumetricEnabled, false);
+  assert.equal(PRESETS.overcast.lensFlareEnabled, false);
+  assert.equal(PRESETS.overcast.cloudAmount > PRESETS["clear-day"].cloudAmount, true);
 });
 
 test("Vanilla disables effects and preset selection clears overrides", () => {

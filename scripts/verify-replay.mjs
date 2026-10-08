@@ -2,8 +2,8 @@ import { chromium } from '@playwright/test';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { DEPTH_HELPERS } from '../src/shaders/atmosphere.js';
-const release = process.env.POLYSHADE_RELEASE ?? '0.3.0';
-const testedHelpers = release === '0.3.0' ? DEPTH_HELPERS :
+const release = process.env.POLYSHADE_RELEASE ?? '0.3.1';
+const testedHelpers = release === '0.3.1' ? DEPTH_HELPERS :
   (await readFile(`${release}/main.mod.js`,'utf8')).match(/var DEPTH_HELPERS = `([\s\S]*?)`;/)?.[1];
 assert.ok(testedHelpers, 'depth helpers extracted from the tested release');
 const output = `${process.env.TEMP}/${process.env.POLYSHADE_OUTPUT ?? `polyshade-replay-${release}`}`;
@@ -105,12 +105,12 @@ try {
     }
     return rows;
   }, testedHelpers);
-  if(release==='0.3.0') {
+  if(release==='0.3.1') {
     assert.ok(report.depthNumerics.every(r=>r.valid.every(Boolean)), 'near/far/sky reconstruction stays finite on the GPU');
     assert.equal(report.moving.contact?.available,true,'contact shadow exists through PML discovery');
   }
   const volume=report.runtime.graphics.resources.targets.find(t=>t.name==='volumetric');
-  if(release==='0.3.0'&&volume)assert.deepEqual([volume.width,volume.height],[1280,720]);
+  if(release==='0.3.1'&&volume)assert.deepEqual([volume.width,volume.height],[1280,720]);
   assert.deepEqual(errors,[]);
   report.errors=errors;
   await writeFile(`${output}/report.json`,JSON.stringify(report,null,2));

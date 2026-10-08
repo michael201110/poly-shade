@@ -54,7 +54,7 @@ export class CarContactShadow {
     this.rayQueries = 0;
     this.material = new three.ShaderMaterial({
       name: "PolyShade car contact shadow",
-      uniforms: { opacity: { value: 0.28 } },
+      uniforms: { opacity: { value: 0 } },
       vertexShader: SHADOW_VERTEX,
       fragmentShader: SHADOW_FRAGMENT,
       transparent: true,
@@ -189,7 +189,11 @@ export class CarContactShadow {
       return;
     }
     const height = this.rayOrigin.copy(this.carPosition).sub(this.groundPoint).dot(this.groundNormal);
-    this.material.uniforms.opacity.value = 0.36 * (1 - Math.max(0, height - 0.5) / 2.2);
+    // The native sun shadow can look strong while airborne, then disappear at
+    // contact because of shadow-map bias. Keep the grounding shadow strongest
+    // at the road and fade it smoothly as the car lifts away.
+    const proximity = Math.max(0, Math.min(1, (2.8 - height) / 2.2));
+    this.material.uniforms.opacity.value = 0.72 * proximity * proximity;
     this.mesh.position.copy(this.groundPoint).addScaledVector(this.groundNormal, 0.018);
     // Align the elliptical footprint with the car, including banked tracks.
     const forward = (this.forward ??= new this.three.Vector3());

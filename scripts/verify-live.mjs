@@ -5,7 +5,7 @@ import { PNG } from "pngjs";
 import { mkdir } from "node:fs/promises";
 import { runOptimizationBenchmark } from "./optimization-benchmark.mjs";
 const output =
-  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.3.0");
+  process.env.TEMP + (process.env.POLYSHADE_OUTPUT ?? "/polyshade-0.3.1");
 await mkdir(output, { recursive: true });
 const report = { presets: {}, comparisons: {}, screenshots: [] };
 function imageStats(buffer) {
@@ -69,7 +69,7 @@ report.environment = {
   platform: process.platform,
   architecture: process.arch,
   viewport: [1280, 720],
-  release: process.env.POLYSHADE_RELEASE ?? "0.3.0",
+  release: process.env.POLYSHADE_RELEASE ?? "0.3.1",
   date: new Date().toISOString(),
 };
 const renderingErrors = [];
@@ -355,7 +355,7 @@ try {
     await writeFile(output + "/warmup-debug.json",JSON.stringify(probe,null,2));
     await browser.close(); process.exit(0);
   }
-  for (const id of ["cinematic-lite", "cinematic", "recording"]) {
+  for (const id of ["clear-day", "overcast", "cinematic-lite", "cinematic", "recording"]) {
     await page.locator("#polyshade-panel select").first().selectOption(id);
     await page.waitForFunction(
       (id) => window.__polyShadeController.getSettings().preset === id,
@@ -367,7 +367,7 @@ try {
     assert.deepEqual(result.capabilities.failures, {});
     assert.ok(result.materials > 0);
     assert.equal(result.capabilities.active.ao, id !== "cinematic-lite");
-    assert.equal(result.capabilities.active.bloom, id !== "cinematic-lite");
+    assert.equal(result.capabilities.active.bloom, id !== "cinematic-lite" && id !== "overcast");
     if (id === "recording")
       assert.deepEqual(result.capabilities.active.sceneSize, [1280, 720]);
     const image = await shot(id);

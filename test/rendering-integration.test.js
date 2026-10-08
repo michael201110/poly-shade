@@ -39,12 +39,19 @@ test("car contact shadow remains on the road independently of sun shadowing", ()
   assert.equal(contact.geometry.type, "PlaneGeometry");
   assert.equal(contact.mesh.visible, true);
   assert.ok(Math.abs(contact.mesh.position.y - 0.018) < 0.001);
+  const groundedOpacity = contact.material.uniforms.opacity.value;
+  assert.ok(groundedOpacity > 0.7, "landing remains darker than the airborne shadow");
   const broadQueries = contact.rayQueries;
   car.position.x = 0.25;
   scene.updateMatrixWorld(true);
   contact.update({ carContactShadowEnabled: true }, 130, camera);
   assert.ok(Math.abs(contact.mesh.position.x - 0.25) < 0.001, "footprint follows every moving frame");
   assert.equal(contact.rayQueries, broadQueries, "cached receiver avoids a whole-track raycast");
+  car.position.y = 2;
+  scene.updateMatrixWorld(true);
+  contact.update({ carContactShadowEnabled: true }, 140, camera);
+  assert.ok(contact.material.uniforms.opacity.value < groundedOpacity / 3,
+    "grounding shadow fades as the car lifts away");
   contact.dispose();
   assert.equal(scene.children.includes(contact.mesh), false);
 });

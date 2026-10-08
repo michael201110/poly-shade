@@ -1,20 +1,26 @@
-# PolyShade 0.3.0
+# PolyShade 0.3.1
 
 A graphics mod for **PolyTrack 0.6.3**, loaded through PolyModLoader. Warm directional sunlight, cool shaded faces, glossy car paint and broad soft clouds give the low-poly world a cinematic racing-game look.
 
 ## Install
 
-Install [PolyModLoader](https://polymodloader.com/), then paste this **versioned 0.3.0 install link** into its mod manager:
+Install [PolyModLoader](https://polymodloader.com/), then paste this **versioned 0.3.1 install link** into its mod manager:
 
 ```text
-https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.3.0/
+https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.3.1/
 ```
 
-[Install PolyShade 0.3.0](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.3.0/)
+[Install PolyShade 0.3.1](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.3.1/)
 
-Select **0.3.0 / latest**, move the mod to Loaded, and reload the game. Remove duplicate old PolyShade entries. Select a preset again to apply the new artistic defaults; existing explicit overrides remain saved.
+Select **0.3.1 / latest**, move the mod to Loaded, and reload the game. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
 
-For automatic future updates, use the [main install link](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/). PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.3.0/version.json` and `0.3.0/main.mod.js`; historical bundles are preserved.
+For automatic future updates, use the [main install link](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/). PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.3.1/version.json` and `0.3.1/main.mod.js`; historical bundles are preserved.
+
+## What's changed in 0.3.1
+
+The car's contact shadow is stronger when its wheels meet the track and fades smoothly as it rises. This fixes the visible switch from a dark airborne sun shadow to a faint ground shadow, including beneath overhead structures. Lens ghosts now vary in size, brightness and softness, with gentler rainbow colour separation. **Clear Day** and **Soft Overcast** add distinct looks without volumetric passes.
+
+See the [0.3.1 screenshots and verification](docs/0.3.1.md).
 
 ## What's changed in 0.3.0
 
@@ -32,6 +38,8 @@ See [verification, measurements and limitations](docs/0.3.0-overhaul.md).
 | Preset | Shadow map | Effects |
 | --- | --- | --- |
 | Vanilla | Native | Restore native rendering |
+| Clear Day | 2048 | Higher white sun, blue sky, sparse clouds, modest optical effects |
+| Soft Overcast | 2048 | Diffuse cool light, broad cloud cover, soft shadows; optics off |
 | Golden Hour Lite | 1024 | Stylized sky/environment, car grounding, FXAA; AO/bloom/optics off |
 | Golden Hour | 2048 | Broad clouds, medium AO, subtle bloom, stronger rays, restrained flare; volumetrics off |
 | Golden Hour Capture | 2048 | High AO/environment, full-resolution volumetric sunlight, stronger rays and FXAA |
@@ -65,4 +73,4 @@ npm run verify:replay
 
 Development-only dependencies include Three.js, Playwright and PNG tooling. Live verification uses Microsoft Edge and the official PML CDN with a fresh profile. It checks presets, restoration, resizing, braking, cameras, driving, native CSM, occlusion and resource cycles. The replay verifier watches Summer 2's #1 replay and runs a GPU near/far/sky-depth regression; its public replay API bridge exists only in the test harness.
 
-Reports/screenshots are written under `%TEMP%/polyshade-0.3.0/` and `%TEMP%/polyshade-replay-0.3.0/`. `POLYSHADE_RELEASE`, `POLYSHADE_OUTPUT`, `POLYSHADE_PRESET` and `POLYSHADE_CSM` select replay comparison settings. Older release calibration/optimization reports remain in [docs](docs/).
+Reports/screenshots are written under `%TEMP%/polyshade-0.3.1/` and `%TEMP%/polyshade-replay-0.3.1/`. `POLYSHADE_RELEASE`, `POLYSHADE_OUTPUT`, `POLYSHADE_PRESET` and `POLYSHADE_CSM` select replay comparison settings. Older release calibration/optimization reports remain in [docs](docs/).

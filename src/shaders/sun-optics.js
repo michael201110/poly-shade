@@ -28,13 +28,19 @@ float sky=step(0.999999,texture2D(tDepth,uv).r);
 float cloudDiffusion=4.0*mask.b*(1.0-mask.b);
 vec3 f=sunColor*(exp(-r*r/0.00042)*0.62+exp(-r*r/0.0035)*cloudDiffusion*0.055)*sky;
 for(int i=0;i<4;i++){
-float axis=0.35+float(i)*0.4;
+float axis=i==0?0.22:(i==1?0.63:(i==2?1.12:1.64));
 vec2 center=sunUv+(vec2(0.5)-sunUv)*axis;
 float d=length((uv-center)*vec2(aspect,1.0));
-float radius=0.016+float(i)*0.006;
-vec3 ringDistance=(vec3(d)-radius+vec3(-1.0,0.0,1.0)*iridescence*0.012)/0.006;
+// Different lens elements produce differently sized, softly coloured ghosts.
+float radius=i==0?0.010:(i==1?0.027:(i==2?0.051:0.016));
+float width=0.0025+radius*0.11;
+float dispersion=iridescence*radius*0.14;
+vec3 ringDistance=(vec3(d)-radius+vec3(-0.65,0.0,0.65)*dispersion)/width;
 vec3 ring=exp(-ringDistance*ringDistance);
-f+=mix(vec3(dot(ring,vec3(0.333))),ring,iridescence)*ghostStrength*0.34;
+float mono=dot(ring,vec3(0.333));
+float core=(1.0-smoothstep(radius*0.2,radius*0.9,d))*0.08;
+float weight=i==0?0.37:(i==1?0.30:(i==2?0.15:0.24));
+f+=(mix(sunColor*vec3(0.72,0.8,0.9)*mono,ring,iridescence*0.62)+sunColor*core)*ghostStrength*weight;
 }
 f+=sunColor*exp(-abs(delta.x)*8.0-delta.y*delta.y/0.000008)*streakStrength*0.2*sky;
 return f*flareStrength*visible;}`;
