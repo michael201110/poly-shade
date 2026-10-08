@@ -1625,6 +1625,12 @@ vec3 shoulder(vec3 c){return clamp((c*(2.51*c+0.03))/(c*(2.43*c+0.59)+0.14),0.0,
 vec3 cameraMotionBlur(vec2 uv,vec3 center){
  if(motionBlurStrength<=0.0)return center;
  float d=texture2D(tDepth,uv).r;
+ float centerDepth=linearDepth(d);
+ float inverseDepth=1.0/max(centerDepth,0.0001);
+ // Inverse view depth is linear across a projected planar surface. Compute
+ // derivatives before per-pixel early-outs, where neighbouring lanes are valid.
+ vec2 depthGradient=vec2(dFdx(inverseDepth),dFdy(inverseDepth));
+ float depthTolerance=max(inverseDepth*0.025,dot(abs(depthGradient),vec2(0.75)));
  vec4 world=cameraWorld*vec4(viewPosition(uv),1.0);
  // The sky is infinitely far away: only camera rotation moves it on screen.
  if(d>=0.9999999)world=vec4(world.xyz-cameraWorld[3].xyz,0.0);
@@ -1640,16 +1646,19 @@ vec3 cameraMotionBlur(vec2 uv,vec3 center){
  float pixels=length(velocity/motionTexel);
  if(!(pixels>=0.5))return center;
  velocity*=min(1.0,motionBlurMaxPixels/max(pixels,0.0001));
- float centerDepth=linearDepth(d);
- float tolerance=max(0.15,max(centerDepth*0.05,fwidth(centerDepth)*2.0));
  vec3 sum=center;float total=1.0;
- // Centered shutter with eight taps avoids a hard sharp core and long ghost trail.
- for(int i=0;i<8;i++){
-  float along=(float(i)+0.5)/8.0-0.5;
+ // Longer shutter paths receive more samples instead of sparse streaks.
+ int tapCount=int(clamp(ceil(min(pixels,motionBlurMaxPixels)*0.5),4.0,16.0));
+ for(int i=0;i<16;i++){
+  if(i>=tapCount)break;
+  float along=(float(i)+0.5)/float(tapCount)-0.5;
   vec2 sampleUv=uv+velocity*along;
   if(any(lessThan(sampleUv,vec2(0.0)))||any(greaterThan(sampleUv,vec2(1.0))))continue;
   float sampleDepth=linearDepth(texture2D(tDepth,sampleUv).r);
-  if(abs(sampleDepth-centerDepth)>tolerance)continue;
+  // Follow the receiver's depth slope instead of rejecting every long tap
+  // on a receding road. Keep rejecting samples across actual depth breaks.
+  float expectedInverseDepth=inverseDepth+dot(depthGradient,(sampleUv-uv)/motionTexel);
+  if(abs(1.0/max(sampleDepth,0.0001)-expectedInverseDepth)>depthTolerance)continue;
   if(objectMotionActive>0.5){
    float sampleObject=texture2D(tObjectMotion,sampleUv).a;
    if(abs(sampleObject-objectMotion.a)>0.5)continue;
@@ -2036,7 +2045,7 @@ var PostProcess = class {
       for (let i = 0; valid && i < 16; i++)
         if (Math.abs(projection[i] - oldProjection[i]) > 1e-3) valid = false;
     }
-    this.motionExposureScale = 1e3 / 60 / Math.max(4, now - this.motionPreviousAt);
+    this.motionExposureScale = 1e3 / 60 / Math.max(0.25, now - this.motionPreviousAt);
     this.motionFrameValid = valid;
     this.motionBlurViewProjection.copy(valid ? this.motionLastViewProjection : current);
     this.motionLastViewProjection.copy(current);
@@ -2168,11 +2177,13 @@ ${fragment}`,
       this.passOrder.push("scene");
       const depth = sceneTarget.depthTexture;
       const motionTexel = (this.motionTexel ??= new this.three.Vector2()).set(1 / w, 1 / h);
-      const motionBlurActive = s.motionBlurEnabled && s.motionBlurStrength > 0 && depth && motionFrameValid;
-      if (s.motionBlurEnabled) this.objectMotion.update(scene, this.motionBlurViewProjection, motionFrameValid);
+      const motionExposureMs = s.motionBlurExposureMs ?? 0;
+      const motionRequested = s.motionBlurEnabled && motionExposureMs > 0;
+      const motionBlurActive = motionRequested && depth && motionFrameValid;
+      if (motionRequested) this.objectMotion.update(scene, this.motionBlurViewProjection, motionFrameValid);
       else if (this.objectMotion.entries.length) this.objectMotion.dispose();
       let objectVelocity = sceneTarget.texture;
-      if (s.motionBlurEnabled && depth && this.objectMotion.entries.length) {
+      if (motionRequested && depth && this.objectMotion.entries.length) {
         const target = this.pool.get("object-motion", w, h);
         retain.add("object-motion");
         target.texture.minFilter = this.three.NearestFilter;
@@ -2431,7 +2442,7 @@ ${fragment}`,
         motionExposureScale: this.motionExposureScale,
         motionVelocityRange: this.objectMotion.velocityRange,
         previousViewProjection: this.motionBlurViewProjection,
-        motionBlurStrength: motionBlurActive ? s.motionBlurStrength : 0,
+        motionBlurStrength: motionBlurActive ? motionExposureMs / (1e3 / 60) : 0,
         motionBlurMaxPixels: s.motionBlurMaxPixels,
         tVolume: volume,
         volumeTexel,
@@ -3182,7 +3193,7 @@ var OPTIONS = {
     postEnabled: ["Post processing", true],
     gradeEnabled: ["Colour grade", true],
     motionBlurEnabled: ["Motion blur", false],
-    motionBlurStrength: ["Motion blur shutter (60 Hz)", 0.6, 0, 1],
+    motionBlurExposureMs: ["Motion blur exposure (ms)", 20, 0, 64],
     motionBlurMaxPixels: ["Motion blur limit (pixels)", 32, 2, 64],
     exposure: ["Exposure", 1.08, 0.7, 1.4],
     contrast: ["Contrast", 1.075, 0.8, 1.2],
@@ -3337,7 +3348,7 @@ var PRESETS2 = Object.freeze({
     aoQuality: "medium",
     aoStrength: 0.38,
     motionBlurEnabled: true,
-    motionBlurStrength: 0.6,
+    motionBlurExposureMs: 20,
     motionBlurMaxPixels: 32,
     bloomStrength: 0.025,
     lensFlareStrength: 0.14,
@@ -3378,7 +3389,7 @@ var PRESETS2 = Object.freeze({
     aoQuality: "medium",
     aoStrength: 0.38,
     motionBlurEnabled: true,
-    motionBlurStrength: 0.6,
+    motionBlurExposureMs: 20,
     motionBlurMaxPixels: 32,
     bloomEnabled: false,
     sunRaysEnabled: false,
@@ -3439,7 +3450,7 @@ var PRESETS2 = Object.freeze({
     flareIridescence: 0.65,
     flareStreakStrength: 0.12,
     motionBlurEnabled: true,
-    motionBlurStrength: 0.6,
+    motionBlurExposureMs: 20,
     motionBlurMaxPixels: 32,
     volumetricEnabled: false
   }),
@@ -3475,7 +3486,7 @@ var PRESETS2 = Object.freeze({
     fxaaEnabled: true,
     volumetricEnabled: true,
     motionBlurEnabled: true,
-    motionBlurStrength: 0.6,
+    motionBlurExposureMs: 20,
     motionBlurMaxPixels: 32,
     surfaceWarmth: 0.2,
     shadowDistance: 30,
@@ -4859,6 +4870,9 @@ function normalizeOverrides(overrides) {
       normalized[key] = validateOption(key, value);
     } catch {
     }
+  }
+  if (!Object.hasOwn(overrides, "motionBlurExposureMs") && typeof overrides.motionBlurStrength === "number" && Number.isFinite(overrides.motionBlurStrength)) {
+    normalized.motionBlurExposureMs = Math.max(0, Math.min(1, overrides.motionBlurStrength)) * (1e3 / 60);
   }
   return normalized;
 }

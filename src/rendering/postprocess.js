@@ -89,7 +89,7 @@ export class PostProcess {
       for (let i = 0; valid && i < 16; i++)
         if (Math.abs(projection[i] - oldProjection[i]) > 0.001) valid = false;
     }
-    this.motionExposureScale = (1000 / 60) / Math.max(4, now - this.motionPreviousAt);
+    this.motionExposureScale = (1000 / 60) / Math.max(0.25, now - this.motionPreviousAt);
     this.motionFrameValid = valid;
     this.motionBlurViewProjection.copy(valid ? this.motionLastViewProjection : current);
     this.motionLastViewProjection.copy(current);
@@ -226,14 +226,16 @@ export class PostProcess {
       this.passOrder.push("scene");
       const depth = sceneTarget.depthTexture;
       const motionTexel = (this.motionTexel ??= new this.three.Vector2()).set(1 / w, 1 / h);
-      const motionBlurActive = s.motionBlurEnabled && s.motionBlurStrength > 0 &&
+      const motionExposureMs = s.motionBlurExposureMs ?? 0;
+      const motionRequested = s.motionBlurEnabled && motionExposureMs > 0;
+      const motionBlurActive = motionRequested &&
         depth && motionFrameValid;
       // Scene rendering has updated the cars' world matrices. Record them even
       // on reset frames so a camera switch cannot invent object velocity.
-      if (s.motionBlurEnabled) this.objectMotion.update(scene, this.motionBlurViewProjection, motionFrameValid);
+      if (motionRequested) this.objectMotion.update(scene, this.motionBlurViewProjection, motionFrameValid);
       else if (this.objectMotion.entries.length) this.objectMotion.dispose();
       let objectVelocity = sceneTarget.texture;
-      if (s.motionBlurEnabled && depth && this.objectMotion.entries.length) {
+      if (motionRequested && depth && this.objectMotion.entries.length) {
         const target = this.pool.get("object-motion", w, h);
         retain.add("object-motion");
         target.texture.minFilter = this.three.NearestFilter;
@@ -543,7 +545,7 @@ export class PostProcess {
         motionExposureScale: this.motionExposureScale,
         motionVelocityRange: this.objectMotion.velocityRange,
         previousViewProjection: this.motionBlurViewProjection,
-        motionBlurStrength: motionBlurActive ? s.motionBlurStrength : 0,
+        motionBlurStrength: motionBlurActive ? motionExposureMs / (1000 / 60) : 0,
         motionBlurMaxPixels: s.motionBlurMaxPixels,
         tVolume: volume,
         volumeTexel,

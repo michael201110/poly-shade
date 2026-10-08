@@ -1,6 +1,9 @@
 import { chromium } from '@playwright/test';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import assert from 'node:assert/strict';
+import { PNG } from 'pngjs';
+import { verifyMotionGpu } from './motion-gpu.mjs';
+import { GRADE_FRAGMENT } from '../src/shaders/grade.js';
 import { DEPTH_HELPERS } from '../src/shaders/atmosphere.js';
 const release = process.env.POLYSHADE_RELEASE ?? '0.3.2';
 const testedHelpers = release === '0.3.2' ? DEPTH_HELPERS :
@@ -23,7 +26,37 @@ try {
         .replace('controller = new RenderController','controller = globalThis.__controller = new RenderController')
         .replace('controller.onFrame(renderer, scene, duration);',`controller.onFrame(renderer, scene, duration);
           if(globalThis.__measure){const now=performance.now();globalThis.__cpu.push(duration);if(globalThis.__last)globalThis.__gaps.push(now-globalThis.__last);globalThis.__last=now;}
-          if(globalThis.__capture){globalThis.__png=renderer.domElement.toDataURL();globalThis.__capture=false;}`)
+          if(globalThis.__capture){
+            globalThis.__png=renderer.domElement.toDataURL();
+            const p=controller.cinematic?.post;
+            if(globalThis.__compareBlur && p?.motionFrameValid && p.active.motionBlur){
+              const grade=p.materials.get('grade'),finish=p.materials.get('finish');
+              if(grade && finish){
+                const strength=grade.uniforms.motionBlurStrength.value,limit=grade.uniforms.motionBlurMaxPixels.value;
+                const material=p.quad.material;
+                const outputs={frameValid:p.motionFrameValid,exposureScale:p.motionExposureScale};
+                p.state.capture(renderer);
+                try{
+                  renderer.autoClear=false;renderer.setScissorTest(false);renderer.toneMapping=controller.three.NoToneMapping;
+                  for(const [name,value] of [['off',0],['max',64/(1000/60)]]){
+                    grade.uniforms.motionBlurStrength.value=value;grade.uniforms.motionBlurMaxPixels.value=64;
+                    renderer.outputColorSpace=controller.three.LinearSRGBColorSpace;
+                    renderer.setRenderTarget(p.pool.targets.get('grade'));p.quad.material=grade;
+                    renderer.__polyShadeNativeDraw.call(renderer,p.scene,p.camera);
+                    renderer.outputColorSpace=p.state.output;
+                    renderer.setRenderTarget(null);p.quad.material=finish;
+                    renderer.__polyShadeNativeDraw.call(renderer,p.scene,p.camera);
+                    outputs[name]=renderer.domElement.toDataURL();
+                  }
+                  globalThis.__blurPair=outputs;
+                }finally{
+                  grade.uniforms.motionBlurStrength.value=strength;grade.uniforms.motionBlurMaxPixels.value=limit;
+                  p.quad.material=material;p.state.restore(renderer);
+                }
+              }
+            }
+            globalThis.__capture=false;
+          }`)
         .replace('instances.set(renderer, { original, wrapper });','renderer.__polyShadeNativeDraw=original;globalThis.__renderer=renderer;globalThis.__nativeDraw=original;instances.set(renderer, { original, wrapper });');
       await route.fulfill({body,headers:{'access-control-allow-origin':'*'},contentType:path.endsWith('.json')?'application/json':'application/javascript'});
     }catch{await route.fulfill({status:404,body:''});}
@@ -62,12 +95,27 @@ try {
   },process.env.POLYSHADE_CSM??'3');
   for(let i=0;i<14;i++) {
     await page.waitForTimeout(700);
-    await page.evaluate(()=>window.__capture=true);
+    await page.evaluate(compare=>{window.__compareBlur=compare;window.__blurPair=null;window.__capture=true;},process.env.POLYSHADE_COMPARE_BLUR==='1' && [1,3,6].includes(i));
     await page.waitForFunction(()=>window.__capture===false);
     const image=await page.evaluate(()=>window.__png);
     const file=`replay-${i}.png`;
     await writeFile(`${output}/${file}`,Buffer.from(image.split(',')[1],'base64'));
     report.screenshots.push(file);
+    const pair=await page.evaluate(()=>window.__blurPair);
+    if(pair){
+      const buffers={};
+      for(const name of ['off','max']){
+        buffers[name]=Buffer.from(pair[name].split(',')[1],'base64');
+        await writeFile(`${output}/blur-${i}-${name}.png`,buffers[name]);
+      }
+      const off=PNG.sync.read(buffers.off),max=PNG.sync.read(buffers.max);
+      let changed=0,total=0;
+      for(let k=0;k<off.data.length;k+=4){
+        const diff=Math.max(...[0,1,2].map(c=>Math.abs(off.data[k+c]-max.data[k+c])));
+        if(diff>8)changed++;total+=diff;
+      }
+      (report.blurComparisons??=[]).push({frame:i,changedFraction:changed/(off.width*off.height),meanDifference:total/(off.width*off.height),exposureScale:pair.exposureScale});
+    }
     if(i===3) {
       report.motion=await page.evaluate(helpers=>{
         const c=window.__controller,p=c.cinematic.post,t=c.three,r=c.cinematic.renderer;
@@ -138,6 +186,12 @@ try {
   const volume=report.runtime.graphics.resources.targets.find(t=>t.name==='volumetric');
   if(release==='0.3.2'&&volume)assert.deepEqual([volume.width,volume.height],[1280,720]);
   if(release==='0.3.2') {
+    report.motionGpu=await verifyMotionGpu(page,GRADE_FRAGMENT);
+    assert.ok(report.motionGpu.changedFraction>0.8,'long shutter visibly blurs a receding textured road');
+    assert.ok(report.motionGpu.contrastEnergyRatio<0.35,'road blur retains enough samples to reduce contrast');
+    assert.equal(report.motionGpu.edgeLeak,0,'foreground geometry does not leak into background blur');
+    if(process.env.POLYSHADE_COMPARE_BLUR==='1')
+      assert.ok(report.blurComparisons?.some(row=>row.changedFraction>0.02),'maximum exposure visibly changes the same replay frame');
     assert.equal(report.motion?.available,true,'opaque car velocity target is available');
     assert.ok(report.motion.carPixels>100,'velocity mask follows the visible car geometry');
     if(report.motion.frameValid && report.motion.cameraOnlyPixels>4)
@@ -146,5 +200,5 @@ try {
   assert.deepEqual(errors,[]);
   report.errors=errors;
   await writeFile(`${output}/report.json`,JSON.stringify(report,null,2));
-  console.log(JSON.stringify({output,depthNumerics:report.depthNumerics,cpu:report.runtime.cpu,frameGaps:report.runtime.frameGaps,gpu:report.runtime.gpu,motion:report.motion,contact:report.moving.contact,errors},null,2));
+  console.log(JSON.stringify({output,depthNumerics:report.depthNumerics,cpu:report.runtime.cpu,frameGaps:report.runtime.frameGaps,gpu:report.runtime.gpu,motionGpu:report.motionGpu,blurComparisons:report.blurComparisons,motion:report.motion,contact:report.moving.contact,errors},null,2));
 } finally {await browser.close();}

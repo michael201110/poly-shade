@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import * as THREE from "three";
 import { ObjectMotion } from "../src/rendering/object-motion.js";
 import { PostProcess } from "../src/rendering/postprocess.js";
+import { normalizeSettings, validateOption } from "../src/settings.js";
 
 function setup() {
   const scene = new THREE.Scene(), root = new THREE.Group();
@@ -23,6 +24,13 @@ function displacement(entry, camera, local = new THREE.Vector3()) {
   const previous = local.clone().applyMatrix4(entry.proxy.material.uniforms.previousObjectViewProjection.value);
   return current.distanceTo(previous);
 }
+test("old shutter settings retain their exposure and new exposure reaches 64 ms", () => {
+  const migrate = overrides => normalizeSettings({schemaVersion:2,preset:"cinematic",overrides}).overrides;
+  assert.equal(migrate({motionBlurStrength:0.6}).motionBlurExposureMs, 10);
+  assert.equal(migrate({motionBlurStrength:1}).motionBlurExposureMs, 1000/60);
+  assert.equal(migrate({motionBlurStrength:1,motionBlurExposureMs:64}).motionBlurExposureMs,64);
+  assert.equal(validateOption("motionBlurExposureMs",80),64);
+});
 test("follow camera cancels car translation while world scenery still moves", () => {
   const {scene, root, camera, motion} = setup();
   const old = vp(camera);

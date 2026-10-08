@@ -62,6 +62,12 @@ function normalizeOverrides(overrides) {
       /* Ignore unknown or invalid saved keys. */
     }
   }
+  // The original shutter control was a fraction of a 60 Hz frame.
+  // Preserve saved exposure duration while replacing that limited control.
+  if (!Object.hasOwn(overrides, "motionBlurExposureMs") &&
+      typeof overrides.motionBlurStrength === "number" && Number.isFinite(overrides.motionBlurStrength)) {
+    normalized.motionBlurExposureMs = Math.max(0, Math.min(1, overrides.motionBlurStrength)) * (1000 / 60);
+  }
   return normalized;
 }
 

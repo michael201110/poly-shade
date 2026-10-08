@@ -16,6 +16,12 @@ vec3 shoulder(vec3 c){return clamp((c*(2.51*c+0.03))/(c*(2.43*c+0.59)+0.14),0.0,
 vec3 cameraMotionBlur(vec2 uv,vec3 center){
  if(motionBlurStrength<=0.0)return center;
  float d=texture2D(tDepth,uv).r;
+ float centerDepth=linearDepth(d);
+ float inverseDepth=1.0/max(centerDepth,0.0001);
+ // Inverse view depth is linear across a projected planar surface. Compute
+ // derivatives before per-pixel early-outs, where neighbouring lanes are valid.
+ vec2 depthGradient=vec2(dFdx(inverseDepth),dFdy(inverseDepth));
+ float depthTolerance=max(inverseDepth*0.025,dot(abs(depthGradient),vec2(0.75)));
  vec4 world=cameraWorld*vec4(viewPosition(uv),1.0);
  // The sky is infinitely far away: only camera rotation moves it on screen.
  if(d>=0.9999999)world=vec4(world.xyz-cameraWorld[3].xyz,0.0);
@@ -31,16 +37,19 @@ vec3 cameraMotionBlur(vec2 uv,vec3 center){
  float pixels=length(velocity/motionTexel);
  if(!(pixels>=0.5))return center;
  velocity*=min(1.0,motionBlurMaxPixels/max(pixels,0.0001));
- float centerDepth=linearDepth(d);
- float tolerance=max(0.15,max(centerDepth*0.05,fwidth(centerDepth)*2.0));
  vec3 sum=center;float total=1.0;
- // Centered shutter with eight taps avoids a hard sharp core and long ghost trail.
- for(int i=0;i<8;i++){
-  float along=(float(i)+0.5)/8.0-0.5;
+ // Longer shutter paths receive more samples instead of sparse streaks.
+ int tapCount=int(clamp(ceil(min(pixels,motionBlurMaxPixels)*0.5),4.0,16.0));
+ for(int i=0;i<16;i++){
+  if(i>=tapCount)break;
+  float along=(float(i)+0.5)/float(tapCount)-0.5;
   vec2 sampleUv=uv+velocity*along;
   if(any(lessThan(sampleUv,vec2(0.0)))||any(greaterThan(sampleUv,vec2(1.0))))continue;
   float sampleDepth=linearDepth(texture2D(tDepth,sampleUv).r);
-  if(abs(sampleDepth-centerDepth)>tolerance)continue;
+  // Follow the receiver's depth slope instead of rejecting every long tap
+  // on a receding road. Keep rejecting samples across actual depth breaks.
+  float expectedInverseDepth=inverseDepth+dot(depthGradient,(sampleUv-uv)/motionTexel);
+  if(abs(1.0/max(sampleDepth,0.0001)-expectedInverseDepth)>depthTolerance)continue;
   if(objectMotionActive>0.5){
    float sampleObject=texture2D(tObjectMotion,sampleUv).a;
    if(abs(sampleObject-objectMotion.a)>0.5)continue;
