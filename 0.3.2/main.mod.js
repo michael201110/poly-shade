@@ -1613,7 +1613,9 @@ void main(){vec3 c=texture2D(tInput,vUv+stepUv*vec2(-1,-1)).rgb+texture2D(tInput
 var GRADE_FRAGMENT = `varying vec2 vUv;${DEPTH_HELPERS}${ATMOSPHERE_HELPERS}${FLARE_HELPERS}${VOLUME_COMPOSITE}
 uniform sampler2D tInput,tAO,tBloom,tRays;
 uniform vec2 rayTexel,motionTexel;
-uniform vec4 motionFocus;
+uniform sampler2D tObjectMotion;
+uniform float objectMotionActive,motionExposureScale;
+uniform vec2 motionVelocityRange;
 uniform mat4 previousViewProjection;
 uniform float motionBlurStrength,motionBlurMaxPixels;
 uniform float aoActive,bloomStrength,rayStrength,atmosphereActive,gradeActive,exposure,contrast,saturation,vibrance,temperature,tint,shadowLift,highlightCompression,blackLevel,whiteLevel,vignetteStrength,vignetteSoftness;
@@ -1624,31 +1626,37 @@ vec3 cameraMotionBlur(vec2 uv,vec3 center){
  if(motionBlurStrength<=0.0)return center;
  float d=texture2D(tDepth,uv).r;
  vec4 world=cameraWorld*vec4(viewPosition(uv),1.0);
+ // The sky is infinitely far away: only camera rotation moves it on screen.
+ if(d>=0.9999999)world=vec4(world.xyz-cameraWorld[3].xyz,0.0);
  vec4 previous=previousViewProjection*world;
  if(previous.w<=0.00001)return center;
- vec2 previousUv=previous.xy/previous.w*0.5+0.5;
- vec2 velocity=uv-previousUv;
+ vec2 velocity=uv-(previous.xy/previous.w*0.5+0.5);
+ vec4 objectMotion=vec4(0.0);
+ if(objectMotionActive>0.5)objectMotion=texture2D(tObjectMotion,uv);
+ if(objectMotion.a>0.5)velocity=(objectMotion.rg*2.0-1.0)*motionVelocityRange;
+ // Strength is shutter duration at 60 Hz, not a blend with a sharp image.
+ // Normalize frame spacing so a slow frame does not create a longer exposure.
+ velocity*=motionBlurStrength*motionExposureScale;
  float pixels=length(velocity/motionTexel);
- if(any(lessThan(previousUv,vec2(0.0)))||any(greaterThan(previousUv,vec2(1.0))))return center;
- float centerDepth=linearDepth(d),tolerance=max(0.75,centerDepth*0.08);
- // Camera translation makes nearby objects appear to move fastest. Reduce
- // that parallax and build the trail on the more distant racing environment.
- velocity*=mix(0.7,2.2,smoothstep(6.0,45.0,centerDepth));
- pixels=length(velocity/motionTexel);
- if(pixels<0.5)return center;
+ if(!(pixels>=0.5))return center;
  velocity*=min(1.0,motionBlurMaxPixels/max(pixels,0.0001));
- vec3 sum=center*0.28;float total=0.28;
- for(int i=0;i<4;i++){
-  float along=(float(i)+0.5)*0.25;
-  vec2 sampleUv=uv-velocity*along;
+ float centerDepth=linearDepth(d);
+ float tolerance=max(0.15,max(centerDepth*0.05,fwidth(centerDepth)*2.0));
+ vec3 sum=center;float total=1.0;
+ // Centered shutter with eight taps avoids a hard sharp core and long ghost trail.
+ for(int i=0;i<8;i++){
+  float along=(float(i)+0.5)/8.0-0.5;
+  vec2 sampleUv=uv+velocity*along;
   if(any(lessThan(sampleUv,vec2(0.0)))||any(greaterThan(sampleUv,vec2(1.0))))continue;
   float sampleDepth=linearDepth(texture2D(tDepth,sampleUv).r);
   if(abs(sampleDepth-centerDepth)>tolerance)continue;
-  sum+=texture2D(tInput,sampleUv).rgb*0.18;total+=0.18;
+  if(objectMotionActive>0.5){
+   float sampleObject=texture2D(tObjectMotion,sampleUv).a;
+   if(abs(sampleObject-objectMotion.a)>0.5)continue;
+  }
+  sum+=texture2D(tInput,sampleUv).rgb;total+=1.0;
  }
- vec2 focusDelta=(uv-motionFocus.xy)/max(motionFocus.zw,vec2(0.001));
- float carProtection=1.0-smoothstep(0.78,1.16,length(focusDelta));
- return mix(center,sum/max(total,0.0001),clamp(motionBlurStrength*(1.0-carProtection),0.0,0.8));
+ return mix(center,sum/total,smoothstep(0.5,1.5,pixels));
 }
 void main(){
  vec3 sceneColor=texture2D(tInput,vUv).rgb;
@@ -1819,6 +1827,134 @@ var TargetPool = class {
   }
 };
 
+// src/rendering/object-motion.js
+var VERTEX = `
+uniform mat4 previousObjectViewProjection;
+varying vec4 previousClip;
+void main(){
+ previousClip=previousObjectViewProjection*vec4(position,1.0);
+ gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);
+}`;
+var FRAGMENT = `
+uniform sampler2D sceneDepth;
+uniform vec2 texel,velocityRange;
+varying vec4 previousClip;
+void main(){
+ vec2 uv=gl_FragCoord.xy*texel;
+ float depth=texture2D(sceneDepth,uv).r;
+ // The car contributes only where its real geometry matches scene depth.
+ // Walls and bridges therefore occlude the velocity pass too.
+ if(abs(gl_FragCoord.z-depth)>max(0.0000002,fwidth(gl_FragCoord.z)*0.5))discard;
+ vec2 velocity=vec2(0.0);
+ if(previousClip.w>0.00001)velocity=uv-(previousClip.xy/previousClip.w*0.5+0.5);
+ gl_FragColor=vec4(clamp(velocity/velocityRange*0.5+0.5,0.0,1.0),0.0,1.0);
+}`;
+var ObjectMotion = class {
+  constructor(three) {
+    this.three = three;
+    this.scene = new three.Scene();
+    this.scene.matrixWorldAutoUpdate = false;
+    this.entries = [];
+    this.sourceScene = null;
+    this.lastScan = -Infinity;
+    this.velocityRange = new three.Vector2(1, 1);
+    this.texel = new three.Vector2();
+  }
+  update(scene, previousViewProjection, valid) {
+    if (scene !== this.sourceScene) {
+      this.dispose();
+      this.sourceScene = scene;
+    }
+    const now = performance.now();
+    if (now - this.lastScan > 500) {
+      this.lastScan = now;
+      const sources = /* @__PURE__ */ new Set();
+      scene.traverse((body) => {
+        if (!body.isMesh || body.userData?.polyShadeOwned) return;
+        const materials = [].concat(body.material ?? []);
+        if (!materials.some((m) => m?.name === "BrakeLight") || materials.some((m) => m.transparent || (m.opacity ?? 1) < 0.98 || isReplayGhost(body, m))) return;
+        const root = body.parent?.isGroup ? body.parent : body;
+        root.traverse((mesh) => {
+          if (!mesh.isMesh || mesh.userData?.polyShadeOwned || mesh.isSkinnedMesh || mesh.isInstancedMesh) return;
+          if ([].concat(mesh.material ?? []).some((m) => m.transparent || (m.opacity ?? 1) < 0.98)) return;
+          sources.add(mesh);
+        });
+      });
+      for (let i = this.entries.length - 1; i >= 0; i--) {
+        const entry = this.entries[i];
+        if (!sources.has(entry.source)) {
+          this.scene.remove(entry.proxy);
+          entry.proxy.material.dispose();
+          this.entries.splice(i, 1);
+        }
+      }
+      for (const source of sources) {
+        if (this.entries.some((e) => e.source === source)) continue;
+        const material = new this.three.ShaderMaterial({
+          name: "PolyShade object velocity",
+          vertexShader: VERTEX,
+          fragmentShader: FRAGMENT,
+          uniforms: {
+            previousObjectViewProjection: { value: new this.three.Matrix4() },
+            sceneDepth: { value: null },
+            texel: { value: this.texel },
+            velocityRange: { value: this.velocityRange }
+          },
+          depthTest: false,
+          depthWrite: false,
+          toneMapped: false,
+          blending: this.three.NoBlending,
+          side: this.three.DoubleSide
+        });
+        const proxy = new this.three.Mesh(source.geometry, material);
+        proxy.matrixAutoUpdate = false;
+        proxy.matrixWorldAutoUpdate = false;
+        proxy.frustumCulled = false;
+        this.scene.add(proxy);
+        this.entries.push({ source, proxy, previous: source.matrixWorld.clone(), fresh: true });
+      }
+    }
+    for (const entry of this.entries) {
+      const { source, proxy, previous } = entry;
+      proxy.visible = true;
+      for (let node = source; node; node = node.parent)
+        if (!node.visible) {
+          proxy.visible = false;
+          break;
+        }
+      proxy.layers.mask = source.layers.mask;
+      proxy.geometry = source.geometry;
+      proxy.matrix.copy(source.matrixWorld);
+      proxy.matrixWorld.copy(source.matrixWorld);
+      proxy.material.uniforms.previousObjectViewProjection.value.multiplyMatrices(
+        previousViewProjection,
+        valid && !entry.fresh ? previous : source.matrixWorld
+      );
+      previous.copy(source.matrixWorld);
+      entry.fresh = false;
+    }
+  }
+  render(renderer, camera, target, depth, draw) {
+    this.texel.set(1 / target.width, 1 / target.height);
+    this.velocityRange.set(64 / target.width, 64 / target.height);
+    for (const { proxy } of this.entries) proxy.material.uniforms.sceneDepth.value = depth;
+    renderer.setRenderTarget(target);
+    renderer.setScissorTest(false);
+    renderer.setClearColor(0, 0);
+    renderer.clear(true, false, false);
+    draw(this.scene, camera);
+  }
+  dispose() {
+    for (const { proxy } of this.entries) {
+      this.scene.remove(proxy);
+      proxy.material.dispose();
+    }
+    this.entries.length = 0;
+    this.sourceScene = null;
+    this.lastScan = -Infinity;
+  }
+};
+
 // src/rendering/postprocess.js
 var DEBUG_VIEWS = [
   "final",
@@ -1868,68 +2004,17 @@ var PostProcess = class {
     this.motionPreviousWorld = new three.Matrix4();
     this.motionPreviousProjection = new three.Matrix4();
     this.motionPreviousCamera = null;
+    this.motionScene = null;
     this.motionPreviousAt = 0;
     this.motionFrameValid = false;
-    this.motionScene = null;
-    this.motionCars = [];
-    this.motionFocus = new three.Vector4(0.5, 0.3, 0.12, 0.16);
-    this.motionFocusWorld = new three.Vector3();
-    this.motionFocusView = new three.Vector3();
-    this.motionFocusProjected = new three.Vector3();
-    this.motionFocusScale = new three.Vector3();
-    this.motionCameraPosition = new three.Vector3();
+    this.objectMotion = new ObjectMotion(three);
+    this.motionExposureScale = 1;
   }
   prepareCameraMotion(scene, camera) {
     camera.updateMatrixWorld?.();
     if (this.motionScene !== scene) {
       this.motionScene = scene;
       this.motionPreviousCamera = null;
-      this.motionCars.length = 0;
-      scene.traverse((mesh) => {
-        if (!mesh.isMesh || mesh.userData?.polyShadeOwned) return;
-        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-        if (materials.some((material) => material?.name === "BrakeLight" && !material.transparent && (material.opacity ?? 1) >= 0.98 && !isReplayGhost(mesh, material))) this.motionCars.push(mesh);
-      });
-    }
-    this.motionFocus.set(0.5, 0.3, 0.12, 0.16);
-    if (this.motionCars.length) {
-      camera.getWorldPosition(this.motionCameraPosition);
-      let nearest = null, nearestDistance = Infinity;
-      for (const mesh of this.motionCars) {
-        if (!mesh.visible) continue;
-        mesh.getWorldPosition(this.motionFocusWorld);
-        const distance = this.motionFocusWorld.distanceToSquared(this.motionCameraPosition);
-        if (distance < nearestDistance) {
-          nearest = mesh;
-          nearestDistance = distance;
-        }
-      }
-      if (nearest) {
-        const geometry = nearest.geometry;
-        if (!geometry.boundingSphere) geometry.computeBoundingSphere?.();
-        const sphere = geometry.boundingSphere;
-        if (sphere) {
-          this.motionFocusWorld.copy(sphere.center).applyMatrix4(nearest.matrixWorld);
-          this.motionFocusView.copy(this.motionFocusWorld).applyMatrix4(camera.matrixWorldInverse);
-          const depth = -this.motionFocusView.z;
-          this.motionFocusProjected.copy(this.motionFocusWorld).project(camera);
-          if (depth > 0.01 && Math.abs(this.motionFocusProjected.x) < 1.5 && Math.abs(this.motionFocusProjected.y) < 1.5) {
-            nearest.getWorldScale(this.motionFocusScale);
-            const worldRadius = sphere.radius * Math.max(
-              this.motionFocusScale.x,
-              this.motionFocusScale.y,
-              this.motionFocusScale.z
-            );
-            const radius = worldRadius * Math.abs(camera.projectionMatrix.elements[5]) / (2 * depth);
-            this.motionFocus.set(
-              this.motionFocusProjected.x * 0.5 + 0.5,
-              this.motionFocusProjected.y * 0.5 + 0.5,
-              Math.max(0.075, Math.min(0.18, radius * 0.9)),
-              Math.max(0.1, Math.min(0.22, radius * 1.1))
-            );
-          }
-        }
-      }
     }
     const current = this.motionCurrentViewProjection.multiplyMatrices(
       camera.projectionMatrix,
@@ -1944,12 +2029,14 @@ var PostProcess = class {
       const dy = world[13] - oldWorld[13];
       const dz = world[14] - oldWorld[14];
       const forwardDot = world[8] * oldWorld[8] + world[9] * oldWorld[9] + world[10] * oldWorld[10];
-      valid = dx * dx + dy * dy + dz * dz < 64 && forwardDot > 0.5;
+      const travelLimit = Math.max(8, (now - this.motionPreviousAt) * 0.8);
+      valid = dx * dx + dy * dy + dz * dz < travelLimit * travelLimit && forwardDot > 0.5;
       const projection = camera.projectionMatrix.elements;
       const oldProjection = this.motionPreviousProjection.elements;
       for (let i = 0; valid && i < 16; i++)
         if (Math.abs(projection[i] - oldProjection[i]) > 1e-3) valid = false;
     }
+    this.motionExposureScale = 1e3 / 60 / Math.max(4, now - this.motionPreviousAt);
     this.motionFrameValid = valid;
     this.motionBlurViewProjection.copy(valid ? this.motionLastViewProjection : current);
     this.motionLastViewProjection.copy(current);
@@ -2032,6 +2119,7 @@ ${fragment}`,
     this.passOrder.length = 0;
     if (this.disabled || !s.postEnabled || s.postQuality === "off") {
       this.pool.dispose();
+      this.objectMotion.dispose();
       this.sunVisibility.dispose();
       this.motionPreviousCamera = null;
       this.active = { post: false };
@@ -2081,6 +2169,23 @@ ${fragment}`,
       const depth = sceneTarget.depthTexture;
       const motionTexel = (this.motionTexel ??= new this.three.Vector2()).set(1 / w, 1 / h);
       const motionBlurActive = s.motionBlurEnabled && s.motionBlurStrength > 0 && depth && motionFrameValid;
+      if (s.motionBlurEnabled) this.objectMotion.update(scene, this.motionBlurViewProjection, motionFrameValid);
+      else if (this.objectMotion.entries.length) this.objectMotion.dispose();
+      let objectVelocity = sceneTarget.texture;
+      if (s.motionBlurEnabled && depth && this.objectMotion.entries.length) {
+        const target = this.pool.get("object-motion", w, h);
+        retain.add("object-motion");
+        target.texture.minFilter = this.three.NearestFilter;
+        target.texture.magFilter = this.three.NearestFilter;
+        if (motionBlurActive) {
+          const renderMotion = () => this.objectMotion.render(r, camera, target, depth, draw);
+          this.guard.pass = "object-motion";
+          if (this.profiler) this.profiler.measure("object-motion", renderMotion);
+          else renderMotion();
+        }
+        objectVelocity = target.texture;
+        this.passOrder.push("object-motion");
+      }
       const depthValues = {
         tDepth: depth,
         inverseProjection: camera.projectionMatrixInverse,
@@ -2321,7 +2426,10 @@ ${fragment}`,
         tRays: rays,
         rayTexel,
         motionTexel,
-        motionFocus: this.motionFocus,
+        tObjectMotion: objectVelocity,
+        objectMotionActive: motionBlurActive && this.objectMotion.entries.length ? 1 : 0,
+        motionExposureScale: this.motionExposureScale,
+        motionVelocityRange: this.objectMotion.velocityRange,
         previousViewProjection: this.motionBlurViewProjection,
         motionBlurStrength: motionBlurActive ? s.motionBlurStrength : 0,
         motionBlurMaxPixels: s.motionBlurMaxPixels,
@@ -2431,6 +2539,7 @@ ${fragment}`,
   }
   dispose() {
     this.sunVisibility.dispose();
+    this.objectMotion.dispose();
     this.pool.dispose();
     for (const material of this.materials.values()) material.dispose();
     this.materials.clear();
@@ -3072,9 +3181,9 @@ var OPTIONS = {
   "Post Processing": {
     postEnabled: ["Post processing", true],
     gradeEnabled: ["Colour grade", true],
-    motionBlurEnabled: ["Camera motion blur", false],
-    motionBlurStrength: ["Motion blur strength", 0.3, 0, 0.8],
-    motionBlurMaxPixels: ["Motion blur limit (pixels)", 10, 2, 24],
+    motionBlurEnabled: ["Motion blur", false],
+    motionBlurStrength: ["Motion blur shutter (60 Hz)", 0.6, 0, 1],
+    motionBlurMaxPixels: ["Motion blur limit (pixels)", 32, 2, 64],
     exposure: ["Exposure", 1.08, 0.7, 1.4],
     contrast: ["Contrast", 1.075, 0.8, 1.2],
     saturation: ["Saturation", 1.06, 0.7, 1.3],
@@ -3228,8 +3337,8 @@ var PRESETS2 = Object.freeze({
     aoQuality: "medium",
     aoStrength: 0.38,
     motionBlurEnabled: true,
-    motionBlurStrength: 0.46,
-    motionBlurMaxPixels: 13,
+    motionBlurStrength: 0.6,
+    motionBlurMaxPixels: 32,
     bloomStrength: 0.025,
     lensFlareStrength: 0.14,
     flareGhostStrength: 0.25,
@@ -3269,8 +3378,8 @@ var PRESETS2 = Object.freeze({
     aoQuality: "medium",
     aoStrength: 0.38,
     motionBlurEnabled: true,
-    motionBlurStrength: 0.42,
-    motionBlurMaxPixels: 12,
+    motionBlurStrength: 0.6,
+    motionBlurMaxPixels: 32,
     bloomEnabled: false,
     sunRaysEnabled: false,
     lensFlareEnabled: false,
@@ -3330,8 +3439,8 @@ var PRESETS2 = Object.freeze({
     flareIridescence: 0.65,
     flareStreakStrength: 0.12,
     motionBlurEnabled: true,
-    motionBlurStrength: 0.56,
-    motionBlurMaxPixels: 18,
+    motionBlurStrength: 0.6,
+    motionBlurMaxPixels: 32,
     volumetricEnabled: false
   }),
   recording: Object.freeze({
@@ -3366,8 +3475,8 @@ var PRESETS2 = Object.freeze({
     fxaaEnabled: true,
     volumetricEnabled: true,
     motionBlurEnabled: true,
-    motionBlurStrength: 0.5,
-    motionBlurMaxPixels: 16,
+    motionBlurStrength: 0.6,
+    motionBlurMaxPixels: 32,
     surfaceWarmth: 0.2,
     shadowDistance: 30,
     shadowSoftness: 4

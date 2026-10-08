@@ -1061,8 +1061,8 @@ try {
     assert.ok(row.lights <= 6);
     assert.equal(row.lights, row.brakeTargets);
     // The filtered sun aperture adds one reusable target; configured shaft
-    // buffers now remain resident through occlusion instead of being churned.
-    assert.ok((row.resources?.live ?? 0) <= 10);
+    // buffers remain resident through occlusion; car velocity adds one target.
+    assert.ok((row.resources?.live ?? 0) <= 11);
     if (row.preset === "vanilla")
       assert.equal(row.skies + row.lights + row.brakeTargets, 0);
   }

@@ -8,7 +8,7 @@ import { BLOOM_FRAGMENT, BLOOM_BLUR_FRAGMENT } from "../shaders/bloom.js";
 import { GRADE_FRAGMENT } from "../shaders/grade.js";
 import { FINISH_FRAGMENT } from "../shaders/finish.js";
 import { RenderState, TargetPool } from "./render-targets.js";
-import { isReplayGhost } from "../materials.js";
+import { ObjectMotion } from "./object-motion.js";
 const DEBUG_VIEWS = [
   "final",
   "depth",
@@ -54,65 +54,17 @@ export class PostProcess {
     this.motionPreviousWorld = new three.Matrix4();
     this.motionPreviousProjection = new three.Matrix4();
     this.motionPreviousCamera = null;
+    this.motionScene = null;
     this.motionPreviousAt = 0;
     this.motionFrameValid = false;
-    this.motionScene = null;
-    this.motionCars = [];
-    this.motionFocus = new three.Vector4(0.5, 0.3, 0.12, 0.16);
-    this.motionFocusWorld = new three.Vector3();
-    this.motionFocusView = new three.Vector3();
-    this.motionFocusProjected = new three.Vector3();
-    this.motionFocusScale = new three.Vector3();
-    this.motionCameraPosition = new three.Vector3();
+    this.objectMotion = new ObjectMotion(three);
+    this.motionExposureScale = 1;
   }
   prepareCameraMotion(scene, camera) {
     camera.updateMatrixWorld?.();
     if (this.motionScene !== scene) {
       this.motionScene = scene;
       this.motionPreviousCamera = null;
-      this.motionCars.length = 0;
-      scene.traverse((mesh) => {
-        if (!mesh.isMesh || mesh.userData?.polyShadeOwned) return;
-        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-        if (materials.some((material) => material?.name === "BrakeLight" &&
-          !material.transparent && (material.opacity ?? 1) >= 0.98 &&
-          !isReplayGhost(mesh, material))) this.motionCars.push(mesh);
-      });
-    }
-    this.motionFocus.set(0.5, 0.3, 0.12, 0.16);
-    if (this.motionCars.length) {
-      camera.getWorldPosition(this.motionCameraPosition);
-      let nearest = null, nearestDistance = Infinity;
-      for (const mesh of this.motionCars) {
-        if (!mesh.visible) continue;
-        mesh.getWorldPosition(this.motionFocusWorld);
-        const distance = this.motionFocusWorld.distanceToSquared(this.motionCameraPosition);
-        if (distance < nearestDistance) { nearest = mesh; nearestDistance = distance; }
-      }
-      if (nearest) {
-        const geometry = nearest.geometry;
-        if (!geometry.boundingSphere) geometry.computeBoundingSphere?.();
-        const sphere = geometry.boundingSphere;
-        if (sphere) {
-          this.motionFocusWorld.copy(sphere.center).applyMatrix4(nearest.matrixWorld);
-          this.motionFocusView.copy(this.motionFocusWorld).applyMatrix4(camera.matrixWorldInverse);
-          const depth = -this.motionFocusView.z;
-          this.motionFocusProjected.copy(this.motionFocusWorld).project(camera);
-          if (depth > 0.01 && Math.abs(this.motionFocusProjected.x) < 1.5 &&
-            Math.abs(this.motionFocusProjected.y) < 1.5) {
-            nearest.getWorldScale(this.motionFocusScale);
-            const worldRadius = sphere.radius * Math.max(
-              this.motionFocusScale.x, this.motionFocusScale.y, this.motionFocusScale.z);
-            const radius = worldRadius * Math.abs(camera.projectionMatrix.elements[5]) / (2 * depth);
-            this.motionFocus.set(
-              this.motionFocusProjected.x * 0.5 + 0.5,
-              this.motionFocusProjected.y * 0.5 + 0.5,
-              Math.max(0.075, Math.min(0.18, radius * 0.9)),
-              Math.max(0.10, Math.min(0.22, radius * 1.1)),
-            );
-          }
-        }
-      }
     }
     const current = this.motionCurrentViewProjection.multiplyMatrices(
       camera.projectionMatrix,
@@ -130,12 +82,14 @@ export class PostProcess {
       const dz = world[14] - oldWorld[14];
       const forwardDot = world[8] * oldWorld[8] +
         world[9] * oldWorld[9] + world[10] * oldWorld[10];
-      valid = dx * dx + dy * dy + dz * dz < 64 && forwardDot > 0.5;
+      const travelLimit = Math.max(8, (now - this.motionPreviousAt) * 0.8);
+      valid = dx * dx + dy * dy + dz * dz < travelLimit * travelLimit && forwardDot > 0.5;
       const projection = camera.projectionMatrix.elements;
       const oldProjection = this.motionPreviousProjection.elements;
       for (let i = 0; valid && i < 16; i++)
         if (Math.abs(projection[i] - oldProjection[i]) > 0.001) valid = false;
     }
+    this.motionExposureScale = (1000 / 60) / Math.max(4, now - this.motionPreviousAt);
     this.motionFrameValid = valid;
     this.motionBlurViewProjection.copy(valid ? this.motionLastViewProjection : current);
     this.motionLastViewProjection.copy(current);
@@ -213,6 +167,7 @@ export class PostProcess {
     this.passOrder.length = 0;
     if (this.disabled || !s.postEnabled || s.postQuality === "off") {
       this.pool.dispose();
+      this.objectMotion.dispose();
       this.sunVisibility.dispose();
       this.motionPreviousCamera = null;
       this.active = { post: false };
@@ -273,6 +228,25 @@ export class PostProcess {
       const motionTexel = (this.motionTexel ??= new this.three.Vector2()).set(1 / w, 1 / h);
       const motionBlurActive = s.motionBlurEnabled && s.motionBlurStrength > 0 &&
         depth && motionFrameValid;
+      // Scene rendering has updated the cars' world matrices. Record them even
+      // on reset frames so a camera switch cannot invent object velocity.
+      if (s.motionBlurEnabled) this.objectMotion.update(scene, this.motionBlurViewProjection, motionFrameValid);
+      else if (this.objectMotion.entries.length) this.objectMotion.dispose();
+      let objectVelocity = sceneTarget.texture;
+      if (s.motionBlurEnabled && depth && this.objectMotion.entries.length) {
+        const target = this.pool.get("object-motion", w, h);
+        retain.add("object-motion");
+        target.texture.minFilter = this.three.NearestFilter;
+        target.texture.magFilter = this.three.NearestFilter;
+        if (motionBlurActive) {
+          const renderMotion = () => this.objectMotion.render(r, camera, target, depth, draw);
+          this.guard.pass = "object-motion";
+          if (this.profiler) this.profiler.measure("object-motion", renderMotion);
+          else renderMotion();
+        }
+        objectVelocity = target.texture;
+        this.passOrder.push("object-motion");
+      }
       const depthValues = {
         tDepth: depth,
         inverseProjection: camera.projectionMatrixInverse,
@@ -564,7 +538,10 @@ export class PostProcess {
         tRays: rays,
         rayTexel,
         motionTexel,
-        motionFocus: this.motionFocus,
+        tObjectMotion: objectVelocity,
+        objectMotionActive: motionBlurActive && this.objectMotion.entries.length ? 1 : 0,
+        motionExposureScale: this.motionExposureScale,
+        motionVelocityRange: this.objectMotion.velocityRange,
         previousViewProjection: this.motionBlurViewProjection,
         motionBlurStrength: motionBlurActive ? s.motionBlurStrength : 0,
         motionBlurMaxPixels: s.motionBlurMaxPixels,
@@ -685,6 +662,7 @@ export class PostProcess {
   }
   dispose() {
     this.sunVisibility.dispose();
+    this.objectMotion.dispose();
     this.pool.dispose();
     for (const material of this.materials.values()) material.dispose();
     this.materials.clear();

@@ -4,7 +4,9 @@ import { VOLUME_COMPOSITE } from "./volumetric.js";
 export const GRADE_FRAGMENT = `varying vec2 vUv;${DEPTH_HELPERS}${ATMOSPHERE_HELPERS}${FLARE_HELPERS}${VOLUME_COMPOSITE}
 uniform sampler2D tInput,tAO,tBloom,tRays;
 uniform vec2 rayTexel,motionTexel;
-uniform vec4 motionFocus;
+uniform sampler2D tObjectMotion;
+uniform float objectMotionActive,motionExposureScale;
+uniform vec2 motionVelocityRange;
 uniform mat4 previousViewProjection;
 uniform float motionBlurStrength,motionBlurMaxPixels;
 uniform float aoActive,bloomStrength,rayStrength,atmosphereActive,gradeActive,exposure,contrast,saturation,vibrance,temperature,tint,shadowLift,highlightCompression,blackLevel,whiteLevel,vignetteStrength,vignetteSoftness;
@@ -15,31 +17,37 @@ vec3 cameraMotionBlur(vec2 uv,vec3 center){
  if(motionBlurStrength<=0.0)return center;
  float d=texture2D(tDepth,uv).r;
  vec4 world=cameraWorld*vec4(viewPosition(uv),1.0);
+ // The sky is infinitely far away: only camera rotation moves it on screen.
+ if(d>=0.9999999)world=vec4(world.xyz-cameraWorld[3].xyz,0.0);
  vec4 previous=previousViewProjection*world;
  if(previous.w<=0.00001)return center;
- vec2 previousUv=previous.xy/previous.w*0.5+0.5;
- vec2 velocity=uv-previousUv;
+ vec2 velocity=uv-(previous.xy/previous.w*0.5+0.5);
+ vec4 objectMotion=vec4(0.0);
+ if(objectMotionActive>0.5)objectMotion=texture2D(tObjectMotion,uv);
+ if(objectMotion.a>0.5)velocity=(objectMotion.rg*2.0-1.0)*motionVelocityRange;
+ // Strength is shutter duration at 60 Hz, not a blend with a sharp image.
+ // Normalize frame spacing so a slow frame does not create a longer exposure.
+ velocity*=motionBlurStrength*motionExposureScale;
  float pixels=length(velocity/motionTexel);
- if(any(lessThan(previousUv,vec2(0.0)))||any(greaterThan(previousUv,vec2(1.0))))return center;
- float centerDepth=linearDepth(d),tolerance=max(0.75,centerDepth*0.08);
- // Camera translation makes nearby objects appear to move fastest. Reduce
- // that parallax and build the trail on the more distant racing environment.
- velocity*=mix(0.7,2.2,smoothstep(6.0,45.0,centerDepth));
- pixels=length(velocity/motionTexel);
- if(pixels<0.5)return center;
+ if(!(pixels>=0.5))return center;
  velocity*=min(1.0,motionBlurMaxPixels/max(pixels,0.0001));
- vec3 sum=center*0.28;float total=0.28;
- for(int i=0;i<4;i++){
-  float along=(float(i)+0.5)*0.25;
-  vec2 sampleUv=uv-velocity*along;
+ float centerDepth=linearDepth(d);
+ float tolerance=max(0.15,max(centerDepth*0.05,fwidth(centerDepth)*2.0));
+ vec3 sum=center;float total=1.0;
+ // Centered shutter with eight taps avoids a hard sharp core and long ghost trail.
+ for(int i=0;i<8;i++){
+  float along=(float(i)+0.5)/8.0-0.5;
+  vec2 sampleUv=uv+velocity*along;
   if(any(lessThan(sampleUv,vec2(0.0)))||any(greaterThan(sampleUv,vec2(1.0))))continue;
   float sampleDepth=linearDepth(texture2D(tDepth,sampleUv).r);
   if(abs(sampleDepth-centerDepth)>tolerance)continue;
-  sum+=texture2D(tInput,sampleUv).rgb*0.18;total+=0.18;
+  if(objectMotionActive>0.5){
+   float sampleObject=texture2D(tObjectMotion,sampleUv).a;
+   if(abs(sampleObject-objectMotion.a)>0.5)continue;
+  }
+  sum+=texture2D(tInput,sampleUv).rgb;total+=1.0;
  }
- vec2 focusDelta=(uv-motionFocus.xy)/max(motionFocus.zw,vec2(0.001));
- float carProtection=1.0-smoothstep(0.78,1.16,length(focusDelta));
- return mix(center,sum/max(total,0.0001),clamp(motionBlurStrength*(1.0-carProtection),0.0,0.8));
+ return mix(center,sum/total,smoothstep(0.5,1.5,pixels));
 }
 void main(){
  vec3 sceneColor=texture2D(tInput,vUv).rgb;

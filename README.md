@@ -18,7 +18,7 @@ For automatic future updates, use the [main install link](https://cdn.polymodloa
 
 ## What's changed in 0.3.2
 
-Added depth-aware camera motion blur with an enable switch, strength and pixel limit. It is enabled subtly in the enhanced presets, skipped during camera cuts and capped to protect track readability. Vanilla and Lite keep it off. Motion blur is integrated into the existing colour pass and adds no render target.
+Reworked motion blur to use actual movement relative to the camera, including per-part car velocity. A steady car in a follow camera stays sharp; passing scenery or a moving car in a fixed camera blurs. Shutter exposure is consistent across frame rates, with smoother sampling and depth-aware edges. Vanilla and Lite keep it off. This updates 0.3.2 without a new version.
 
 See the [0.3.2 implementation notes](docs/0.3.2.md).
 
@@ -56,7 +56,7 @@ All enhanced presets use 1x scene resolution by default. Manual render scale and
 
 **F7** toggles PolyShade. The panel exposes sky, sun direction, environment, shadows, materials, atmosphere, rays, volumetric strength/density/decay/samples/distance, colour grading and quality. Vanilla, Disable and F7 restore original materials, surface uniforms, lighting, background, environment, shadow settings and renderer state. Track changes dispose owned effects.
 
-Camera motion blur is depth aware and capped by a pixel limit. It keeps the player's car near the focus point sharp and puts stronger trails on the distant scenery. Adjust its toggle, strength and maximum trail length under Post Processing.
+Motion blur tracks screen movement, with depth-aware boundaries and a pixel limit. Under Post Processing, the shutter slider controls exposure duration: 0.6 means 10 ms (216? at 60 Hz). The default trail limit is 32 pixels. Select a preset again to apply the new defaults if you have saved overrides.
 
 A single sun direction drives the procedural disc, shadows, sky glow, cloud illumination, generated environment, aerial perspective and shafts. Clouds use broad smooth shapes. The environment is generated/cached from that sky; no photographic HDRI or external art asset is loaded.
 
