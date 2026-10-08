@@ -4,21 +4,23 @@ A graphics mod for **PolyTrack 0.6.3**, loaded through PolyModLoader. Warm direc
 
 ## Install
 
-Install [PolyModLoader](https://polymodloader.com/), then paste this **versioned 0.3.3 install link** into its mod manager:
+Install [PolyModLoader](https://polymodloader.com/), then paste this **0.3.3 install link** into its mod manager:
 
 ```text
-https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.3.3/
+https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/
 ```
 
-[Install PolyShade 0.3.3](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.3.3/)
+[Install PolyShade 0.3.3](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/)
 
 Select **0.3.3 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.3.3**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
 
-For automatic future updates, use the [main install link](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/). PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.3.3/version.json` and `0.3.3/main.mod.js`; historical bundles are preserved.
+This one-time 0.3.3 update is served from the [main install link](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/); the immutable `v0.3.3` tag continues to point at its original bundle. PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.3.3/version.json` and `0.3.3/main.mod.js`; historical bundles are preserved.
 
 ## What's changed in 0.3.3
 
 Shadow receivers now reject invalid or out-of-range light projections before sampling a shadow map, and native cascade fades avoid division by zero. Native shadow callbacks and material handles remain connected to the game. Contact-shadow searches use an incremental spatial index instead of raycasting every track instance.
+
+The compact panel now has a separate close button that hides it completely. Press F7 to bring the panel back; while it is visible, F7 continues to toggle PolyShade.
 
 Exposure, blur and other uniform controls retain linked materials; hidden native cascade shaders are warmed, and auxiliary render scenes no longer discard the main scene's GPU resources. Full-resolution shafts and the existing visual presets are preserved.
 

@@ -178,6 +178,14 @@ function makePanel() {
   );
 }
 
+function handlePanelHotkey() {
+  if (panel?.isHidden()) {
+    panel.show();
+    return;
+  }
+  toggleEnabled(!settings.enabled);
+}
+
 function restoreAndDispose() {
   controller?.restore();
   removeRenderHook?.();
@@ -220,17 +228,13 @@ export const polyMod = Object.assign(new PolyShadeMod(), {
           ? `Enhancing the live scene; ${controller.modifiedMaterials} mesh materials tuned.`
           : "Renderer hook installed; waiting for a rendered scene.",
       );
-    removeHotkey ??= installHotkey(document, () =>
-      toggleEnabled(!settings.enabled),
-    );
+    removeHotkey ??= installHotkey(document, handlePanelHotkey);
   },
   onGameLoad() {
     if (!settings) settings = loadSettings(getStorage());
     makePanel();
     if (!removeHotkey)
-      removeHotkey = installHotkey(document, () =>
-        toggleEnabled(!settings.enabled),
-      );
+      removeHotkey = installHotkey(document, handlePanelHotkey);
     if (!controller) attachRenderer();
     unloadListener ??= restoreAndDispose;
     globalThis.addEventListener?.("pagehide", unloadListener, { once: true });

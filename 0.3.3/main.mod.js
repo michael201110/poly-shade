@@ -4826,7 +4826,18 @@ function mountPanel(document2, callbacks, initialSettings) {
     panel2.dataset.collapsed = panel2.dataset.collapsed !== "true" ? "true" : "false";
     collapse.textContent = panel2.dataset.collapsed === "true" ? "Show" : "Hide";
   });
-  header.appendChild(collapse);
+  const dismiss = createElement(document2, "button", "", "\xD7");
+  dismiss.type = "button";
+  dismiss.setAttribute("aria-label", "Completely hide PolyShade panel");
+  dismiss.title = "Completely hide panel (F7 to show it again)";
+  dismiss.addEventListener("click", () => {
+    panel2.hidden = true;
+  });
+  const headerActions = createElement(document2, "div");
+  headerActions.style.display = "flex";
+  headerActions.style.gap = "6px";
+  headerActions.append(collapse, dismiss);
+  header.appendChild(headerActions);
   panel2.appendChild(header);
   const content = createElement(document2, "div", "polyshade-content");
   const presetSelect = makeSelect(
@@ -5004,6 +5015,12 @@ ${r.evidence.join(", ")}`
   return {
     setStatus(text) {
       status.textContent = text;
+    },
+    isHidden() {
+      return panel2.hidden;
+    },
+    show() {
+      panel2.hidden = false;
     },
     setSettings(settings2) {
       presetSelect.value = settings2.preset;
@@ -5341,6 +5358,13 @@ function makePanel() {
     }
   );
 }
+function handlePanelHotkey() {
+  if (panel?.isHidden()) {
+    panel.show();
+    return;
+  }
+  toggleEnabled(!settings.enabled);
+}
 function restoreAndDispose() {
   controller?.restore();
   removeRenderHook?.();
@@ -5379,19 +5403,13 @@ var polyMod = Object.assign(new PolyShadeMod(), {
       panel?.setStatus(
         controller.activeScene ? `Enhancing the live scene; ${controller.modifiedMaterials} mesh materials tuned.` : "Renderer hook installed; waiting for a rendered scene."
       );
-    removeHotkey ??= installHotkey(
-      document,
-      () => toggleEnabled(!settings.enabled)
-    );
+    removeHotkey ??= installHotkey(document, handlePanelHotkey);
   },
   onGameLoad() {
     if (!settings) settings = loadSettings(getStorage());
     makePanel();
     if (!removeHotkey)
-      removeHotkey = installHotkey(
-        document,
-        () => toggleEnabled(!settings.enabled)
-      );
+      removeHotkey = installHotkey(document, handlePanelHotkey);
     if (!controller) attachRenderer();
     unloadListener ??= restoreAndDispose;
     globalThis.addEventListener?.("pagehide", unloadListener, { once: true });

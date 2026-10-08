@@ -144,7 +144,18 @@ export function mountPanel(document, callbacks, initialSettings) {
       panel.dataset.collapsed !== "true" ? "true" : "false";
     collapse.textContent = panel.dataset.collapsed === "true" ? "Show" : "Hide";
   });
-  header.appendChild(collapse);
+  const dismiss = createElement(document, "button", "", "×");
+  dismiss.type = "button";
+  dismiss.setAttribute("aria-label", "Completely hide PolyShade panel");
+  dismiss.title = "Completely hide panel (F7 to show it again)";
+  dismiss.addEventListener("click", () => {
+    panel.hidden = true;
+  });
+  const headerActions = createElement(document, "div");
+  headerActions.style.display = "flex";
+  headerActions.style.gap = "6px";
+  headerActions.append(collapse, dismiss);
+  header.appendChild(headerActions);
   panel.appendChild(header);
 
   const content = createElement(document, "div", "polyshade-content");
@@ -326,6 +337,12 @@ export function mountPanel(document, callbacks, initialSettings) {
   return {
     setStatus(text) {
       status.textContent = text;
+    },
+    isHidden() {
+      return panel.hidden;
+    },
+    show() {
+      panel.hidden = false;
     },
     setSettings(settings) {
       presetSelect.value = settings.preset;
