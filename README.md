@@ -56,7 +56,7 @@ All enhanced presets use 1x scene resolution by default. Manual render scale and
 
 **F7** toggles PolyShade. The panel exposes sky, sun direction, environment, shadows, materials, atmosphere, rays, volumetric strength/density/decay/samples/distance, colour grading and quality. Vanilla, Disable and F7 restore original materials, surface uniforms, lighting, background, environment, shadow settings and renderer state. Track changes dispose owned effects.
 
-Camera motion blur is depth aware and capped by a pixel limit. Adjust its toggle, strength and maximum trail length under Post Processing. It follows camera movement; moving objects do not receive individual object velocity blur.
+Camera motion blur is depth aware and capped by a pixel limit. It keeps the player's car near the focus point sharp and puts stronger trails on the distant scenery. Adjust its toggle, strength and maximum trail length under Post Processing.
 
 A single sun direction drives the procedural disc, shadows, sky glow, cloud illumination, generated environment, aerial perspective and shafts. Clouds use broad smooth shapes. The environment is generated/cached from that sky; no photographic HDRI or external art asset is loaded.
 

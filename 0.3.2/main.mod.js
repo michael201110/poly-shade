@@ -1613,6 +1613,7 @@ void main(){vec3 c=texture2D(tInput,vUv+stepUv*vec2(-1,-1)).rgb+texture2D(tInput
 var GRADE_FRAGMENT = `varying vec2 vUv;${DEPTH_HELPERS}${ATMOSPHERE_HELPERS}${FLARE_HELPERS}${VOLUME_COMPOSITE}
 uniform sampler2D tInput,tAO,tBloom,tRays;
 uniform vec2 rayTexel,motionTexel;
+uniform vec4 motionFocus;
 uniform mat4 previousViewProjection;
 uniform float motionBlurStrength,motionBlurMaxPixels;
 uniform float aoActive,bloomStrength,rayStrength,atmosphereActive,gradeActive,exposure,contrast,saturation,vibrance,temperature,tint,shadowLift,highlightCompression,blackLevel,whiteLevel,vignetteStrength,vignetteSoftness;
@@ -1628,9 +1629,14 @@ vec3 cameraMotionBlur(vec2 uv,vec3 center){
  vec2 previousUv=previous.xy/previous.w*0.5+0.5;
  vec2 velocity=uv-previousUv;
  float pixels=length(velocity/motionTexel);
- if(pixels<0.5||any(lessThan(previousUv,vec2(0.0)))||any(greaterThan(previousUv,vec2(1.0))))return center;
- velocity*=min(1.0,motionBlurMaxPixels/max(pixels,0.0001));
+ if(any(lessThan(previousUv,vec2(0.0)))||any(greaterThan(previousUv,vec2(1.0))))return center;
  float centerDepth=linearDepth(d),tolerance=max(0.75,centerDepth*0.08);
+ // Camera translation makes nearby objects appear to move fastest. Reduce
+ // that parallax and build the trail on the more distant racing environment.
+ velocity*=mix(0.7,2.2,smoothstep(6.0,45.0,centerDepth));
+ pixels=length(velocity/motionTexel);
+ if(pixels<0.5)return center;
+ velocity*=min(1.0,motionBlurMaxPixels/max(pixels,0.0001));
  vec3 sum=center*0.28;float total=0.28;
  for(int i=0;i<4;i++){
   float along=(float(i)+0.5)*0.25;
@@ -1640,7 +1646,9 @@ vec3 cameraMotionBlur(vec2 uv,vec3 center){
   if(abs(sampleDepth-centerDepth)>tolerance)continue;
   sum+=texture2D(tInput,sampleUv).rgb*0.18;total+=0.18;
  }
- return mix(center,sum/max(total,0.0001),clamp(motionBlurStrength,0.0,0.8));
+ vec2 focusDelta=(uv-motionFocus.xy)/max(motionFocus.zw,vec2(0.001));
+ float carProtection=1.0-smoothstep(0.78,1.16,length(focusDelta));
+ return mix(center,sum/max(total,0.0001),clamp(motionBlurStrength*(1.0-carProtection),0.0,0.8));
 }
 void main(){
  vec3 sceneColor=texture2D(tInput,vUv).rgb;
@@ -1862,9 +1870,67 @@ var PostProcess = class {
     this.motionPreviousCamera = null;
     this.motionPreviousAt = 0;
     this.motionFrameValid = false;
+    this.motionScene = null;
+    this.motionCars = [];
+    this.motionFocus = new three.Vector4(0.5, 0.3, 0.12, 0.16);
+    this.motionFocusWorld = new three.Vector3();
+    this.motionFocusView = new three.Vector3();
+    this.motionFocusProjected = new three.Vector3();
+    this.motionFocusScale = new three.Vector3();
+    this.motionCameraPosition = new three.Vector3();
   }
-  prepareCameraMotion(camera) {
+  prepareCameraMotion(scene, camera) {
     camera.updateMatrixWorld?.();
+    if (this.motionScene !== scene) {
+      this.motionScene = scene;
+      this.motionPreviousCamera = null;
+      this.motionCars.length = 0;
+      scene.traverse((mesh) => {
+        if (!mesh.isMesh || mesh.userData?.polyShadeOwned) return;
+        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        if (materials.some((material) => material?.name === "BrakeLight" && !material.transparent && (material.opacity ?? 1) >= 0.98 && !isReplayGhost(mesh, material))) this.motionCars.push(mesh);
+      });
+    }
+    this.motionFocus.set(0.5, 0.3, 0.12, 0.16);
+    if (this.motionCars.length) {
+      camera.getWorldPosition(this.motionCameraPosition);
+      let nearest = null, nearestDistance = Infinity;
+      for (const mesh of this.motionCars) {
+        if (!mesh.visible) continue;
+        mesh.getWorldPosition(this.motionFocusWorld);
+        const distance = this.motionFocusWorld.distanceToSquared(this.motionCameraPosition);
+        if (distance < nearestDistance) {
+          nearest = mesh;
+          nearestDistance = distance;
+        }
+      }
+      if (nearest) {
+        const geometry = nearest.geometry;
+        if (!geometry.boundingSphere) geometry.computeBoundingSphere?.();
+        const sphere = geometry.boundingSphere;
+        if (sphere) {
+          this.motionFocusWorld.copy(sphere.center).applyMatrix4(nearest.matrixWorld);
+          this.motionFocusView.copy(this.motionFocusWorld).applyMatrix4(camera.matrixWorldInverse);
+          const depth = -this.motionFocusView.z;
+          this.motionFocusProjected.copy(this.motionFocusWorld).project(camera);
+          if (depth > 0.01 && Math.abs(this.motionFocusProjected.x) < 1.5 && Math.abs(this.motionFocusProjected.y) < 1.5) {
+            nearest.getWorldScale(this.motionFocusScale);
+            const worldRadius = sphere.radius * Math.max(
+              this.motionFocusScale.x,
+              this.motionFocusScale.y,
+              this.motionFocusScale.z
+            );
+            const radius = worldRadius * Math.abs(camera.projectionMatrix.elements[5]) / (2 * depth);
+            this.motionFocus.set(
+              this.motionFocusProjected.x * 0.5 + 0.5,
+              this.motionFocusProjected.y * 0.5 + 0.5,
+              Math.max(0.075, Math.min(0.18, radius * 0.9)),
+              Math.max(0.1, Math.min(0.22, radius * 1.1))
+            );
+          }
+        }
+      }
+    }
     const current = this.motionCurrentViewProjection.multiplyMatrices(
       camera.projectionMatrix,
       camera.matrixWorldInverse
@@ -1975,7 +2041,7 @@ ${fragment}`,
       this.motionPreviousCamera = null;
       return draw(scene, camera);
     }
-    const motionFrameValid = this.prepareCameraMotion(camera);
+    const motionFrameValid = this.prepareCameraMotion(scene, camera);
     this.state.capture(r);
     this.passOrder.length = 0;
     try {
@@ -2255,6 +2321,7 @@ ${fragment}`,
         tRays: rays,
         rayTexel,
         motionTexel,
+        motionFocus: this.motionFocus,
         previousViewProjection: this.motionBlurViewProjection,
         motionBlurStrength: motionBlurActive ? s.motionBlurStrength : 0,
         motionBlurMaxPixels: s.motionBlurMaxPixels,
@@ -3161,8 +3228,8 @@ var PRESETS2 = Object.freeze({
     aoQuality: "medium",
     aoStrength: 0.38,
     motionBlurEnabled: true,
-    motionBlurStrength: 0.14,
-    motionBlurMaxPixels: 7,
+    motionBlurStrength: 0.46,
+    motionBlurMaxPixels: 13,
     bloomStrength: 0.025,
     lensFlareStrength: 0.14,
     flareGhostStrength: 0.25,
@@ -3202,8 +3269,8 @@ var PRESETS2 = Object.freeze({
     aoQuality: "medium",
     aoStrength: 0.38,
     motionBlurEnabled: true,
-    motionBlurStrength: 0.12,
-    motionBlurMaxPixels: 7,
+    motionBlurStrength: 0.42,
+    motionBlurMaxPixels: 12,
     bloomEnabled: false,
     sunRaysEnabled: false,
     lensFlareEnabled: false,
@@ -3263,8 +3330,8 @@ var PRESETS2 = Object.freeze({
     flareIridescence: 0.65,
     flareStreakStrength: 0.12,
     motionBlurEnabled: true,
-    motionBlurStrength: 0.22,
-    motionBlurMaxPixels: 8,
+    motionBlurStrength: 0.56,
+    motionBlurMaxPixels: 18,
     volumetricEnabled: false
   }),
   recording: Object.freeze({
@@ -3299,8 +3366,8 @@ var PRESETS2 = Object.freeze({
     fxaaEnabled: true,
     volumetricEnabled: true,
     motionBlurEnabled: true,
-    motionBlurStrength: 0.2,
-    motionBlurMaxPixels: 8,
+    motionBlurStrength: 0.5,
+    motionBlurMaxPixels: 16,
     surfaceWarmth: 0.2,
     shadowDistance: 30,
     shadowSoftness: 4

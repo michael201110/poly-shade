@@ -8,6 +8,7 @@ import { BLOOM_FRAGMENT, BLOOM_BLUR_FRAGMENT } from "../shaders/bloom.js";
 import { GRADE_FRAGMENT } from "../shaders/grade.js";
 import { FINISH_FRAGMENT } from "../shaders/finish.js";
 import { RenderState, TargetPool } from "./render-targets.js";
+import { isReplayGhost } from "../materials.js";
 const DEBUG_VIEWS = [
   "final",
   "depth",
@@ -55,9 +56,64 @@ export class PostProcess {
     this.motionPreviousCamera = null;
     this.motionPreviousAt = 0;
     this.motionFrameValid = false;
+    this.motionScene = null;
+    this.motionCars = [];
+    this.motionFocus = new three.Vector4(0.5, 0.3, 0.12, 0.16);
+    this.motionFocusWorld = new three.Vector3();
+    this.motionFocusView = new three.Vector3();
+    this.motionFocusProjected = new three.Vector3();
+    this.motionFocusScale = new three.Vector3();
+    this.motionCameraPosition = new three.Vector3();
   }
-  prepareCameraMotion(camera) {
+  prepareCameraMotion(scene, camera) {
     camera.updateMatrixWorld?.();
+    if (this.motionScene !== scene) {
+      this.motionScene = scene;
+      this.motionPreviousCamera = null;
+      this.motionCars.length = 0;
+      scene.traverse((mesh) => {
+        if (!mesh.isMesh || mesh.userData?.polyShadeOwned) return;
+        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        if (materials.some((material) => material?.name === "BrakeLight" &&
+          !material.transparent && (material.opacity ?? 1) >= 0.98 &&
+          !isReplayGhost(mesh, material))) this.motionCars.push(mesh);
+      });
+    }
+    this.motionFocus.set(0.5, 0.3, 0.12, 0.16);
+    if (this.motionCars.length) {
+      camera.getWorldPosition(this.motionCameraPosition);
+      let nearest = null, nearestDistance = Infinity;
+      for (const mesh of this.motionCars) {
+        if (!mesh.visible) continue;
+        mesh.getWorldPosition(this.motionFocusWorld);
+        const distance = this.motionFocusWorld.distanceToSquared(this.motionCameraPosition);
+        if (distance < nearestDistance) { nearest = mesh; nearestDistance = distance; }
+      }
+      if (nearest) {
+        const geometry = nearest.geometry;
+        if (!geometry.boundingSphere) geometry.computeBoundingSphere?.();
+        const sphere = geometry.boundingSphere;
+        if (sphere) {
+          this.motionFocusWorld.copy(sphere.center).applyMatrix4(nearest.matrixWorld);
+          this.motionFocusView.copy(this.motionFocusWorld).applyMatrix4(camera.matrixWorldInverse);
+          const depth = -this.motionFocusView.z;
+          this.motionFocusProjected.copy(this.motionFocusWorld).project(camera);
+          if (depth > 0.01 && Math.abs(this.motionFocusProjected.x) < 1.5 &&
+            Math.abs(this.motionFocusProjected.y) < 1.5) {
+            nearest.getWorldScale(this.motionFocusScale);
+            const worldRadius = sphere.radius * Math.max(
+              this.motionFocusScale.x, this.motionFocusScale.y, this.motionFocusScale.z);
+            const radius = worldRadius * Math.abs(camera.projectionMatrix.elements[5]) / (2 * depth);
+            this.motionFocus.set(
+              this.motionFocusProjected.x * 0.5 + 0.5,
+              this.motionFocusProjected.y * 0.5 + 0.5,
+              Math.max(0.075, Math.min(0.18, radius * 0.9)),
+              Math.max(0.10, Math.min(0.22, radius * 1.1)),
+            );
+          }
+        }
+      }
+    }
     const current = this.motionCurrentViewProjection.multiplyMatrices(
       camera.projectionMatrix,
       camera.matrixWorldInverse,
@@ -166,7 +222,7 @@ export class PostProcess {
       this.motionPreviousCamera = null;
       return draw(scene, camera);
     }
-    const motionFrameValid = this.prepareCameraMotion(camera);
+    const motionFrameValid = this.prepareCameraMotion(scene, camera);
     this.state.capture(r);
     this.passOrder.length = 0;
     try {
@@ -508,6 +564,7 @@ export class PostProcess {
         tRays: rays,
         rayTexel,
         motionTexel,
+        motionFocus: this.motionFocus,
         previousViewProjection: this.motionBlurViewProjection,
         motionBlurStrength: motionBlurActive ? s.motionBlurStrength : 0,
         motionBlurMaxPixels: s.motionBlurMaxPixels,

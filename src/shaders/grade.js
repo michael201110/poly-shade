@@ -4,6 +4,7 @@ import { VOLUME_COMPOSITE } from "./volumetric.js";
 export const GRADE_FRAGMENT = `varying vec2 vUv;${DEPTH_HELPERS}${ATMOSPHERE_HELPERS}${FLARE_HELPERS}${VOLUME_COMPOSITE}
 uniform sampler2D tInput,tAO,tBloom,tRays;
 uniform vec2 rayTexel,motionTexel;
+uniform vec4 motionFocus;
 uniform mat4 previousViewProjection;
 uniform float motionBlurStrength,motionBlurMaxPixels;
 uniform float aoActive,bloomStrength,rayStrength,atmosphereActive,gradeActive,exposure,contrast,saturation,vibrance,temperature,tint,shadowLift,highlightCompression,blackLevel,whiteLevel,vignetteStrength,vignetteSoftness;
@@ -19,9 +20,14 @@ vec3 cameraMotionBlur(vec2 uv,vec3 center){
  vec2 previousUv=previous.xy/previous.w*0.5+0.5;
  vec2 velocity=uv-previousUv;
  float pixels=length(velocity/motionTexel);
- if(pixels<0.5||any(lessThan(previousUv,vec2(0.0)))||any(greaterThan(previousUv,vec2(1.0))))return center;
- velocity*=min(1.0,motionBlurMaxPixels/max(pixels,0.0001));
+ if(any(lessThan(previousUv,vec2(0.0)))||any(greaterThan(previousUv,vec2(1.0))))return center;
  float centerDepth=linearDepth(d),tolerance=max(0.75,centerDepth*0.08);
+ // Camera translation makes nearby objects appear to move fastest. Reduce
+ // that parallax and build the trail on the more distant racing environment.
+ velocity*=mix(0.7,2.2,smoothstep(6.0,45.0,centerDepth));
+ pixels=length(velocity/motionTexel);
+ if(pixels<0.5)return center;
+ velocity*=min(1.0,motionBlurMaxPixels/max(pixels,0.0001));
  vec3 sum=center*0.28;float total=0.28;
  for(int i=0;i<4;i++){
   float along=(float(i)+0.5)*0.25;
@@ -31,7 +37,9 @@ vec3 cameraMotionBlur(vec2 uv,vec3 center){
   if(abs(sampleDepth-centerDepth)>tolerance)continue;
   sum+=texture2D(tInput,sampleUv).rgb*0.18;total+=0.18;
  }
- return mix(center,sum/max(total,0.0001),clamp(motionBlurStrength,0.0,0.8));
+ vec2 focusDelta=(uv-motionFocus.xy)/max(motionFocus.zw,vec2(0.001));
+ float carProtection=1.0-smoothstep(0.78,1.16,length(focusDelta));
+ return mix(center,sum/max(total,0.0001),clamp(motionBlurStrength*(1.0-carProtection),0.0,0.8));
 }
 void main(){
  vec3 sceneColor=texture2D(tInput,vUv).rgb;
