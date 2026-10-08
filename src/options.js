@@ -34,6 +34,7 @@ export const OPTIONS = {
     ],
   },
   Shadows: {
+    carContactShadowEnabled: ["Car contact shadow", true],
     shadowQuality: [
       "Shadow quality",
       "medium",

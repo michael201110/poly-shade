@@ -33,6 +33,7 @@ export const PRESETS = Object.freeze({
     fogEnabled: false,
     fogStrength: 0.2,
     shadowQuality: "off",
+    carContactShadowEnabled: false,
     renderScale: 1,
     surfaceWarmth: 0.2,
     shadowDistance: 30,

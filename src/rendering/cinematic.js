@@ -1,4 +1,5 @@
 import { BrakeLights } from "./brake-lights.js";
+import { CarContactShadow } from "./car-contact-shadow.js";
 import { inspectRenderer } from "./capabilities.js";
 import { ProceduralSky, skyPalette } from "./sky.js";
 import { SkyEnvironment } from "./environment.js";
@@ -28,6 +29,8 @@ export class CinematicRenderer {
   attachScene(scene) {
     this.detachScene();
     this.brakeLights = new BrakeLights(this.three, scene);
+    if (this.three.CircleGeometry && this.three.Raycaster && this.three.ShaderMaterial)
+      this.carContactShadow = new CarContactShadow(this.three, scene);
     if (this.three.ShaderMaterial && this.three.SphereGeometry)
       this.sky = new ProceduralSky(this.three, scene);
     if (this.capabilities.features.environment)
@@ -41,6 +44,8 @@ export class CinematicRenderer {
     this.configureProfiler(settings);
     this.brakeLights?.scan(settings, camera, state);
     this.brakeLights?.update(settings);
+    this.carContactShadow?.scan(camera, settings);
+    this.carContactShadow?.update(settings, now, camera);
     this.palette = skyPalette(this.three, settings);
     this.sky?.update(settings, now);
     this.sky?.scan();
@@ -60,6 +65,7 @@ export class CinematicRenderer {
   frame(settings, now, camera) {
     if (this.brakeLights && camera) this.brakeLights.camera = camera;
     this.brakeLights?.update(settings);
+    this.carContactShadow?.update(settings, now, camera);
     if (this.sky && this.guard.failures.has("sky")) {
       this.sky.dispose();
       this.sky = null;
@@ -132,7 +138,9 @@ export class CinematicRenderer {
     this.warmup.clear();
     this.shadows.dispose();
     this.brakeLights?.dispose();
+    this.carContactShadow?.dispose();
     this.brakeLights = null;
+    this.carContactShadow = null;
     this.sky?.dispose();
     this.environment?.dispose();
     this.sky = null;

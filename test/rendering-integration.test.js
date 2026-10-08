@@ -13,8 +13,34 @@ import {
   updateShadowFocus,
 } from "../src/effects.js";
 import { PRESETS } from "../src/presets.js";
+import { CarContactShadow } from "../src/rendering/car-contact-shadow.js";
 
 const profile = PRESETS.cinematic;
+
+test("car contact shadow remains on the road independently of sun shadowing", () => {
+  const scene = new THREE.Scene();
+  const roadMaterial = new THREE.MeshStandardMaterial();
+  roadMaterial.name = "Road";
+  const road = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), roadMaterial);
+  road.rotation.x = -Math.PI / 2;
+  scene.add(road);
+  const brakeMaterial = new THREE.MeshStandardMaterial();
+  brakeMaterial.name = "BrakeLight";
+  const car = new THREE.Mesh(new THREE.BoxGeometry(1, 0.5, 1), brakeMaterial);
+  car.position.y = 0.5;
+  scene.add(car);
+  scene.updateMatrixWorld(true);
+  const camera = new THREE.PerspectiveCamera();
+  camera.position.set(0, 4, 5);
+  camera.updateMatrixWorld(true);
+  const contact = new CarContactShadow(THREE, scene);
+  contact.scan(camera, { carContactShadowEnabled: true });
+  contact.update({ carContactShadowEnabled: true }, 120, camera);
+  assert.equal(contact.mesh.visible, true);
+  assert.ok(Math.abs(contact.mesh.position.y - 0.018) < 0.001);
+  contact.dispose();
+  assert.equal(scene.children.includes(contact.mesh), false);
+});
 
 test("opaque unnamed Basic surfaces become lit while preserving textures and vertex colors", () => {
   const scene = new THREE.Scene();

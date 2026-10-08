@@ -576,12 +576,24 @@ function updateShadowRange(sceneState, settings, camera, three) {
   camera.getWorldPosition(cameraPosition);
   for (const [mesh, desired] of sceneState.managedShadowMeshes) {
     const matrix = mesh.matrixWorld?.elements;
-    if (matrix) meshPosition.set(matrix[12], matrix[13], matrix[14]);
+    let radius = 0;
+    const geometry = mesh.geometry;
+    if (!geometry?.boundingSphere && geometry?.computeBoundingSphere)
+      geometry.computeBoundingSphere();
+    if (matrix && geometry?.boundingSphere) {
+      meshPosition.copy(geometry.boundingSphere.center).applyMatrix4(mesh.matrixWorld);
+      radius = geometry.boundingSphere.radius * Math.max(
+        Math.hypot(matrix[0], matrix[1], matrix[2]),
+        Math.hypot(matrix[4], matrix[5], matrix[6]),
+        Math.hypot(matrix[8], matrix[9], matrix[10]),
+      );
+    } else if (matrix) meshPosition.set(matrix[12], matrix[13], matrix[14]);
     else mesh.getWorldPosition?.(meshPosition);
     const dx = meshPosition.x - cameraPosition.x;
     const dy = meshPosition.y - cameraPosition.y;
     const dz = meshPosition.z - cameraPosition.z;
-    const inRange = dx * dx + dy * dy + dz * dz <= rangeSquared;
+    const distanceSquared = dx * dx + dy * dy + dz * dz;
+    const inRange = Math.max(0, Math.sqrt(distanceSquared) - radius) ** 2 <= rangeSquared;
     mesh.castShadow = inRange && desired.managedCastShadow;
     mesh.receiveShadow = inRange && desired.managedReceiveShadow;
   }

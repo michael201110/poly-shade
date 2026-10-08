@@ -1,4 +1,4 @@
-# PolyShade 0.2.7
+# PolyShade 0.2.8
 
 A rendering-only PolyModLoader mod for **PolyTrack 0.6.3**. Warm sunlight, readable cool shadows, broad soft clouds and restrained camera optics preserve the game's low-poly appearance.
 
@@ -10,11 +10,11 @@ Install [PolyModLoader](https://polymodloader.com/), then add the [PolyShade ins
 https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/
 ```
 
-Select **0.2.7 / latest**, enable PolyShade and reload. Remove duplicate older entries. If the CDN caches an old manifest, replace `main` with the full latest SHA from [commit history](https://github.com/michael201110/poly-shade/commits/main/). This follows PML's [documented sharing format](https://wiki.polymodloader.com/sharing-your-mod/).
+Select **0.2.8 / latest**, enable PolyShade and reload. Remove duplicate older entries. If the CDN caches an old manifest, replace `main` with the full latest SHA from [commit history](https://github.com/michael201110/poly-shade/commits/main/). This follows PML's [documented sharing format](https://wiki.polymodloader.com/sharing-your-mod/).
 
-The root manifest maps 0.6.3 to `0.2.7/version.json` and `0.2.7/main.mod.js`. Earlier release directories are preserved. The corrected PML base class, lifecycle and constructor-assigned renderer interception remain intact.
+The root manifest maps 0.6.3 to `0.2.8/version.json` and `0.2.8/main.mod.js`. Earlier release directories are preserved. The corrected PML base class, lifecycle and constructor-assigned renderer interception remain intact.
 
-**0.2.7 tightens shadow-map coverage** to stop block artifacts on distant scenery. The 0.2.6 shadow and ray improvements remain. See [0.2.6 visual fixes](docs/0.2.6-visual-fixes.md).
+**0.2.8 keeps a soft contact shadow beneath the player car** even when an overhead structure blocks the sun shadow map. It uses one lightweight ground ray and adds no shadow map or post-processing pass.
 
 **0.2.5 optimizes rendering without lowering the 0.2.4 presets.** It removes an invisible native sun's redundant shadow map, retains and preallocates configured shaft buffers, warms brake-light shader variants in the background when supported, and caches unchanged settings/material work. Ray masks are filtered before integration for smoother occlusion edges. See [measurements and verification](docs/0.2.5-optimization.md).
 
