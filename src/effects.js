@@ -232,7 +232,7 @@ function configureLight(sceneState, three, light, settings, bounds) {
       if (typeof light.shadow.radius === "number")
         light.shadow.radius = settings.shadowSoftness ?? 1.5;
       if (typeof light.shadow.intensity === "number")
-        light.shadow.intensity = settings.shadowStrength ?? 0.68;
+        light.shadow.intensity = settings.shadowStrength ?? 0.84;
 
       const camera = light.shadow.camera;
       if (camera && bounds && Number.isFinite(bounds.radius)) {
@@ -315,6 +315,7 @@ export function createSceneState(scene) {
     ownedLights: new Set(),
     lightSnapshots: new Map(),
     meshShadowSnapshots: new Map(),
+    managedShadowMeshes: new Map(),
     materialClones: new Map(),
     originalMaterials: new Map(),
     processedMeshes: new Map(),
@@ -425,6 +426,9 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
           const snapshot = sceneState.meshShadowSnapshots.get(object);
           object.castShadow = snapshot.castShadow;
           object.receiveShadow = snapshot.receiveShadow;
+          snapshot.managedCastShadow = snapshot.castShadow;
+          snapshot.managedReceiveShadow = snapshot.receiveShadow;
+          sceneState.managedShadowMeshes.set(object, snapshot);
           return;
         }
 
@@ -436,12 +440,17 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
         ) {
           object.castShadow = true;
         }
+        const snapshot = sceneState.meshShadowSnapshots.get(object);
+        snapshot.managedCastShadow = object.castShadow;
+        snapshot.managedReceiveShadow = object.receiveShadow;
+        sceneState.managedShadowMeshes.set(object, snapshot);
       });
       for (const [mesh, snapshot] of sceneState.meshShadowSnapshots) {
         if (activeMeshes.has(mesh)) continue;
         mesh.castShadow = snapshot.castShadow;
         mesh.receiveShadow = snapshot.receiveShadow;
         sceneState.meshShadowSnapshots.delete(mesh);
+        sceneState.managedShadowMeshes.delete(mesh);
       }
     });
   } else {
@@ -450,6 +459,7 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
       mesh.receiveShadow = snapshot.receiveShadow;
     }
     sceneState.meshShadowSnapshots.clear();
+    sceneState.managedShadowMeshes.clear();
     for (const [light, snapshot] of sceneState.lightSnapshots) {
       if (!light.isDirectionalLight) continue;
       if (typeof snapshot.castShadow === "boolean")
@@ -468,6 +478,7 @@ export function applySceneEffects(sceneState, three, settings, camera, now) {
     sceneState.lastScanAt = now;
   }
   updateShadowFocus(sceneState, settings, camera);
+  updateShadowRange(sceneState, settings, camera, three);
 }
 
 export function usesNativeCSM(scene) {
@@ -551,6 +562,29 @@ export function updateShadowFocus(sceneState, settings, camera) {
   sun.parent?.worldToLocal?.(sun.position);
   sun.target.updateMatrixWorld?.();
   sun.updateMatrixWorld?.();
+}
+
+// The local shadow map is tightly focused on gameplay. Letting distant
+// receivers use it exposes its finite resolution as large square patches at
+// the horizon, so limit the mod-managed shadow work to the stable focus area.
+function updateShadowRange(sceneState, settings, camera, three) {
+  if (!camera?.getWorldPosition || !three?.Vector3) return;
+  const range = Math.max(20, (settings.shadowDistance ?? 30) * 2);
+  const rangeSquared = range * range;
+  const cameraPosition = (sceneState.shadowRangeCamera ??= new three.Vector3());
+  const meshPosition = (sceneState.shadowRangeMesh ??= new three.Vector3());
+  camera.getWorldPosition(cameraPosition);
+  for (const [mesh, desired] of sceneState.managedShadowMeshes) {
+    const matrix = mesh.matrixWorld?.elements;
+    if (matrix) meshPosition.set(matrix[12], matrix[13], matrix[14]);
+    else mesh.getWorldPosition?.(meshPosition);
+    const dx = meshPosition.x - cameraPosition.x;
+    const dy = meshPosition.y - cameraPosition.y;
+    const dz = meshPosition.z - cameraPosition.z;
+    const inRange = dx * dx + dy * dy + dz * dz <= rangeSquared;
+    mesh.castShadow = inRange && desired.managedCastShadow;
+    mesh.receiveShadow = inRange && desired.managedReceiveShadow;
+  }
 }
 
 export function refreshFrameEffects(
@@ -676,6 +710,7 @@ export function restoreScene(sceneState) {
     mesh.receiveShadow = snapshot.receiveShadow;
   }
   sceneState.meshShadowSnapshots.clear();
+  sceneState.managedShadowMeshes.clear();
 
   for (const [light, snapshot] of sceneState.lightSnapshots) {
     light.intensity = snapshot.intensity;
