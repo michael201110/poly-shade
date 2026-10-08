@@ -178,14 +178,6 @@ function makePanel() {
   );
 }
 
-function handlePanelHotkey() {
-  if (panel?.isHidden()) {
-    panel.show();
-    return;
-  }
-  toggleEnabled(!settings.enabled);
-}
-
 function restoreAndDispose() {
   controller?.restore();
   removeRenderHook?.();
@@ -206,7 +198,7 @@ class PolyShadeMod extends PolyMod {}
 export const polyMod = Object.assign(new PolyShadeMod(), {
   modName: "PolyShade",
   modID: "polyshade",
-  modVersion: "0.3.3",
+  modVersion: "0.3.4",
   modAuthor: "PolyShade",
   modDescription:
     "<p>Lighting, shadows, material response, and atmosphere for PolyTrack's live Three.js scene. Rendering only; no physics or simulation changes.</p>",
@@ -228,13 +220,19 @@ export const polyMod = Object.assign(new PolyShadeMod(), {
           ? `Enhancing the live scene; ${controller.modifiedMaterials} mesh materials tuned.`
           : "Renderer hook installed; waiting for a rendered scene.",
       );
-    removeHotkey ??= installHotkey(document, handlePanelHotkey);
+    removeHotkey ??= installHotkey(document, {
+      toggleEnabled: () => toggleEnabled(!settings.enabled),
+      togglePanel: () => panel?.toggleVisibility(),
+    });
   },
   onGameLoad() {
     if (!settings) settings = loadSettings(getStorage());
     makePanel();
     if (!removeHotkey)
-      removeHotkey = installHotkey(document, handlePanelHotkey);
+      removeHotkey = installHotkey(document, {
+        toggleEnabled: () => toggleEnabled(!settings.enabled),
+        togglePanel: () => panel?.toggleVisibility(),
+      });
     if (!controller) attachRenderer();
     unloadListener ??= restoreAndDispose;
     globalThis.addEventListener?.("pagehide", unloadListener, { once: true });

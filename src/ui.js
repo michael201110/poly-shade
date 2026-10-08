@@ -147,7 +147,7 @@ export function mountPanel(document, callbacks, initialSettings) {
   const dismiss = createElement(document, "button", "", "×");
   dismiss.type = "button";
   dismiss.setAttribute("aria-label", "Completely hide PolyShade panel");
-  dismiss.title = "Completely hide panel (F7 to show it again)";
+  dismiss.title = "Completely hide panel (press End to show it again)";
   dismiss.addEventListener("click", () => {
     panel.hidden = true;
   });
@@ -327,7 +327,7 @@ export function mountPanel(document, callbacks, initialSettings) {
       document,
       "p",
       "polyshade-muted",
-      "F7 toggles PolyShade. UI remains outside the game canvas.",
+      "Home toggles PolyShade; End hides or restores this panel.",
     ),
   );
 
@@ -343,6 +343,9 @@ export function mountPanel(document, callbacks, initialSettings) {
     },
     show() {
       panel.hidden = false;
+    },
+    toggleVisibility() {
+      panel.hidden = !panel.hidden;
     },
     setSettings(settings) {
       presetSelect.value = settings.preset;
@@ -388,15 +391,16 @@ export function mountPanel(document, callbacks, initialSettings) {
   };
 }
 
-export function installHotkey(document, toggle) {
+export function installHotkey(document, { toggleEnabled, togglePanel }) {
   const onKeyDown = (event) => {
-    if (event.code !== "F7" || event.repeat || event.target?.isContentEditable)
+    if (!["Home", "End"].includes(event.code) || event.repeat || event.target?.isContentEditable)
       return;
     const tagName = event.target?.tagName?.toLowerCase();
     if (tagName === "input" || tagName === "textarea" || tagName === "select")
       return;
     event.preventDefault();
-    toggle();
+    if (event.code === "Home") toggleEnabled();
+    else togglePanel();
   };
   document.addEventListener("keydown", onKeyDown, true);
   return () => document.removeEventListener("keydown", onKeyDown, true);

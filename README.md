@@ -1,26 +1,30 @@
-# PolyShade 0.3.3
+# PolyShade 0.3.4
 
 A graphics mod for **PolyTrack 0.6.3**, loaded through PolyModLoader. Warm directional sunlight, cool shaded faces, glossy car paint and broad soft clouds give the low-poly world a cinematic racing-game look.
 
 ## Install
 
-Install [PolyModLoader](https://polymodloader.com/), then paste this **0.3.3 install link** into its mod manager:
+Install [PolyModLoader](https://polymodloader.com/), then paste this **0.3.4 install link** into its mod manager:
 
 ```text
 https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/
 ```
 
-[Install PolyShade 0.3.3](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/)
+[Install PolyShade 0.3.4](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/)
 
-Select **0.3.3 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.3.3**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
+Select **0.3.4 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.3.4**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
 
-This one-time 0.3.3 update is served from the [main install link](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/); the immutable `v0.3.3` tag continues to point at its original bundle. PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.3.3/version.json` and `0.3.3/main.mod.js`; historical bundles are preserved.
+PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.3.4/version.json` and `0.3.4/main.mod.js`; historical bundles are preserved.
+
+## What's changed in 0.3.4
+
+Home now toggles PolyShade rendering. End hides or restores the panel, and the panel's close button fully dismisses it. These shortcuts work without toggling the other function.
 
 ## What's changed in 0.3.3
 
 Shadow receivers now reject invalid or out-of-range light projections before sampling a shadow map, and native cascade fades avoid division by zero. Native shadow callbacks and material handles remain connected to the game. Contact-shadow searches use an incremental spatial index instead of raycasting every track instance.
 
-The compact panel now has a separate close button that hides it completely. Press F7 to bring the panel back; while it is visible, F7 continues to toggle PolyShade.
+The compact panel has a separate close button that hides it completely.
 
 Exposure, blur and other uniform controls retain linked materials; hidden native cascade shaders are warmed, and auxiliary render scenes no longer discard the main scene's GPU resources. Full-resolution shafts and the existing visual presets are preserved.
 
@@ -64,7 +68,7 @@ All enhanced presets use 1x scene resolution by default. Manual render scale and
 
 ## Controls and lighting
 
-**F7** toggles PolyShade. The panel exposes sky, sun direction, environment, shadows, materials, atmosphere, rays, volumetric strength/density/decay/samples/distance, colour grading and quality. Vanilla, Disable and F7 restore original materials, surface uniforms, lighting, background, environment, shadow settings and renderer state. Track changes dispose owned effects.
+**Home** toggles PolyShade; **End** hides or restores the panel. The panel exposes sky, sun direction, environment, shadows, materials, atmosphere, rays, volumetric strength/density/decay/samples/distance, colour grading and quality. Vanilla, Disable and Home restore original materials, surface uniforms, lighting, background, environment, shadow settings and renderer state. Track changes dispose owned effects.
 
 Motion blur tracks screen movement, with depth-aware boundaries and a pixel limit. Under Post Processing, **Motion blur exposure (ms)** sets shutter duration directly: enhanced presets use 22 ms, and the maximum is 64 ms. The default trail limit is 32 pixels; use 32-48 ms / 64 pixels for a stronger visible effect. Saved shutter overrides are converted to their previous exposure duration, so selecting a preset again applies the stronger defaults.
 
