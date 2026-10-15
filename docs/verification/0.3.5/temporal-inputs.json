@@ -1,0 +1,257 @@
+{
+  "gpu": "ANGLE (NVIDIA, NVIDIA T500 (0x00001FBB) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "threeRevision": "181",
+  "syntheticFrameMs": 16.666666666666668,
+  "fields": {
+    "static-velocity": {
+      "car": {
+        "x": -0.038970947265625,
+        "y": 0,
+        "alpha": 4.99609375
+      },
+      "road": {
+        "x": -0.0162353515625,
+        "y": 0,
+        "alpha": 11.9921875
+      },
+      "valid": true,
+      "jitter": [
+        0.25,
+        -0.3888888888888889
+      ]
+    },
+    "car-velocity": {
+      "car": {
+        "x": 1.1920928955078125e-7,
+        "y": 0.0000010728836059570312,
+        "alpha": 4.99609375
+      },
+      "road": {
+        "x": 0,
+        "y": 0,
+        "alpha": 0
+      },
+      "valid": true,
+      "jitter": [
+        0.25,
+        -0.3888888888888889
+      ]
+    },
+    "combined-velocity": {
+      "car": {
+        "x": 1.1920928955078125e-7,
+        "y": 0.0000010728836059570312,
+        "alpha": 4.99609375
+      },
+      "road": {
+        "x": -0.0162353515625,
+        "y": 0,
+        "alpha": 11.9921875
+      },
+      "valid": true,
+      "jitter": [
+        0.25,
+        -0.3888888888888889
+      ]
+    }
+  },
+  "invalidation": {
+    "teleport": {
+      "valid": false,
+      "resets": 4,
+      "lastReset": "camera cut or teleport",
+      "phase": 1,
+      "phaseCount": 18,
+      "jitter": [
+        0,
+        -0.16666666666666669
+      ],
+      "previousJitter": [
+        0,
+        -0.16666666666666669
+      ],
+      "deltaMs": 16.666666666666686
+    },
+    "scale": {
+      "valid": false,
+      "resets": 5,
+      "lastReset": "resolution or settings changed",
+      "phase": 1,
+      "phaseCount": 23,
+      "jitter": [
+        0,
+        -0.16666666666666669
+      ],
+      "previousJitter": [
+        0,
+        -0.16666666666666669
+      ],
+      "deltaMs": 16.666666666666686
+    },
+    "recovered": {
+      "valid": true,
+      "resets": 5,
+      "lastReset": "resolution or settings changed",
+      "phase": 2,
+      "phaseCount": 23,
+      "jitter": [
+        -0.25,
+        0.16666666666666663
+      ],
+      "previousJitter": [
+        0,
+        -0.16666666666666669
+      ],
+      "deltaMs": 16.666666666666686
+    },
+    "explicit": {
+      "valid": false,
+      "resets": 6,
+      "lastReset": "run reset",
+      "phase": 1,
+      "phaseCount": 23,
+      "jitter": [
+        0,
+        -0.16666666666666669
+      ],
+      "previousJitter": [
+        0,
+        -0.16666666666666669
+      ],
+      "deltaMs": 16.666666666666686
+    }
+  },
+  "failures": {},
+  "jitterOnly": [
+    {
+      "x": 0,
+      "y": 0.0000019073486328125,
+      "alpha": 4.99609375
+    },
+    {
+      "x": 0,
+      "y": -0.0000035762786865234375,
+      "alpha": 4.99609375
+    },
+    {
+      "x": 1.1920928955078125e-7,
+      "y": -8.344650268554688e-7,
+      "alpha": 4.99609375
+    },
+    {
+      "x": 0,
+      "y": 4.76837158203125e-7,
+      "alpha": 4.99609375
+    },
+    {
+      "x": 0,
+      "y": 0.0000029802322387695312,
+      "alpha": 4.99609375
+    },
+    {
+      "x": 1.1920928955078125e-7,
+      "y": -0.0000022649765014648438,
+      "alpha": 4.99609375
+    },
+    {
+      "x": 1.1920928955078125e-7,
+      "y": 0.0000011920928955078125,
+      "alpha": 4.99609375
+    },
+    {
+      "x": 0,
+      "y": -0.000004172325134277344,
+      "alpha": 4.99609375
+    }
+  ],
+  "movingCar": {
+    "x": 0.038970947265625,
+    "y": 0.000006556510925292969,
+    "alpha": 4.99609375
+  },
+  "occludedCar": {
+    "x": 0,
+    "y": 1.1920928955078125e-7,
+    "alpha": 2.998046875
+  },
+  "output": {
+    "car": [
+      0.8154296875,
+      0,
+      0,
+      0
+    ],
+    "road": [
+      0.634765625,
+      0.634765625,
+      0.634765625,
+      0
+    ],
+    "disoccluded": [
+      0.634765625,
+      0.634765625,
+      0.634765625,
+      0
+    ]
+  },
+  "rejection": {
+    "revealedRoad": 1,
+    "staticRoad": 0,
+    "cameraStillHistoryWeight": 0.3,
+    "globalHistoryValid": true
+  },
+  "staticMarkings": {
+    "withoutCarMotion": {
+      "variance": 0.00009234483150066808,
+      "maxRejection": 0
+    },
+    "withCarMotion": {
+      "variance": 0.00009234483150066808,
+      "maxRejection": 0
+    }
+  },
+  "spawnKeepsStaticHistory": true,
+  "swarm": {
+    "parts": 161,
+    "valid": true,
+    "visibleVelocity": {
+      "x": 0.006496429443359375,
+      "y": 0.000004887580871582031,
+      "alpha": 14.9921875
+    }
+  },
+  "canvas": [
+    1280,
+    720
+  ],
+  "internal": [
+    755,
+    425
+  ],
+  "fallback": {
+    "active": {
+      "requested": "sgsr2-fragment",
+      "backend": "native",
+      "scale": 1,
+      "supported": true,
+      "compute": false,
+      "reason": "SGSR2 failed; using native rendering.",
+      "temporal": null
+    },
+    "sceneSize": [
+      1280,
+      720
+    ],
+    "projectionRestored": true,
+    "temporalTargets": []
+  },
+  "threeRevisionCandidates": [
+    {
+      "id": "9437",
+      "versionExports": [],
+      "revisionContext": null
+    }
+  ],
+  "nativeWrapperKeys": [],
+  "errors": []
+}

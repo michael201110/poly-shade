@@ -4,6 +4,7 @@ import { VOLUME_COMPOSITE } from "./volumetric.js";
 export const GRADE_FRAGMENT = `varying vec2 vUv;${DEPTH_HELPERS}${ATMOSPHERE_HELPERS}${FLARE_HELPERS}${VOLUME_COMPOSITE}
 uniform sampler2D tInput,tAO,tBloom,tRays;
 uniform vec2 rayTexel,motionTexel;
+uniform vec2 motionJitter;
 uniform sampler2D tObjectMotion;
 uniform float objectMotionActive,motionExposureScale;
 uniform vec2 motionVelocityRange;
@@ -27,7 +28,7 @@ vec3 cameraMotionBlur(vec2 uv,vec3 center){
  if(d>=0.9999999)world=vec4(world.xyz-cameraWorld[3].xyz,0.0);
  vec4 previous=previousViewProjection*world;
  if(previous.w<=0.00001)return center;
- vec2 velocity=uv-(previous.xy/previous.w*0.5+0.5);
+ vec2 velocity=uv-motionJitter-(previous.xy/previous.w*0.5+0.5);
  vec4 objectMotion=vec4(0.0);
  if(objectMotionActive>0.5)objectMotion=texture2D(tObjectMotion,uv);
  if(objectMotion.a>0.5)velocity=(objectMotion.rg*2.0-1.0)*motionVelocityRange;

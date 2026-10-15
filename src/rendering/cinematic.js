@@ -92,8 +92,10 @@ export class CinematicRenderer {
   }
   render(scene, camera, settings, draw) {
     this.configureProfiler(settings);
-    if (this.post) this.post.profiler = this.profiler;
-    if (!this.profiler) this.timer.begin();
+    this.timer.begin();
+    // Every twelfth frame times the whole pipeline; other diagnostic frames
+    // time individual passes. Never nest EXT_disjoint_timer_query queries.
+    if (this.post) this.post.profiler = this.timer.active ? null : this.profiler;
     if (settings.shadowQuality !== "off") this.shadows.prepare(camera);
     try {
       return this.post
@@ -101,7 +103,7 @@ export class CinematicRenderer {
         : draw();
     } finally {
       if (settings.shadowQuality !== "off") this.shadows.commit();
-      if (!this.profiler) this.timer.end();
+      this.timer.end();
 
     }
   }

@@ -9,6 +9,10 @@ import { GRADE_FRAGMENT } from "../shaders/grade.js";
 import { FINISH_FRAGMENT } from "../shaders/finish.js";
 import { RenderState, TargetPool } from "./render-targets.js";
 import { ObjectMotion } from "./object-motion.js";
+import { TemporalState, selectUpscaling } from "./temporal-state.js";
+import { STATIC_VELOCITY_FRAGMENT, TEMPORAL_DEBUG_FRAGMENT } from "../shaders/temporal-inputs.js";
+import { SGSR2Fragment } from "./sgsr2-fragment.js";
+import { SGSR2_VERTEX, SGSR2_CONVERT_FRAGMENT, SGSR2_UPSCALE_FRAGMENT } from "../shaders/sgsr2.js";
 const DEBUG_VIEWS = [
   "final",
   "depth",
@@ -59,12 +63,15 @@ export class PostProcess {
     this.motionFrameValid = false;
     this.objectMotion = new ObjectMotion(three);
     this.motionExposureScale = 1;
+    this.temporal = new TemporalState(three);
+    this.upscaler = new SGSR2Fragment(three);
   }
   prepareCameraMotion(scene, camera) {
     camera.updateMatrixWorld?.();
     if (this.motionScene !== scene) {
       this.motionScene = scene;
       this.motionPreviousCamera = null;
+      this.temporal.invalidate("post processing disabled");
     }
     const current = this.motionCurrentViewProjection.multiplyMatrices(
       camera.projectionMatrix,
@@ -105,7 +112,8 @@ export class PostProcess {
         name,
         new this.three.ShaderMaterial({
           name: `PolyShade_${name}`,
-          vertexShader: FULLSCREEN_VERTEX,
+          vertexShader: name.startsWith("sgsr2-") ? SGSR2_VERTEX : FULLSCREEN_VERTEX,
+          ...(name.startsWith("sgsr2-") ? { glslVersion: "300 es" } : {}),
           fragmentShader: `// PolyShade ${name}\n${fragment}`,
           uniforms: {},
           depthTest: false,
@@ -134,9 +142,14 @@ export class PostProcess {
       add("sun-visibility", SUN_VISIBILITY_FRAGMENT);
     if (s.sunRaysEnabled) { add("sun-mask", SUN_MASK_FRAGMENT); add("sun-rays", SUN_RAYS_FRAGMENT); }
     if (s.volumetricEnabled) add("volumetric", VOLUMETRIC_FRAGMENT);
-    if (s.fxaaEnabled || (s.sharpenEnabled && s.sharpenStrength > 0)) {
+    if (["auto", "sgsr2-fragment"].includes(s.upscaling) || s.fxaaEnabled || (s.sharpenEnabled && s.sharpenStrength > 0)) {
       add("grade", GRADE_FRAGMENT); add("finish", FINISH_FRAGMENT, false);
     } else add("grade-output", GRADE_OUTPUT_FRAGMENT, false);
+    if (["auto", "sgsr2-fragment"].includes(s.upscaling) && selectUpscaling(s, this.capabilities).supported) {
+      add("static-velocity", STATIC_VELOCITY_FRAGMENT);
+      add("sgsr2-convert", SGSR2_CONVERT_FRAGMENT);
+      add("sgsr2-upscale", SGSR2_UPSCALE_FRAGMENT);
+    }
     return passes;
   }
   prepareTarget(retain, name, width, height) {
@@ -180,13 +193,20 @@ export class PostProcess {
     const motionFrameValid = this.prepareCameraMotion(scene, camera);
     this.state.capture(r);
     this.passOrder.length = 0;
+    let temporalActive = false;
     try {
       const gl = r.getContext();
-      let w = Math.round(gl.drawingBufferWidth * s.renderScale),
-        h = Math.round(gl.drawingBufferHeight * s.renderScale);
+      const upscaleView = s.upscaleDebugView ?? "final";
+      const selectedUpscaling = selectUpscaling(s, this.capabilities, this.upscaleFailed);
+      const upscaling = upscaleView === "native" ?
+        { ...selectedUpscaling, backend: "native", scale: 1, reason: "Native comparison view." } : selectedUpscaling;
+      temporalActive = upscaling.backend === "sgsr2-fragment" && upscaleView !== "native";
+      const internalScale = upscaleView === "native" ? 1 : upscaling.scale;
+      let w = Math.round(gl.drawingBufferWidth * internalScale),
+        h = Math.round(gl.drawingBufferHeight * internalScale);
       const sceneTarget = this.pool.get("scene", w, h, {
         depth: true,
-        samples: this.capabilities.antialias
+        samples: !temporalActive && this.capabilities.antialias
           ? Math.min(
               s.sceneSamples === "auto" || s.sceneSamples === undefined
                 ? 0
@@ -197,16 +217,20 @@ export class PostProcess {
       });
       w = sceneTarget.width;
       h = sceneTarget.height;
-      const finishNeeded =
+      if (temporalActive) this.temporal.begin(scene, camera, w, h,
+        gl.drawingBufferWidth, gl.drawingBufferHeight, s);
+      else this.temporal.invalidate("temporal reconstruction inactive");
+      const finishNeeded = temporalActive ||
         s.fxaaEnabled || (s.sharpenEnabled && s.sharpenStrength > 0);
+      const gradeName = temporalActive ? "sgsr-input" : "grade";
       const gradeTarget = finishNeeded
           ? this.pool.get(
-              "grade",
-              gl.drawingBufferWidth,
-              gl.drawingBufferHeight,
+              gradeName,
+              temporalActive ? w : gl.drawingBufferWidth,
+              temporalActive ? h : gl.drawingBufferHeight,
             )
           : this.state.target,
-        retain = new Set(finishNeeded ? ["scene", "grade"] : ["scene"]);
+        retain = new Set(finishNeeded ? ["scene", gradeName] : ["scene"]);
       r.xr.enabled = false;
       r.autoClear = true;
       r.toneMapping = this.three.NoToneMapping;
@@ -232,7 +256,10 @@ export class PostProcess {
         depth && motionFrameValid;
       // Scene rendering has updated the cars' world matrices. Record them even
       // on reset frames so a camera switch cannot invent object velocity.
-      if (motionRequested) this.objectMotion.update(scene, this.motionBlurViewProjection, motionFrameValid);
+      if (motionRequested || temporalActive) this.objectMotion.update(scene,
+        temporalActive ? this.temporal.previousJitteredVP : this.motionBlurViewProjection,
+        temporalActive ? this.temporal.valid : motionFrameValid,
+        { temporal: temporalActive, maxTravel: temporalActive ? Math.max(8, this.temporal.deltaMs * 0.8) : Infinity });
       else if (this.objectMotion.entries.length) this.objectMotion.dispose();
       let objectVelocity = sceneTarget.texture;
       if (motionRequested && depth && this.objectMotion.entries.length) {
@@ -241,7 +268,8 @@ export class PostProcess {
         target.texture.minFilter = this.three.NearestFilter;
         target.texture.magFilter = this.three.NearestFilter;
         if (motionBlurActive) {
-          const renderMotion = () => this.objectMotion.render(r, camera, target, depth, draw);
+          const renderMotion = () => this.objectMotion.render(r, camera, target, depth, draw,
+            { jitterUV: temporalActive ? this.temporal.jitterUV : null });
           this.guard.pass = "object-motion";
           if (this.profiler) this.profiler.measure("object-motion", renderMotion);
           else renderMotion();
@@ -254,6 +282,32 @@ export class PostProcess {
         inverseProjection: camera.projectionMatrixInverse,
         nearFar: { x: camera.near, y: camera.far },
       };
+      let temporalVelocity = null;
+      if (temporalActive && depth) {
+        const target = this.pool.get("sgsr-velocity", w, h);
+        retain.add("sgsr-velocity");
+        target.texture.colorSpace = this.three.NoColorSpace;
+        target.texture.minFilter = this.three.NearestFilter;
+        target.texture.magFilter = this.three.NearestFilter;
+        if (!this.pass("static-velocity", STATIC_VELOCITY_FRAGMENT, target, {
+          tDepth: depth, inverseCurrentVP: this.temporal.inverseJitteredVP,
+          previousVP: this.temporal.previousJitteredVP, jitterUV: this.temporal.jitterUV,
+          previousInverseProjection: this.temporal.previousInverseProjection,
+          historyValid: this.temporal.valid ? 1 : 0,
+        }, draw)) throw new Error("Static velocity failed");
+        if (upscaleView !== "static-velocity") {
+          this.guard.pass = "car-velocity";
+          const cars = () => this.objectMotion.render(r, camera, target, depth, draw, {
+            temporal: true, clear: upscaleView === "car-velocity", jitterUV: this.temporal.jitterUV,
+            previousInverseProjection: this.temporal.previousInverseProjection,
+          });
+          if (this.profiler) this.profiler.measure("car-velocity", cars);
+          else cars();
+          if (this.guard.failures.has("car-velocity")) throw new Error("Car velocity failed");
+          this.passOrder.push("car-velocity");
+        }
+        temporalVelocity = target.texture;
+      }
       let ao = sceneTarget.texture,
         aoActive = false,
         bloom = sceneTarget.texture,
@@ -540,6 +594,7 @@ export class PostProcess {
         tRays: rays,
         rayTexel,
         motionTexel,
+        motionJitter: temporalActive ? this.temporal.jitterUV : { x: 0, y: 0 },
         tObjectMotion: objectVelocity,
         objectMotionActive: motionBlurActive && this.objectMotion.entries.length ? 1 : 0,
         motionExposureScale: this.motionExposureScale,
@@ -608,6 +663,13 @@ export class PostProcess {
         )
       )
         throw new Error("Colour grade failed");
+      let presentationInput = gradeTarget?.texture;
+      if (temporalActive) {
+        presentationInput = this.upscaler.reconstruct(this, gradeTarget.texture, depth,
+          temporalVelocity, retain, draw, this.temporal, camera);
+        if (upscaleView === "low-resolution") presentationInput = gradeTarget.texture;
+        else if (upscaleView === "history") presentationInput = this.upscaler.history;
+      }
       r.outputColorSpace = this.state.output;
       const texel = (this.texel ??= new this.three.Vector2());
       texel.set(1 / gl.drawingBufferWidth, 1 / gl.drawingBufferHeight);
@@ -618,15 +680,25 @@ export class PostProcess {
           FINISH_FRAGMENT,
           this.state.target,
           {
-            tInput: gradeTarget.texture,
+            tInput: presentationInput,
             texel,
-            fxaa: s.fxaaEnabled ? 1 : 0,
+            fxaa: !temporalActive && s.fxaaEnabled ? 1 : 0,
             sharpen: s.sharpenEnabled ? s.sharpenStrength : 0,
           },
           draw,
         )
       )
         throw new Error("Final colour output failed");
+      if (temporalActive && !["final", "history", "low-resolution"].includes(upscaleView)) {
+        const view = upscaleView.includes("velocity") ? 1 :
+          upscaleView === "depth" ? 2 : upscaleView === "jitter" ? 3 : upscaleView === "history-rejection" ? 5 : 4;
+        if (!this.pass("temporal-debug", TEMPORAL_DEBUG_FRAGMENT, this.state.target, {
+          tInput: view === 5 ? this.upscaler.convertTexture : temporalVelocity, tDepth: depth, view,
+          jitter: this.temporal.jitter, historyValid: this.temporal.valid ? 1 : 0,
+          nearFar: depthValues.nearFar,
+        }, draw)) throw new Error("Temporal debug failed");
+      }
+      if (temporalActive) this.temporal.commit();
       this.pool.retain(retain);
       if (!retain.has("sun-visibility")) this.sunVisibility.dispose();
       this.frames++;
@@ -645,19 +717,31 @@ export class PostProcess {
         sunPartial: this.sunVisibility.partial,
         cloudTransmission: this.sunVisibility.transmission,
         samples: sceneTarget.samples,
-        fxaa: s.fxaaEnabled,
+        fxaa: !temporalActive && s.fxaaEnabled,
         sceneSize: [w, h],
+        outputSize: [gl.drawingBufferWidth, gl.drawingBufferHeight],
+        upscaling: { ...upscaling, temporal: temporalActive ? this.temporal.report() : null },
         targets: this.pool.targets.size,
       };
     } catch (error) {
+      if (temporalActive) {
+        this.upscaleFailed = true;
+        this.temporal.restoreCamera();
+        this.temporal.invalidate("SGSR2 failure");
+        this.state.restore(r);
+        console.error("[PolyShade] SGSR2 failed; falling back to native resolution.", error);
+        return this.render(scene, camera, s, draw, palette);
+      }
       this.disabled = true;
       console.error(
         "[PolyShade] Post processing disabled; using direct rendering.",
         error,
       );
       this.state.restore(r);
+      if (temporalActive) this.temporal.restoreCamera();
       draw(scene, camera);
     } finally {
+      if (temporalActive) this.temporal.restoreCamera();
       this.guard.pass = "scene";
       this.state.restore(r);
     }

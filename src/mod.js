@@ -7,6 +7,7 @@ import {
   installGameRendererHook,
 } from "./renderer.js";
 import { mountPanel, installHotkey } from "./ui.js";
+import { installHistoryEvents } from "./rendering/history-events.js";
 import {
   loadSettings,
   saveSettings,
@@ -22,6 +23,7 @@ let panel;
 let removeRenderHook;
 let removeGameHook;
 let removeHotkey;
+let removeHistoryEvents;
 let unloadListener;
 let confirmedScene;
 
@@ -182,6 +184,8 @@ function restoreAndDispose() {
   controller?.restore();
   removeRenderHook?.();
   removeHotkey?.();
+  removeHistoryEvents?.();
+  removeHistoryEvents = undefined;
   removeGameHook?.();
   if (unloadListener)
     globalThis.removeEventListener?.("pagehide", unloadListener);
@@ -198,7 +202,7 @@ class PolyShadeMod extends PolyMod {}
 export const polyMod = Object.assign(new PolyShadeMod(), {
   modName: "PolyShade",
   modID: "polyshade",
-  modVersion: "0.3.4",
+  modVersion: "0.3.5",
   modAuthor: "PolyShade",
   modDescription:
     "<p>Lighting, shadows, material response, and atmosphere for PolyTrack's live Three.js scene. Rendering only; no physics or simulation changes.</p>",
@@ -214,6 +218,7 @@ export const polyMod = Object.assign(new PolyShadeMod(), {
   postInit() {
     if (!settings) settings = loadSettings(getStorage());
     makePanel();
+    removeHistoryEvents ??= installHistoryEvents(document, reason => controller?.cinematic?.post?.temporal.invalidate(reason));
     if (controller)
       panel?.setStatus(
         controller.activeScene
@@ -228,6 +233,8 @@ export const polyMod = Object.assign(new PolyShadeMod(), {
   onGameLoad() {
     if (!settings) settings = loadSettings(getStorage());
     makePanel();
+    controller?.cinematic?.post?.temporal.invalidate("game loaded");
+    removeHistoryEvents ??= installHistoryEvents(document, reason => controller?.cinematic?.post?.temporal.invalidate(reason));
     if (!removeHotkey)
       removeHotkey = installHotkey(document, {
         toggleEnabled: () => toggleEnabled(!settings.enabled),

@@ -1,20 +1,32 @@
-# PolyShade 0.3.4
+# PolyShade 0.3.5
 
 A graphics mod for **PolyTrack 0.6.3**, loaded through PolyModLoader. Warm directional sunlight, cool shaded faces, glossy car paint and broad soft clouds give the low-poly world a cinematic racing-game look.
 
 ## Install
 
-Install [PolyModLoader](https://polymodloader.com/), then paste this **0.3.4 install link** into its mod manager:
+Install [PolyModLoader](https://polymodloader.com/), then paste this **0.3.5 install link** into its mod manager:
 
 ```text
 https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/
 ```
 
-[Install PolyShade 0.3.4](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/)
+[Install PolyShade 0.3.5](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/) · [Pinned 0.3.5](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.3.5/)
 
-Select **0.3.4 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.3.4**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
+Select **0.3.5 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.3.5**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
 
-PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.3.4/version.json` and `0.3.4/main.mod.js`; historical bundles are preserved.
+PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.3.5/version.json` and `0.3.5/main.mod.js`; historical bundles are preserved.
+
+## What's changed in 0.3.5
+
+Optional **SGSR2 Fragment** temporal upscaling reconstructs a reduced-resolution scene to native canvas resolution before presentation. Under **Upscaling**, choose SGSR2 Fragment or Auto, then 100%, 77%, 67%, 59%, 50% or a custom scale. Native is the default. Auto selects Fragment when supported, otherwise Native. Compute is unsupported in this WebGL renderer and falls back to Native.
+
+Static velocity comes from depth/camera reprojection, with independent rigid car and wheel motion composited over it. Jitter and both colour/geometry history reset across camera cuts, resize, run resets and mode changes. Depth consistency and previous moving-car coverage reject newly revealed road locally while static markings keep their history. The DOM HUD remains native and sharp. FXAA is bypassed during SGSR2; the existing colour grading and final colour-space presentation remain in use.
+
+Diagnostic views expose static/car/combined velocity, depth, jitter, global history validity, per-pixel history rejection, previous colour history, low-resolution colour and a native comparison. Per-pass profiling reports scene, reconstruction and geometry-history costs; total GPU timing is sampled without nested queries or synchronous readbacks.
+
+See [architecture, T500 measurements, visual checks and limitations](docs/0.3.5.md), [the inspected original pipeline](docs/sgsr2-pipeline.md), and [Qualcomm attribution and license](THIRD_PARTY_NOTICES.md). `npm run verify:temporal` checks the inputs and local disocclusion on the GPU; `npm run verify:upscaling` benchmarks all five scales in the real PML game.
+
+In the documented 1280×720 T500 capture, SGSR2 at **50% reduced GPU frame time by 15.7%** (3.22 → 2.72 ms); **67% reduced it by 4.3%** (3.08 ms). These are view-specific rendering measurements, not gameplay FPS gains. The report includes scene/reconstruction costs and all five scales, including the extra cost of temporal reconstruction at 100%.
 
 ## What's changed in 0.3.4
 

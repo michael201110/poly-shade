@@ -190,6 +190,7 @@ export function inspectRenderer(three, renderer) {
   const targets = !!three.WebGLRenderTarget;
   const depth = webgl2 && !!three.DepthTexture;
   return {
+    threeRevision: three.REVISION ?? globalThis.__THREE__ ?? null,
     classes: three.discovery?.classes ?? {},
     constants: {
       ...ENUMS,

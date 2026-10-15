@@ -112,6 +112,13 @@ export const OPTIONS = {
     sharpenEnabled: ["Sharpen", false],
     sharpenStrength: ["Sharpen strength", 0.08, 0, 0.3],
   },
+  Upscaling: {
+    upscaling: ["Upscaling", "native", ["native", "sgsr2-fragment", "auto", "reduced", "sgsr2-compute"]],
+    upscaleQuality: ["Render scale preset", "quality", ["native", "ultra-quality", "quality", "balanced", "performance", "custom"]],
+    upscaleCustomScale: ["Custom internal scale", 0.67, 0.5, 1],
+    upscaleJitter: ["Projection jitter", true],
+    upscaleDebugView: ["Upscaling debug view", "final", ["final", "low-resolution", "depth", "static-velocity", "car-velocity", "combined-velocity", "jitter", "history-validity", "history-rejection", "history", "native"]],
+  },
   Quality: {
     renderScale: ["Render scale", 1, 1, 1.5],
     sceneSamples: ["Scene MSAA", "auto", ["auto", "0", "2", "4"]],

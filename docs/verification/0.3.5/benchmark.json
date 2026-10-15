@@ -1,0 +1,3996 @@
+{
+  "date": "2026-10-15T18:39:00.172Z",
+  "browser": "155.0.4283.45",
+  "viewport": [
+    1280,
+    720
+  ],
+  "cases": [
+    {
+      "name": "native-100",
+      "scale": 1,
+      "mode": "native",
+      "gpu": {
+        "average": 3.22164224,
+        "p95": 4.294656,
+        "samples": 25
+      },
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0,
+            "p95": 0,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 3.438757333333333,
+            "p95": 4.866048,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 3.8608333304524423,
+            "p95": 5.100000023841858,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.000005333333333333333,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.02666666607062022,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.20697739130434784,
+            "p95": 0.241664,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.09083333710829417,
+            "p95": 0.20000004768371582,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.037981217391304355,
+            "p95": 0.04096,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.027500000099341074,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.08329600000000001,
+            "p95": 0.05296,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.01416666607062022,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.04064973913043478,
+            "p95": 0.041472,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.016666666666666666,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.07166191304347827,
+            "p95": 0.02448,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.01583333412806193,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.07583721739130435,
+            "p95": 0.032768,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.017499998211860657,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.1905613913043478,
+            "p95": 0.397312,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.03166666726271312,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.2093217391304348,
+            "p95": 0.188032,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.03166666527589162,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        }
+      },
+      "active": {
+        "post": true,
+        "depth": true,
+        "ao": true,
+        "bloom": true,
+        "sunRays": false,
+        "volumetric": false,
+        "motionBlur": false,
+        "lensFlare": false,
+        "sunUv": [
+          56.32127426249389,
+          -366.05871401879665
+        ],
+        "sunScreenVisibility": 0,
+        "sunClear": 0,
+        "sunPartial": 0,
+        "cloudTransmission": 1,
+        "samples": 0,
+        "fxaa": true,
+        "sceneSize": [
+          1280,
+          720
+        ],
+        "outputSize": [
+          1280,
+          720
+        ],
+        "upscaling": {
+          "requested": "native",
+          "backend": "native",
+          "scale": 1,
+          "supported": true,
+          "compute": false,
+          "reason": null,
+          "temporal": null
+        },
+        "targets": 9
+      },
+      "passes": [
+        "scene",
+        "ao",
+        "ao-blur",
+        "ao-blur",
+        "bloom",
+        "bloom-blur",
+        "bloom-blur",
+        "grade",
+        "finish"
+      ],
+      "resources": [
+        {
+          "name": "scene",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 11059200
+        },
+        {
+          "name": "ao",
+          "width": 512,
+          "height": 288,
+          "pixels": 147456,
+          "samples": 0,
+          "estimatedBytes": 589824
+        },
+        {
+          "name": "ao-blur",
+          "width": 512,
+          "height": 288,
+          "pixels": 147456,
+          "samples": 0,
+          "estimatedBytes": 589824
+        },
+        {
+          "name": "bloom",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "bloom-blur",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "sun-rays",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sun-mask",
+          "width": 256,
+          "height": 256,
+          "pixels": 65536,
+          "samples": 0,
+          "estimatedBytes": 524288
+        },
+        {
+          "name": "sun-visibility",
+          "width": 1,
+          "height": 1,
+          "pixels": 1,
+          "samples": 0,
+          "estimatedBytes": 4
+        },
+        {
+          "name": "grade",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 3686400
+        }
+      ],
+      "failed": false,
+      "carParts": 0,
+      "failures": {},
+      "cameraRestored": true
+    },
+    {
+      "name": "reduced-100",
+      "scale": 1,
+      "mode": "reduced",
+      "gpu": {
+        "average": 3.13526272,
+        "p95": 4.464704,
+        "samples": 25
+      },
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0.05999999046325684,
+            "p95": 0.10000002384185791,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 3.9946826666666664,
+            "p95": 9.498208,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 3.9875000019868216,
+            "p95": 7.399999976158142,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.0000026666666666666664,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.02750000109275182,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.22202991304347827,
+            "p95": 0.248608,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.10083333005507787,
+            "p95": 0.30000001192092896,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.07745947826086956,
+            "p95": 0.05712,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.02333333492279053,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.07693634782608695,
+            "p95": 0.044,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.01833333373069763,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.12566678260869565,
+            "p95": 0.208736,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.022499998410542805,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.021103304347826084,
+            "p95": 0.02224,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.019166666269302367,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.0995311304347826,
+            "p95": 0.329536,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.013333334028720856,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.26103652173913044,
+            "p95": 1.062944,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.04416666974623998,
+            "p95": 0.19999998807907104,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.1638817391304348,
+            "p95": 0.129024,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0366666649778684,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        }
+      },
+      "active": {
+        "post": true,
+        "depth": true,
+        "ao": true,
+        "bloom": true,
+        "sunRays": false,
+        "volumetric": false,
+        "motionBlur": false,
+        "lensFlare": false,
+        "sunUv": [
+          56.32127426249389,
+          -366.05871401879665
+        ],
+        "sunScreenVisibility": 0,
+        "sunClear": 0,
+        "sunPartial": 0,
+        "cloudTransmission": 1,
+        "samples": 0,
+        "fxaa": true,
+        "sceneSize": [
+          1280,
+          720
+        ],
+        "outputSize": [
+          1280,
+          720
+        ],
+        "upscaling": {
+          "requested": "reduced",
+          "backend": "reduced",
+          "scale": 1,
+          "supported": true,
+          "compute": false,
+          "reason": null,
+          "temporal": null
+        },
+        "targets": 9
+      },
+      "passes": [
+        "scene",
+        "ao",
+        "ao-blur",
+        "ao-blur",
+        "bloom",
+        "bloom-blur",
+        "bloom-blur",
+        "grade",
+        "finish"
+      ],
+      "resources": [
+        {
+          "name": "scene",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 11059200
+        },
+        {
+          "name": "ao",
+          "width": 512,
+          "height": 288,
+          "pixels": 147456,
+          "samples": 0,
+          "estimatedBytes": 589824
+        },
+        {
+          "name": "ao-blur",
+          "width": 512,
+          "height": 288,
+          "pixels": 147456,
+          "samples": 0,
+          "estimatedBytes": 589824
+        },
+        {
+          "name": "bloom",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "bloom-blur",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "sun-rays",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sun-mask",
+          "width": 256,
+          "height": 256,
+          "pixels": 65536,
+          "samples": 0,
+          "estimatedBytes": 524288
+        },
+        {
+          "name": "sun-visibility",
+          "width": 1,
+          "height": 1,
+          "pixels": 1,
+          "samples": 0,
+          "estimatedBytes": 4
+        },
+        {
+          "name": "grade",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 3686400
+        }
+      ],
+      "failed": false,
+      "carParts": 0,
+      "failures": {},
+      "cameraRestored": true
+    },
+    {
+      "name": "reduced-77",
+      "scale": 0.77,
+      "mode": "reduced",
+      "gpu": {
+        "average": 2.1607385600000004,
+        "p95": 3.268416,
+        "samples": 25
+      },
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0,
+            "p95": 0,
+            "samples": 4
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 2.069485333333333,
+            "p95": 2.516704,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 1.954999996225039,
+            "p95": 2.699999988079071,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.0000026666666666666664,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.013333335022131602,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.12685217391304346,
+            "p95": 0.153056,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.049166663984457654,
+            "p95": 0.19999998807907104,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.10069982608695652,
+            "p95": 0.035264,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.014166666567325592,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.05413704347826087,
+            "p95": 0.048224,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0066666662693023685,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.10531617391304347,
+            "p95": 0.829248,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.010833332439263661,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.14640417391304347,
+            "p95": 1.403808,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0066666672627131145,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.026014608695652176,
+            "p95": 0.030432,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.012500000993410747,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.18731269565217393,
+            "p95": 0.270304,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.020833332339922586,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.11831513043478262,
+            "p95": 0.131616,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.021666666368643443,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        }
+      },
+      "active": {
+        "post": true,
+        "depth": true,
+        "ao": true,
+        "bloom": true,
+        "sunRays": false,
+        "volumetric": false,
+        "motionBlur": false,
+        "lensFlare": false,
+        "sunUv": [
+          56.32127426249389,
+          -366.05871401879665
+        ],
+        "sunScreenVisibility": 0,
+        "sunClear": 0,
+        "sunPartial": 0,
+        "cloudTransmission": 1,
+        "samples": 0,
+        "fxaa": true,
+        "sceneSize": [
+          986,
+          554
+        ],
+        "outputSize": [
+          1280,
+          720
+        ],
+        "upscaling": {
+          "requested": "reduced",
+          "backend": "reduced",
+          "scale": 0.77,
+          "supported": true,
+          "compute": false,
+          "reason": null,
+          "temporal": null
+        },
+        "targets": 9
+      },
+      "passes": [
+        "scene",
+        "ao",
+        "ao-blur",
+        "ao-blur",
+        "bloom",
+        "bloom-blur",
+        "bloom-blur",
+        "grade",
+        "finish"
+      ],
+      "resources": [
+        {
+          "name": "scene",
+          "width": 986,
+          "height": 554,
+          "pixels": 546244,
+          "samples": 0,
+          "estimatedBytes": 6554928
+        },
+        {
+          "name": "ao",
+          "width": 394,
+          "height": 222,
+          "pixels": 87468,
+          "samples": 0,
+          "estimatedBytes": 349872
+        },
+        {
+          "name": "ao-blur",
+          "width": 394,
+          "height": 222,
+          "pixels": 87468,
+          "samples": 0,
+          "estimatedBytes": 349872
+        },
+        {
+          "name": "bloom",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "bloom-blur",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "sun-rays",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sun-mask",
+          "width": 256,
+          "height": 256,
+          "pixels": 65536,
+          "samples": 0,
+          "estimatedBytes": 524288
+        },
+        {
+          "name": "sun-visibility",
+          "width": 1,
+          "height": 1,
+          "pixels": 1,
+          "samples": 0,
+          "estimatedBytes": 4
+        },
+        {
+          "name": "grade",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 3686400
+        }
+      ],
+      "failed": false,
+      "carParts": 0,
+      "failures": {},
+      "cameraRestored": true
+    },
+    {
+      "name": "reduced-67",
+      "scale": 0.67,
+      "mode": "reduced",
+      "gpu": {
+        "average": 2.5155955200000006,
+        "p95": 4.215616,
+        "samples": 25
+      },
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0,
+            "p95": 0,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 2.599514666666666,
+            "p95": 3.842048,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 1.868333338201046,
+            "p95": 2.699999988079071,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.0000026666666666666664,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.011666667461395264,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.14766469565217394,
+            "p95": 0.18624,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.049166663487752275,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.24447721739130432,
+            "p95": 1.62512,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.016666668156782787,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.12729878260869565,
+            "p95": 0.106528,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0066666677594184875,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.17706295652173912,
+            "p95": 1.410432,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.007500000794728597,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.029229913043478266,
+            "p95": 0.081952,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.009166667362054189,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.02656695652173913,
+            "p95": 0.081984,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0066666667660077415,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.24821426086956522,
+            "p95": 0.376832,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.02416666696468989,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.17536834782608696,
+            "p95": 0.352256,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.02666666656732559,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        }
+      },
+      "active": {
+        "post": true,
+        "depth": true,
+        "ao": true,
+        "bloom": true,
+        "sunRays": false,
+        "volumetric": false,
+        "motionBlur": false,
+        "lensFlare": false,
+        "sunUv": [
+          56.32127426249389,
+          -366.05871401879665
+        ],
+        "sunScreenVisibility": 0,
+        "sunClear": 0,
+        "sunPartial": 0,
+        "cloudTransmission": 1,
+        "samples": 0,
+        "fxaa": true,
+        "sceneSize": [
+          858,
+          482
+        ],
+        "outputSize": [
+          1280,
+          720
+        ],
+        "upscaling": {
+          "requested": "reduced",
+          "backend": "reduced",
+          "scale": 0.67,
+          "supported": true,
+          "compute": false,
+          "reason": null,
+          "temporal": null
+        },
+        "targets": 9
+      },
+      "passes": [
+        "scene",
+        "ao",
+        "ao-blur",
+        "ao-blur",
+        "bloom",
+        "bloom-blur",
+        "bloom-blur",
+        "grade",
+        "finish"
+      ],
+      "resources": [
+        {
+          "name": "scene",
+          "width": 858,
+          "height": 482,
+          "pixels": 413556,
+          "samples": 0,
+          "estimatedBytes": 4962672
+        },
+        {
+          "name": "ao",
+          "width": 343,
+          "height": 193,
+          "pixels": 66199,
+          "samples": 0,
+          "estimatedBytes": 264796
+        },
+        {
+          "name": "ao-blur",
+          "width": 343,
+          "height": 193,
+          "pixels": 66199,
+          "samples": 0,
+          "estimatedBytes": 264796
+        },
+        {
+          "name": "bloom",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "bloom-blur",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "sun-rays",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sun-mask",
+          "width": 256,
+          "height": 256,
+          "pixels": 65536,
+          "samples": 0,
+          "estimatedBytes": 524288
+        },
+        {
+          "name": "sun-visibility",
+          "width": 1,
+          "height": 1,
+          "pixels": 1,
+          "samples": 0,
+          "estimatedBytes": 4
+        },
+        {
+          "name": "grade",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 3686400
+        }
+      ],
+      "failed": false,
+      "carParts": 0,
+      "failures": {},
+      "cameraRestored": true
+    },
+    {
+      "name": "reduced-59",
+      "scale": 0.59,
+      "mode": "reduced",
+      "gpu": {
+        "average": 2.17007104,
+        "p95": 3.870688,
+        "samples": 25
+      },
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0.03999999761581421,
+            "p95": 0.10000002384185791,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 1.8712559999999998,
+            "p95": 2.052096,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 1.7408333306511243,
+            "p95": 2.5,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.000005333333333333333,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.01416666607062022,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.11313530434782608,
+            "p95": 0.126432,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.05416666766007741,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.049569391304347815,
+            "p95": 0.084224,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.013333333532015483,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.030692173913043484,
+            "p95": 0.047104,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.009166666368643443,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.025129739130434776,
+            "p95": 0.024128,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.010000000397364298,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.029238260869565217,
+            "p95": 0.041632,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.009166667362054189,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.07946295652173913,
+            "p95": 0.07936,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.001666666070620219,
+            "p95": 0,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.21737321739130436,
+            "p95": 0.367936,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.024166667461395265,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.16344347826086958,
+            "p95": 0.197312,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.016666665176550546,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        }
+      },
+      "active": {
+        "post": true,
+        "depth": true,
+        "ao": true,
+        "bloom": true,
+        "sunRays": false,
+        "volumetric": false,
+        "motionBlur": false,
+        "lensFlare": false,
+        "sunUv": [
+          56.32127426249389,
+          -366.05871401879665
+        ],
+        "sunScreenVisibility": 0,
+        "sunClear": 0,
+        "sunPartial": 0,
+        "cloudTransmission": 1,
+        "samples": 0,
+        "fxaa": true,
+        "sceneSize": [
+          755,
+          425
+        ],
+        "outputSize": [
+          1280,
+          720
+        ],
+        "upscaling": {
+          "requested": "reduced",
+          "backend": "reduced",
+          "scale": 0.59,
+          "supported": true,
+          "compute": false,
+          "reason": null,
+          "temporal": null
+        },
+        "targets": 9
+      },
+      "passes": [
+        "scene",
+        "ao",
+        "ao-blur",
+        "ao-blur",
+        "bloom",
+        "bloom-blur",
+        "bloom-blur",
+        "grade",
+        "finish"
+      ],
+      "resources": [
+        {
+          "name": "scene",
+          "width": 755,
+          "height": 425,
+          "pixels": 320875,
+          "samples": 0,
+          "estimatedBytes": 3850500
+        },
+        {
+          "name": "ao",
+          "width": 302,
+          "height": 170,
+          "pixels": 51340,
+          "samples": 0,
+          "estimatedBytes": 205360
+        },
+        {
+          "name": "ao-blur",
+          "width": 302,
+          "height": 170,
+          "pixels": 51340,
+          "samples": 0,
+          "estimatedBytes": 205360
+        },
+        {
+          "name": "bloom",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "bloom-blur",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "sun-rays",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sun-mask",
+          "width": 256,
+          "height": 256,
+          "pixels": 65536,
+          "samples": 0,
+          "estimatedBytes": 524288
+        },
+        {
+          "name": "sun-visibility",
+          "width": 1,
+          "height": 1,
+          "pixels": 1,
+          "samples": 0,
+          "estimatedBytes": 4
+        },
+        {
+          "name": "grade",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 3686400
+        }
+      ],
+      "failed": false,
+      "carParts": 0,
+      "failures": {},
+      "cameraRestored": true
+    },
+    {
+      "name": "reduced-50",
+      "scale": 0.5,
+      "mode": "reduced",
+      "gpu": {
+        "average": 2.03609856,
+        "p95": 3.71152,
+        "samples": 25
+      },
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0.020000004768371583,
+            "p95": 0.10000002384185791,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 1.8130586666666666,
+            "p95": 2.738176,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 1.900833334028721,
+            "p95": 3.899999976158142,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.000016,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.01083333392937978,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.08173217391304348,
+            "p95": 0.114144,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.060833334426085156,
+            "p95": 0.19999998807907104,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.07324104347826087,
+            "p95": 0.076128,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.014166666567325592,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.02831721739130435,
+            "p95": 0.073728,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0125,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.1082017391304348,
+            "p95": 0.497664,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.013333332538604737,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.03472,
+            "p95": 0.089504,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.01166666547457377,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.03246052173913043,
+            "p95": 0.087968,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0025000000993410745,
+            "p95": 0,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.3308229565217391,
+            "p95": 0.976224,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.027499999105930328,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.21655234782608693,
+            "p95": 0.3584,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.023333335916201275,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        }
+      },
+      "active": {
+        "post": true,
+        "depth": true,
+        "ao": true,
+        "bloom": true,
+        "sunRays": false,
+        "volumetric": false,
+        "motionBlur": false,
+        "lensFlare": false,
+        "sunUv": [
+          56.32127426249389,
+          -366.05871401879665
+        ],
+        "sunScreenVisibility": 0,
+        "sunClear": 0,
+        "sunPartial": 0,
+        "cloudTransmission": 1,
+        "samples": 0,
+        "fxaa": true,
+        "sceneSize": [
+          640,
+          360
+        ],
+        "outputSize": [
+          1280,
+          720
+        ],
+        "upscaling": {
+          "requested": "reduced",
+          "backend": "reduced",
+          "scale": 0.5,
+          "supported": true,
+          "compute": false,
+          "reason": null,
+          "temporal": null
+        },
+        "targets": 9
+      },
+      "passes": [
+        "scene",
+        "ao",
+        "ao-blur",
+        "ao-blur",
+        "bloom",
+        "bloom-blur",
+        "bloom-blur",
+        "grade",
+        "finish"
+      ],
+      "resources": [
+        {
+          "name": "scene",
+          "width": 640,
+          "height": 360,
+          "pixels": 230400,
+          "samples": 0,
+          "estimatedBytes": 2764800
+        },
+        {
+          "name": "ao",
+          "width": 256,
+          "height": 144,
+          "pixels": 36864,
+          "samples": 0,
+          "estimatedBytes": 147456
+        },
+        {
+          "name": "ao-blur",
+          "width": 256,
+          "height": 144,
+          "pixels": 36864,
+          "samples": 0,
+          "estimatedBytes": 147456
+        },
+        {
+          "name": "bloom",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "bloom-blur",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "sun-rays",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sun-mask",
+          "width": 256,
+          "height": 256,
+          "pixels": 65536,
+          "samples": 0,
+          "estimatedBytes": 524288
+        },
+        {
+          "name": "sun-visibility",
+          "width": 1,
+          "height": 1,
+          "pixels": 1,
+          "samples": 0,
+          "estimatedBytes": 4
+        },
+        {
+          "name": "grade",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 3686400
+        }
+      ],
+      "failed": false,
+      "carParts": 0,
+      "failures": {},
+      "cameraRestored": true
+    },
+    {
+      "name": "sgsr2-fragment-100",
+      "scale": 1,
+      "mode": "sgsr2-fragment",
+      "gpu": {
+        "average": 4.270056960000001,
+        "p95": 5.57872,
+        "samples": 25
+      },
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0.024999991059303284,
+            "p95": 0.09999996423721313,
+            "samples": 4
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 2.6729946666666673,
+            "p95": 3.44624,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 1.7550000046690306,
+            "p95": 2.900000035762787,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.000005333333333333333,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.009166666368643443,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "static-velocity": {
+          "gpu": {
+            "average": 0.14669495652173914,
+            "p95": 0.17488,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.06916666626930237,
+            "p95": 0.20000004768371582,
+            "samples": 120
+          }
+        },
+        "car-velocity": {
+          "gpu": {
+            "average": 0.23742747826086957,
+            "p95": 1.495456,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.06583333363135656,
+            "p95": 0.19999998807907104,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.2145544347826087,
+            "p95": 0.23168,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.017500000695387524,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.2600528695652174,
+            "p95": 1.616,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.016666669646898905,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.04114504347826087,
+            "p95": 0.044224,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.005833333233992258,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.1232862608695652,
+            "p95": 0.042144,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.010833332935969034,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.052119652173913046,
+            "p95": 0.03296,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.017499999701976778,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.11903582608695651,
+            "p95": 0.991328,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.005833332737286885,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.15074226086956524,
+            "p95": 0.268768,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.022500000397364297,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "sgsr2": {
+          "gpu": {
+            "average": 0.7872987826086957,
+            "p95": 0.79024,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.035833333432674405,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "temporal-geometry": {
+          "gpu": {
+            "average": 0.17131130434782607,
+            "p95": 0.176128,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.006666665275891622,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.17164800000000002,
+            "p95": 0.188448,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.02416666646798452,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        }
+      },
+      "active": {
+        "post": true,
+        "depth": true,
+        "ao": true,
+        "bloom": true,
+        "sunRays": false,
+        "volumetric": false,
+        "motionBlur": false,
+        "lensFlare": false,
+        "sunUv": [
+          56.144418617928494,
+          -366.1052932832089
+        ],
+        "sunScreenVisibility": 0,
+        "sunClear": 0,
+        "sunPartial": 0,
+        "cloudTransmission": 1,
+        "samples": 0,
+        "fxaa": false,
+        "sceneSize": [
+          1280,
+          720
+        ],
+        "outputSize": [
+          1280,
+          720
+        ],
+        "upscaling": {
+          "requested": "sgsr2-fragment",
+          "backend": "sgsr2-fragment",
+          "scale": 1,
+          "supported": true,
+          "compute": false,
+          "reason": null,
+          "temporal": {
+            "valid": true,
+            "resets": 43,
+            "lastReset": "resolution or settings changed",
+            "phase": 423,
+            "phaseCount": 8,
+            "jitter": [
+              0.375,
+              0.05555555555555558
+            ],
+            "previousJitter": [
+              -0.125,
+              -0.2777777777777778
+            ],
+            "deltaMs": 16.799999952316284
+          }
+        },
+        "targets": 14
+      },
+      "passes": [
+        "scene",
+        "static-velocity",
+        "car-velocity",
+        "ao",
+        "ao-blur",
+        "ao-blur",
+        "bloom",
+        "bloom-blur",
+        "bloom-blur",
+        "grade",
+        "sgsr2-convert",
+        "sgsr2-upscale",
+        "temporal-geometry",
+        "finish"
+      ],
+      "resources": [
+        {
+          "name": "scene",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 11059200
+        },
+        {
+          "name": "ao",
+          "width": 512,
+          "height": 288,
+          "pixels": 147456,
+          "samples": 0,
+          "estimatedBytes": 589824
+        },
+        {
+          "name": "ao-blur",
+          "width": 512,
+          "height": 288,
+          "pixels": 147456,
+          "samples": 0,
+          "estimatedBytes": 589824
+        },
+        {
+          "name": "bloom",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "bloom-blur",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "sun-rays",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sun-mask",
+          "width": 256,
+          "height": 256,
+          "pixels": 65536,
+          "samples": 0,
+          "estimatedBytes": 524288
+        },
+        {
+          "name": "sun-visibility",
+          "width": 1,
+          "height": 1,
+          "pixels": 1,
+          "samples": 0,
+          "estimatedBytes": 4
+        },
+        {
+          "name": "sgsr-input",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sgsr-velocity",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sgsr-convert",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sgsr-history-a",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sgsr-history-b",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sgsr-geometry",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        }
+      ],
+      "failed": false,
+      "carParts": 7,
+      "failures": {},
+      "cameraRestored": true
+    },
+    {
+      "name": "sgsr2-fragment-77",
+      "scale": 0.77,
+      "mode": "sgsr2-fragment",
+      "gpu": {
+        "average": 3.0389209600000004,
+        "p95": 3.899392,
+        "samples": 25
+      },
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0,
+            "p95": 0,
+            "samples": 4
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 2.0843786666666664,
+            "p95": 3.266656,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 2.080000002682209,
+            "p95": 3.100000023841858,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.0000026666666666666664,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.01583333412806193,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "static-velocity": {
+          "gpu": {
+            "average": 0.08622886956521737,
+            "p95": 0.098816,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.061666667958100635,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "car-velocity": {
+          "gpu": {
+            "average": 0.20689391304347826,
+            "p95": 1.565952,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.07999999523162842,
+            "p95": 0.19999998807907104,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.1798984347826087,
+            "p95": 0.164832,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.012500000496705374,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.03798260869565218,
+            "p95": 0.050592,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.015833333134651184,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.03606260869565218,
+            "p95": 0.043008,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.007500000298023224,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.09003686956521738,
+            "p95": 0.413728,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.00833333432674408,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.02283826086956521,
+            "p95": 0.025568,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.019166668752829234,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.024125217391304344,
+            "p95": 0.026432,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0066666662693023685,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.18206330434782608,
+            "p95": 0.210528,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.019166664282480875,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "sgsr2": {
+          "gpu": {
+            "average": 0.6773565217391304,
+            "p95": 1.660608,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.03249999682108561,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "temporal-geometry": {
+          "gpu": {
+            "average": 0.14394295652173913,
+            "p95": 0.11264,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.008333333333333333,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.1676313043478261,
+            "p95": 0.184704,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.020000000298023225,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        }
+      },
+      "active": {
+        "post": true,
+        "depth": true,
+        "ao": true,
+        "bloom": true,
+        "sunRays": false,
+        "volumetric": false,
+        "motionBlur": false,
+        "lensFlare": false,
+        "sunUv": [
+          56.47433391431518,
+          -366.24032270314774
+        ],
+        "sunScreenVisibility": 0,
+        "sunClear": 0,
+        "sunPartial": 0,
+        "cloudTransmission": 1,
+        "samples": 0,
+        "fxaa": false,
+        "sceneSize": [
+          986,
+          554
+        ],
+        "outputSize": [
+          1280,
+          720
+        ],
+        "upscaling": {
+          "requested": "sgsr2-fragment",
+          "backend": "sgsr2-fragment",
+          "scale": 0.77,
+          "supported": true,
+          "compute": false,
+          "reason": null,
+          "temporal": {
+            "valid": true,
+            "resets": 44,
+            "lastReset": "resolution or settings changed",
+            "phase": 422,
+            "phaseCount": 14,
+            "jitter": [
+              -0.25,
+              0.16666666666666663
+            ],
+            "previousJitter": [
+              0,
+              -0.16666666666666669
+            ],
+            "deltaMs": 16.80000001192093
+          }
+        },
+        "targets": 14
+      },
+      "passes": [
+        "scene",
+        "static-velocity",
+        "car-velocity",
+        "ao",
+        "ao-blur",
+        "ao-blur",
+        "bloom",
+        "bloom-blur",
+        "bloom-blur",
+        "grade",
+        "sgsr2-convert",
+        "sgsr2-upscale",
+        "temporal-geometry",
+        "finish"
+      ],
+      "resources": [
+        {
+          "name": "scene",
+          "width": 986,
+          "height": 554,
+          "pixels": 546244,
+          "samples": 0,
+          "estimatedBytes": 6554928
+        },
+        {
+          "name": "ao",
+          "width": 394,
+          "height": 222,
+          "pixels": 87468,
+          "samples": 0,
+          "estimatedBytes": 349872
+        },
+        {
+          "name": "ao-blur",
+          "width": 394,
+          "height": 222,
+          "pixels": 87468,
+          "samples": 0,
+          "estimatedBytes": 349872
+        },
+        {
+          "name": "bloom",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "bloom-blur",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "sun-rays",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sun-mask",
+          "width": 256,
+          "height": 256,
+          "pixels": 65536,
+          "samples": 0,
+          "estimatedBytes": 524288
+        },
+        {
+          "name": "sun-visibility",
+          "width": 1,
+          "height": 1,
+          "pixels": 1,
+          "samples": 0,
+          "estimatedBytes": 4
+        },
+        {
+          "name": "sgsr-input",
+          "width": 986,
+          "height": 554,
+          "pixels": 546244,
+          "samples": 0,
+          "estimatedBytes": 4369952
+        },
+        {
+          "name": "sgsr-velocity",
+          "width": 986,
+          "height": 554,
+          "pixels": 546244,
+          "samples": 0,
+          "estimatedBytes": 4369952
+        },
+        {
+          "name": "sgsr-convert",
+          "width": 986,
+          "height": 554,
+          "pixels": 546244,
+          "samples": 0,
+          "estimatedBytes": 4369952
+        },
+        {
+          "name": "sgsr-history-a",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sgsr-history-b",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sgsr-geometry",
+          "width": 986,
+          "height": 554,
+          "pixels": 546244,
+          "samples": 0,
+          "estimatedBytes": 4369952
+        }
+      ],
+      "failed": false,
+      "carParts": 7,
+      "failures": {},
+      "cameraRestored": true
+    },
+    {
+      "name": "sgsr2-fragment-67",
+      "scale": 0.67,
+      "mode": "sgsr2-fragment",
+      "gpu": {
+        "average": 3.0844531199999996,
+        "p95": 3.912768,
+        "samples": 25
+      },
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0,
+            "p95": 0,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 1.9532160000000003,
+            "p95": 2.62048,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 1.817500002682209,
+            "p95": 2.699999988079071,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.000010666666666666666,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.007499999304612478,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "static-velocity": {
+          "gpu": {
+            "average": 0.07549078260869564,
+            "p95": 0.079584,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.05833333432674408,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "car-velocity": {
+          "gpu": {
+            "average": 0.18034782608695651,
+            "p95": 1.487744,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.06083333343267441,
+            "p95": 0.19999998807907104,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.1908535652173913,
+            "p95": 0.142432,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.020833333333333332,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.03662191304347825,
+            "p95": 0.050784,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.013333332538604737,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.08993808695652172,
+            "p95": 0.163168,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.008333333333333333,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.028421565217391302,
+            "p95": 0.03168,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.015000000099341075,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.02633182608695652,
+            "p95": 0.026752,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0066666667660077415,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.02583095652173913,
+            "p95": 0.030592,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.00833333432674408,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.11521113043478262,
+            "p95": 0.208224,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.018333330750465393,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "sgsr2": {
+          "gpu": {
+            "average": 0.6731255652173913,
+            "p95": 0.715936,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.04583333084980647,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "temporal-geometry": {
+          "gpu": {
+            "average": 0.12758399999999998,
+            "p95": 0.207712,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.013333333532015483,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.2783958260869565,
+            "p95": 1.2248,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.014999997119108837,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        }
+      },
+      "active": {
+        "post": true,
+        "depth": true,
+        "ao": true,
+        "bloom": true,
+        "sunRays": false,
+        "volumetric": false,
+        "motionBlur": false,
+        "lensFlare": false,
+        "sunUv": [
+          56.057433673864864,
+          -366.1282930029809
+        ],
+        "sunScreenVisibility": 0,
+        "sunClear": 0,
+        "sunPartial": 0,
+        "cloudTransmission": 1,
+        "samples": 0,
+        "fxaa": false,
+        "sceneSize": [
+          858,
+          482
+        ],
+        "outputSize": [
+          1280,
+          720
+        ],
+        "upscaling": {
+          "requested": "sgsr2-fragment",
+          "backend": "sgsr2-fragment",
+          "scale": 0.67,
+          "supported": true,
+          "compute": false,
+          "reason": null,
+          "temporal": {
+            "valid": true,
+            "resets": 45,
+            "lastReset": "resolution or settings changed",
+            "phase": 421,
+            "phaseCount": 18,
+            "jitter": [
+              0.375,
+              0.05555555555555558
+            ],
+            "previousJitter": [
+              -0.125,
+              -0.2777777777777778
+            ],
+            "deltaMs": 17
+          }
+        },
+        "targets": 14
+      },
+      "passes": [
+        "scene",
+        "static-velocity",
+        "car-velocity",
+        "ao",
+        "ao-blur",
+        "ao-blur",
+        "bloom",
+        "bloom-blur",
+        "bloom-blur",
+        "grade",
+        "sgsr2-convert",
+        "sgsr2-upscale",
+        "temporal-geometry",
+        "finish"
+      ],
+      "resources": [
+        {
+          "name": "scene",
+          "width": 858,
+          "height": 482,
+          "pixels": 413556,
+          "samples": 0,
+          "estimatedBytes": 4962672
+        },
+        {
+          "name": "ao",
+          "width": 343,
+          "height": 193,
+          "pixels": 66199,
+          "samples": 0,
+          "estimatedBytes": 264796
+        },
+        {
+          "name": "ao-blur",
+          "width": 343,
+          "height": 193,
+          "pixels": 66199,
+          "samples": 0,
+          "estimatedBytes": 264796
+        },
+        {
+          "name": "bloom",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "bloom-blur",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "sun-rays",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sun-mask",
+          "width": 256,
+          "height": 256,
+          "pixels": 65536,
+          "samples": 0,
+          "estimatedBytes": 524288
+        },
+        {
+          "name": "sun-visibility",
+          "width": 1,
+          "height": 1,
+          "pixels": 1,
+          "samples": 0,
+          "estimatedBytes": 4
+        },
+        {
+          "name": "sgsr-input",
+          "width": 858,
+          "height": 482,
+          "pixels": 413556,
+          "samples": 0,
+          "estimatedBytes": 3308448
+        },
+        {
+          "name": "sgsr-velocity",
+          "width": 858,
+          "height": 482,
+          "pixels": 413556,
+          "samples": 0,
+          "estimatedBytes": 3308448
+        },
+        {
+          "name": "sgsr-convert",
+          "width": 858,
+          "height": 482,
+          "pixels": 413556,
+          "samples": 0,
+          "estimatedBytes": 3308448
+        },
+        {
+          "name": "sgsr-history-a",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sgsr-history-b",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sgsr-geometry",
+          "width": 858,
+          "height": 482,
+          "pixels": 413556,
+          "samples": 0,
+          "estimatedBytes": 3308448
+        }
+      ],
+      "failed": false,
+      "carParts": 7,
+      "failures": {},
+      "cameraRestored": true
+    },
+    {
+      "name": "sgsr2-fragment-59",
+      "scale": 0.59,
+      "mode": "sgsr2-fragment",
+      "gpu": {
+        "average": 2.7227059199999997,
+        "p95": 5.826368,
+        "samples": 25
+      },
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0,
+            "p95": 0,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 1.557978181818182,
+            "p95": 2.455552,
+            "samples": 11
+          },
+          "cpu": {
+            "average": 2.1733333289623262,
+            "p95": 3.300000011920929,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.000008,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.016666665176550546,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "static-velocity": {
+          "gpu": {
+            "average": 0.06868452173913044,
+            "p95": 0.180736,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.04833333740631739,
+            "p95": 0.19999998807907104,
+            "samples": 120
+          }
+        },
+        "car-velocity": {
+          "gpu": {
+            "average": 0.16223582608695652,
+            "p95": 0.372736,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.07250000188748042,
+            "p95": 0.19999998807907104,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.28991304347826086,
+            "p95": 1.51552,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.018333335717519123,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.07391860869565217,
+            "p95": 0.090752,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.012499997516473134,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.035234782608695656,
+            "p95": 0.104448,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.009999999900658925,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.024190608695652174,
+            "p95": 0.079872,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.01166666547457377,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.03165217391304348,
+            "p95": 0.087712,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.00916666587193807,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.02877495652173913,
+            "p95": 0.076288,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.007499999304612478,
+            "p95": 0,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.1905975652173913,
+            "p95": 1.042432,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.026666665077209474,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "sgsr2": {
+          "gpu": {
+            "average": 0.5745307826086956,
+            "p95": 1.320672,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.045000000794728594,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "temporal-geometry": {
+          "gpu": {
+            "average": 0.14552347826086956,
+            "p95": 0.264576,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.017500000695387524,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.19858504347826086,
+            "p95": 0.583712,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.016666667660077412,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        }
+      },
+      "active": {
+        "post": true,
+        "depth": true,
+        "ao": true,
+        "bloom": true,
+        "sunRays": false,
+        "volumetric": false,
+        "motionBlur": false,
+        "lensFlare": false,
+        "sunUv": [
+          56.02143952733667,
+          -366.1376247726245
+        ],
+        "sunScreenVisibility": 0,
+        "sunClear": 0,
+        "sunPartial": 0,
+        "cloudTransmission": 1,
+        "samples": 0,
+        "fxaa": false,
+        "sceneSize": [
+          755,
+          425
+        ],
+        "outputSize": [
+          1280,
+          720
+        ],
+        "upscaling": {
+          "requested": "sgsr2-fragment",
+          "backend": "sgsr2-fragment",
+          "scale": 0.59,
+          "supported": true,
+          "compute": false,
+          "reason": null,
+          "temporal": {
+            "valid": true,
+            "resets": 46,
+            "lastReset": "resolution or settings changed",
+            "phase": 421,
+            "phaseCount": 23,
+            "jitter": [
+              0.375,
+              0.05555555555555558
+            ],
+            "previousJitter": [
+              -0.125,
+              -0.2777777777777778
+            ],
+            "deltaMs": 16.399999976158142
+          }
+        },
+        "targets": 14
+      },
+      "passes": [
+        "scene",
+        "static-velocity",
+        "car-velocity",
+        "ao",
+        "ao-blur",
+        "ao-blur",
+        "bloom",
+        "bloom-blur",
+        "bloom-blur",
+        "grade",
+        "sgsr2-convert",
+        "sgsr2-upscale",
+        "temporal-geometry",
+        "finish"
+      ],
+      "resources": [
+        {
+          "name": "scene",
+          "width": 755,
+          "height": 425,
+          "pixels": 320875,
+          "samples": 0,
+          "estimatedBytes": 3850500
+        },
+        {
+          "name": "ao",
+          "width": 302,
+          "height": 170,
+          "pixels": 51340,
+          "samples": 0,
+          "estimatedBytes": 205360
+        },
+        {
+          "name": "ao-blur",
+          "width": 302,
+          "height": 170,
+          "pixels": 51340,
+          "samples": 0,
+          "estimatedBytes": 205360
+        },
+        {
+          "name": "bloom",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "bloom-blur",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "sun-rays",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sun-mask",
+          "width": 256,
+          "height": 256,
+          "pixels": 65536,
+          "samples": 0,
+          "estimatedBytes": 524288
+        },
+        {
+          "name": "sun-visibility",
+          "width": 1,
+          "height": 1,
+          "pixels": 1,
+          "samples": 0,
+          "estimatedBytes": 4
+        },
+        {
+          "name": "sgsr-input",
+          "width": 755,
+          "height": 425,
+          "pixels": 320875,
+          "samples": 0,
+          "estimatedBytes": 2567000
+        },
+        {
+          "name": "sgsr-velocity",
+          "width": 755,
+          "height": 425,
+          "pixels": 320875,
+          "samples": 0,
+          "estimatedBytes": 2567000
+        },
+        {
+          "name": "sgsr-convert",
+          "width": 755,
+          "height": 425,
+          "pixels": 320875,
+          "samples": 0,
+          "estimatedBytes": 2567000
+        },
+        {
+          "name": "sgsr-history-a",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sgsr-history-b",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sgsr-geometry",
+          "width": 755,
+          "height": 425,
+          "pixels": 320875,
+          "samples": 0,
+          "estimatedBytes": 2567000
+        }
+      ],
+      "failed": false,
+      "carParts": 7,
+      "failures": {},
+      "cameraRestored": true
+    },
+    {
+      "name": "sgsr2-fragment-50",
+      "scale": 0.5,
+      "mode": "sgsr2-fragment",
+      "gpu": {
+        "average": 2.7152895999999997,
+        "p95": 5.579264,
+        "samples": 25
+      },
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0.020000004768371583,
+            "p95": 0.10000002384185791,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 1.3609013333333333,
+            "p95": 3.370976,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 2.4566666637857755,
+            "p95": 3.800000011920929,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.000008,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.01666666865348816,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "static-velocity": {
+          "gpu": {
+            "average": 0.037004521739130436,
+            "p95": 0.04304,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.052500000099341075,
+            "p95": 0.19999998807907104,
+            "samples": 120
+          }
+        },
+        "car-velocity": {
+          "gpu": {
+            "average": 0.35711443478260874,
+            "p95": 2.544512,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.08666666746139526,
+            "p95": 0.19999998807907104,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.15998886956521738,
+            "p95": 0.067648,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.021666668355464935,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.018579478260869562,
+            "p95": 0.02016,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.030833330750465394,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.021086608695652168,
+            "p95": 0.024576,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.009999999900658925,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.24211060869565215,
+            "p95": 1.990176,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.019166667759418488,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.027257043478260867,
+            "p95": 0.032736,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.019166666269302367,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.15801460869565218,
+            "p95": 0.778624,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.007499998311201731,
+            "p95": 0.09999996423721313,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.12780939130434782,
+            "p95": 0.094976,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.029999999205271403,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "sgsr2": {
+          "gpu": {
+            "average": 0.515031652173913,
+            "p95": 1.202176,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.04250000019868215,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "temporal-geometry": {
+          "gpu": {
+            "average": 0.11218365217391306,
+            "p95": 0.790912,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.01583333263794581,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.3646664347826087,
+            "p95": 0.906816,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.020833333830038707,
+            "p95": 0.10000002384185791,
+            "samples": 120
+          }
+        }
+      },
+      "active": {
+        "post": true,
+        "depth": true,
+        "ao": true,
+        "bloom": true,
+        "sunRays": false,
+        "volumetric": false,
+        "motionBlur": false,
+        "lensFlare": false,
+        "sunUv": [
+          56.20337049945029,
+          -366.52450666291946
+        ],
+        "sunScreenVisibility": 0,
+        "sunClear": 0,
+        "sunPartial": 0,
+        "cloudTransmission": 1,
+        "samples": 0,
+        "fxaa": false,
+        "sceneSize": [
+          640,
+          360
+        ],
+        "outputSize": [
+          1280,
+          720
+        ],
+        "upscaling": {
+          "requested": "sgsr2-fragment",
+          "backend": "sgsr2-fragment",
+          "scale": 0.5,
+          "supported": true,
+          "compute": false,
+          "reason": null,
+          "temporal": {
+            "valid": true,
+            "resets": 47,
+            "lastReset": "resolution or settings changed",
+            "phase": 421,
+            "phaseCount": 32,
+            "jitter": [
+              0.125,
+              0.2777777777777777
+            ],
+            "previousJitter": [
+              -0.375,
+              -0.05555555555555558
+            ],
+            "deltaMs": 16.19999998807907
+          }
+        },
+        "targets": 14
+      },
+      "passes": [
+        "scene",
+        "static-velocity",
+        "car-velocity",
+        "ao",
+        "ao-blur",
+        "ao-blur",
+        "bloom",
+        "bloom-blur",
+        "bloom-blur",
+        "grade",
+        "sgsr2-convert",
+        "sgsr2-upscale",
+        "temporal-geometry",
+        "finish"
+      ],
+      "resources": [
+        {
+          "name": "scene",
+          "width": 640,
+          "height": 360,
+          "pixels": 230400,
+          "samples": 0,
+          "estimatedBytes": 2764800
+        },
+        {
+          "name": "ao",
+          "width": 256,
+          "height": 144,
+          "pixels": 36864,
+          "samples": 0,
+          "estimatedBytes": 147456
+        },
+        {
+          "name": "ao-blur",
+          "width": 256,
+          "height": 144,
+          "pixels": 36864,
+          "samples": 0,
+          "estimatedBytes": 147456
+        },
+        {
+          "name": "bloom",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "bloom-blur",
+          "width": 320,
+          "height": 180,
+          "pixels": 57600,
+          "samples": 0,
+          "estimatedBytes": 460800
+        },
+        {
+          "name": "sun-rays",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sun-mask",
+          "width": 256,
+          "height": 256,
+          "pixels": 65536,
+          "samples": 0,
+          "estimatedBytes": 524288
+        },
+        {
+          "name": "sun-visibility",
+          "width": 1,
+          "height": 1,
+          "pixels": 1,
+          "samples": 0,
+          "estimatedBytes": 4
+        },
+        {
+          "name": "sgsr-input",
+          "width": 640,
+          "height": 360,
+          "pixels": 230400,
+          "samples": 0,
+          "estimatedBytes": 1843200
+        },
+        {
+          "name": "sgsr-velocity",
+          "width": 640,
+          "height": 360,
+          "pixels": 230400,
+          "samples": 0,
+          "estimatedBytes": 1843200
+        },
+        {
+          "name": "sgsr-convert",
+          "width": 640,
+          "height": 360,
+          "pixels": 230400,
+          "samples": 0,
+          "estimatedBytes": 1843200
+        },
+        {
+          "name": "sgsr-history-a",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sgsr-history-b",
+          "width": 1280,
+          "height": 720,
+          "pixels": 921600,
+          "samples": 0,
+          "estimatedBytes": 7372800
+        },
+        {
+          "name": "sgsr-geometry",
+          "width": 640,
+          "height": 360,
+          "pixels": 230400,
+          "samples": 0,
+          "estimatedBytes": 1843200
+        }
+      ],
+      "failed": false,
+      "carParts": 7,
+      "failures": {},
+      "cameraRestored": true
+    }
+  ],
+  "screenshots": [
+    "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-sgsr2/native-100.png",
+    "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-sgsr2/reduced-100.png",
+    "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-sgsr2/reduced-77.png",
+    "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-sgsr2/reduced-67.png",
+    "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-sgsr2/reduced-59.png",
+    "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-sgsr2/reduced-50.png",
+    "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-sgsr2/sgsr2-fragment-100.png",
+    "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-sgsr2/sgsr2-fragment-77.png",
+    "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-sgsr2/sgsr2-fragment-67.png",
+    "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-sgsr2/sgsr2-fragment-59.png",
+    "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-sgsr2/sgsr2-fragment-50.png"
+  ],
+  "method": "Fixed Summer 2 #1 replay scene and camera, after ~6s; test-only simulation freeze, real hooked renderer at browser RAF. Warmed shadows and shaders; no motion blur. GPU timings sampled asynchronously.",
+  "environment": {
+    "gpu": "ANGLE (NVIDIA, NVIDIA T500 (0x00001FBB) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "threeRevision": "181",
+    "capabilities": {
+      "threeRevision": "181",
+      "classes": {
+        "WebGLRenderer": true,
+        "Scene": true,
+        "Color": true,
+        "Fog": true,
+        "FogExp2": false,
+        "DirectionalLight": true,
+        "PointLight": true,
+        "SpotLight": true,
+        "AmbientLight": false,
+        "HemisphereLight": true,
+        "Vector2": true,
+        "Vector3": true,
+        "Vector4": true,
+        "Matrix4": true,
+        "Quaternion": true,
+        "Box3": true,
+        "Sphere": true,
+        "ShaderMaterial": true,
+        "RawShaderMaterial": false,
+        "Mesh": true,
+        "BufferGeometry": true,
+        "BufferAttribute": true,
+        "PlaneGeometry": true,
+        "SphereGeometry": true,
+        "OrthographicCamera": true,
+        "PerspectiveCamera": true,
+        "WebGLRenderTarget": true,
+        "WebGLCubeRenderTarget": true,
+        "CubeCamera": false,
+        "DepthTexture": true,
+        "DataTexture": true,
+        "Texture": true,
+        "Raycaster": true,
+        "MeshStandardMaterial": true,
+        "MeshPhysicalMaterial": true,
+        "MeshLambertMaterial": true,
+        "MeshPhongMaterial": false,
+        "Frustum": true,
+        "Clock": false,
+        "PMREMGenerator": false,
+        "GameRenderer": true
+      },
+      "constants": {
+        "NoBlending": 0,
+        "AdditiveBlending": 2,
+        "CustomBlending": 5,
+        "FrontSide": 0,
+        "BackSide": 1,
+        "DoubleSide": 2,
+        "NearestFilter": 1003,
+        "LinearFilter": 1006,
+        "HalfFloatType": 1016,
+        "FloatType": 1015,
+        "UnsignedByteType": 1009,
+        "UnsignedIntType": 1014,
+        "RGBAFormat": 1023,
+        "DepthFormat": 1026,
+        "SRGBColorSpace": "srgb",
+        "LinearSRGBColorSpace": "srgb-linear",
+        "NoColorSpace": "",
+        "ACESFilmicToneMapping": 4,
+        "NoToneMapping": 0,
+        "PCFShadowMap": 1,
+        "PCFSoftShadowMap": 2,
+        "VSMShadowMap": 3,
+        "EquirectangularReflectionMapping": 303,
+        "RGBFormat": null,
+        "sRGBEncoding": null
+      },
+      "enumSource": "PolyTrack 0.6.3 bundle stable enum table; named exports preferred",
+      "extensions": [
+        "EXT_clip_control",
+        "EXT_color_buffer_float",
+        "EXT_color_buffer_half_float",
+        "EXT_conservative_depth",
+        "EXT_depth_clamp",
+        "EXT_disjoint_timer_query_webgl2",
+        "EXT_float_blend",
+        "EXT_polygon_offset_clamp",
+        "EXT_render_snorm",
+        "EXT_texture_compression_bptc",
+        "EXT_texture_compression_rgtc",
+        "EXT_texture_filter_anisotropic",
+        "EXT_texture_mirror_clamp_to_edge",
+        "EXT_texture_norm16",
+        "KHR_parallel_shader_compile",
+        "NV_shader_noperspective_interpolation",
+        "OES_draw_buffers_indexed",
+        "OES_sample_variables",
+        "OES_shader_multisample_interpolation",
+        "OES_texture_float_linear",
+        "OVR_multiview2",
+        "WEBGL_blend_func_extended",
+        "WEBGL_clip_cull_distance",
+        "WEBGL_compressed_texture_s3tc",
+        "WEBGL_compressed_texture_s3tc_srgb",
+        "WEBGL_debug_renderer_info",
+        "WEBGL_debug_shaders",
+        "WEBGL_lose_context",
+        "WEBGL_multi_draw",
+        "WEBGL_polygon_mode",
+        "WEBGL_provoking_vertex",
+        "WEBGL_stencil_texturing"
+      ],
+      "webgl2": true,
+      "halfFloat": true,
+      "floatLinear": true,
+      "maxTextureSize": 16384,
+      "maxRenderbufferSize": 16384,
+      "maxVaryingVectors": 30,
+      "maxSamples": 8,
+      "maxTextureUnits": 16,
+      "maxColorAttachments": 8,
+      "multipleRenderTargets": true,
+      "antialias": true,
+      "devicePixelRatio": 1,
+      "pixelRatio": 1,
+      "drawingBuffer": [
+        1280,
+        720
+      ],
+      "outputColorSpace": "srgb-linear",
+      "toneMapping": 0,
+      "features": {
+        "shaderMaterial": true,
+        "renderTargets": true,
+        "depthTexture": true,
+        "pmrem": false,
+        "cubeCamera": false,
+        "environment": true,
+        "postprocess": true,
+        "ssao": true,
+        "bloom": true,
+        "sunRays": true,
+        "fxaa": true,
+        "gpuTimer": true
+      },
+      "passes": [
+        "scene",
+        "static-velocity",
+        "car-velocity",
+        "ao",
+        "ao-blur",
+        "ao-blur",
+        "bloom",
+        "bloom-blur",
+        "bloom-blur",
+        "grade",
+        "sgsr2-convert",
+        "sgsr2-upscale",
+        "temporal-geometry",
+        "finish"
+      ],
+      "active": {
+        "post": true,
+        "depth": true,
+        "ao": true,
+        "bloom": true,
+        "sunRays": false,
+        "volumetric": false,
+        "motionBlur": false,
+        "lensFlare": false,
+        "sunUv": [
+          56.27730083105571,
+          -365.47888915059394
+        ],
+        "sunScreenVisibility": 0,
+        "sunClear": 0,
+        "sunPartial": 0,
+        "cloudTransmission": 1,
+        "samples": 0,
+        "fxaa": false,
+        "sceneSize": [
+          858,
+          482
+        ],
+        "outputSize": [
+          1280,
+          720
+        ],
+        "upscaling": {
+          "requested": "sgsr2-fragment",
+          "backend": "sgsr2-fragment",
+          "scale": 0.67,
+          "supported": true,
+          "compute": false,
+          "reason": null,
+          "temporal": {
+            "valid": true,
+            "resets": 42,
+            "lastReset": "projection changed",
+            "phase": 207,
+            "phaseCount": 18,
+            "jitter": [
+              0.0625,
+              -0.46296296296296297
+            ],
+            "previousJitter": [
+              -0.4375,
+              0.38888888888888884
+            ],
+            "deltaMs": 17.099999964237213
+          }
+        },
+        "targets": 14
+      },
+      "resources": {
+        "allocated": 15,
+        "disposed": 1,
+        "resized": 3,
+        "live": 14,
+        "targets": [
+          {
+            "name": "scene",
+            "width": 858,
+            "height": 482,
+            "pixels": 413556,
+            "samples": 0,
+            "estimatedBytes": 4962672
+          },
+          {
+            "name": "ao",
+            "width": 343,
+            "height": 193,
+            "pixels": 66199,
+            "samples": 0,
+            "estimatedBytes": 264796
+          },
+          {
+            "name": "ao-blur",
+            "width": 343,
+            "height": 193,
+            "pixels": 66199,
+            "samples": 0,
+            "estimatedBytes": 264796
+          },
+          {
+            "name": "bloom",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "bloom-blur",
+            "width": 320,
+            "height": 180,
+            "pixels": 57600,
+            "samples": 0,
+            "estimatedBytes": 460800
+          },
+          {
+            "name": "sun-rays",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "sun-mask",
+            "width": 256,
+            "height": 256,
+            "pixels": 65536,
+            "samples": 0,
+            "estimatedBytes": 524288
+          },
+          {
+            "name": "sun-visibility",
+            "width": 1,
+            "height": 1,
+            "pixels": 1,
+            "samples": 0,
+            "estimatedBytes": 4
+          },
+          {
+            "name": "sgsr-input",
+            "width": 858,
+            "height": 482,
+            "pixels": 413556,
+            "samples": 0,
+            "estimatedBytes": 3308448
+          },
+          {
+            "name": "sgsr-velocity",
+            "width": 858,
+            "height": 482,
+            "pixels": 413556,
+            "samples": 0,
+            "estimatedBytes": 3308448
+          },
+          {
+            "name": "sgsr-convert",
+            "width": 858,
+            "height": 482,
+            "pixels": 413556,
+            "samples": 0,
+            "estimatedBytes": 3308448
+          },
+          {
+            "name": "sgsr-history-a",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "sgsr-history-b",
+            "width": 1280,
+            "height": 720,
+            "pixels": 921600,
+            "samples": 0,
+            "estimatedBytes": 7372800
+          },
+          {
+            "name": "sgsr-geometry",
+            "width": 858,
+            "height": 482,
+            "pixels": 413556,
+            "samples": 0,
+            "estimatedBytes": 3308448
+          }
+        ]
+      },
+      "failures": {},
+      "brakeLights": {
+        "cars": 1,
+        "lights": 2,
+        "active": false,
+        "type": "SpotLight",
+        "targets": 2
+      },
+      "contactShadow": {
+        "available": true,
+        "visible": true,
+        "cars": 1,
+        "receivers": 88,
+        "broadQueries": 27,
+        "narrowQueries": 30,
+        "indexedInstances": 2174
+      },
+      "shadowCache": {
+        "updated": 379,
+        "reused": 0,
+        "animated": false
+      },
+      "shaderWarmup": {
+        "supported": true,
+        "submitted": 30,
+        "queued": 0
+      },
+      "environment": {
+        "generations": 1,
+        "cubeSize": 64
+      }
+    },
+    "revisionSources": [
+      {
+        "id": "4922",
+        "match": [
+          "revision: i } }),\n              ),\n              \"undefined\" != typeof window &&\n        ",
+          "__THREE__\n                  ? an(\n                      \"WARNING: Multiple instances of T",
+          "__THREE__ = i)));\n          }"
+        ]
+      },
+      {
+        "id": "9437",
+        "match": [
+          "THREE.WebGLRenderer: WebGL 1 is not supported since r163.\",\n                    );\n                ",
+          "THREE.WebGLRenderer.readRenderTargetPixels: renderTarget is not THREE.WebGLRenderTarget.\",\n        ",
+          "THREE.WebGLRenderer.readRenderTargetPixelsAsync: renderTarget is not in RGBA or implementation defi",
+          "THREE.WebGLRenderer.readRenderTargetPixelsAsync: renderTarget is not in UnsignedByteType or impleme",
+          "THREE.WebGLRenderer.readRenderTargetPixelsAsync: requested read bounds are out of range.\",\n        "
+        ]
+      }
+    ],
+    "dpr": 1,
+    "carParts": 7,
+    "nativeWrapper": []
+  },
+  "resize": {
+    "post": true,
+    "depth": true,
+    "ao": true,
+    "bloom": true,
+    "sunRays": false,
+    "volumetric": false,
+    "motionBlur": false,
+    "lensFlare": false,
+    "sunUv": [
+      56.40922112537022,
+      -365.710819097875
+    ],
+    "sunScreenVisibility": 0,
+    "sunClear": 0,
+    "sunPartial": 0,
+    "cloudTransmission": 1,
+    "samples": 0,
+    "fxaa": false,
+    "sceneSize": [
+      858,
+      482
+    ],
+    "outputSize": [
+      1280,
+      720
+    ],
+    "upscaling": {
+      "requested": "sgsr2-fragment",
+      "backend": "sgsr2-fragment",
+      "scale": 0.67,
+      "supported": true,
+      "compute": false,
+      "reason": null,
+      "temporal": {
+        "valid": true,
+        "resets": 57,
+        "lastReset": "resolution or settings changed",
+        "phase": 42,
+        "phaseCount": 18,
+        "jitter": [
+          -0.125,
+          -0.2777777777777778
+        ],
+        "previousJitter": [
+          0.125,
+          0.2777777777777777
+        ],
+        "deltaMs": 16.5
+      }
+    },
+    "targets": 14
+  },
+  "compute": {
+    "requested": "sgsr2-compute",
+    "backend": "native",
+    "scale": 1,
+    "supported": true,
+    "compute": false,
+    "reason": "SGSR2 Compute is unsupported by this WebGL renderer.",
+    "temporal": null
+  },
+  "nativeRestoration": {
+    "active": {
+      "post": true,
+      "depth": true,
+      "ao": true,
+      "bloom": true,
+      "sunRays": false,
+      "volumetric": false,
+      "motionBlur": false,
+      "lensFlare": false,
+      "sunUv": [
+        56.32127426249389,
+        -366.05871401879665
+      ],
+      "sunScreenVisibility": 0,
+      "sunClear": 0,
+      "sunPartial": 0,
+      "cloudTransmission": 1,
+      "samples": 0,
+      "fxaa": true,
+      "sceneSize": [
+        1280,
+        720
+      ],
+      "outputSize": [
+        1280,
+        720
+      ],
+      "upscaling": {
+        "requested": "native",
+        "backend": "native",
+        "scale": 1,
+        "supported": true,
+        "compute": false,
+        "reason": null,
+        "temporal": null
+      },
+      "targets": 9
+    },
+    "temporalTargets": []
+  },
+  "disabled": true,
+  "panelHidden": true,
+  "panelRestored": true,
+  "errors": []
+}

@@ -212,9 +212,15 @@ export function mountPanel(document, callbacks, initialSettings) {
           control.value = v;
         };
       } else {
+        const upscaleLabels = {
+          native: key === "upscaling" ? "Native" : "Native / 100%", "sgsr2-fragment": "SGSR2 Fragment", auto: "Auto",
+          reduced: "Reduced resolution (bilinear benchmark)", "sgsr2-compute": "SGSR2 Compute (unsupported)",
+          "ultra-quality": "Ultra Quality / 77%", quality: "Quality / 67%",
+          balanced: "Balanced / 59%", performance: "Performance / 50%", custom: "Custom",
+        };
         control = makeSelect(
           document,
-          min.map((v) => [v, v]),
+          min.map((v) => [v, key === "upscaling" || key === "upscaleQuality" ? upscaleLabels[v] ?? v : v]),
           initialSettings.values[key],
           (v) => callbacks.onValue(key, v),
         );
@@ -319,6 +325,8 @@ export function mountPanel(document, callbacks, initialSettings) {
   );
   status.setAttribute("role", "status");
   content.appendChild(status);
+  const upscaleStatus = createElement(document, "div", "polyshade-status");
+  content.appendChild(upscaleStatus);
   const metrics = createElement(document, "div", "polyshade-metrics");
   metrics.hidden = true;
   content.appendChild(metrics);
@@ -356,6 +364,12 @@ export function mountPanel(document, callbacks, initialSettings) {
       metrics.hidden = !settings.values.debugEnabled;
     },
     setMetrics(data) {
+      const active = data.capabilities?.active;
+      const upscale = active?.upscaling;
+      upscaleStatus.textContent = upscale ?
+        `${upscale.backend} | internal ${active.sceneSize.join(" × ")} → output ${active.outputSize.join(" × ")}` +
+        (upscale.temporal ? ` | history ${upscale.temporal.valid ? "valid" : "reset"} (${upscale.temporal.lastReset}), jitter ${upscale.temporal.jitter.map(v => v.toFixed(3)).join(", ")}` : "") +
+        (upscale.reason ? ` | ${upscale.reason}` : "") : "";
       if (metrics.hidden) return;
       const shadowSize = SHADOW_MAP_SIZES[data.shadowQuality] || "off";
       metrics.textContent = [

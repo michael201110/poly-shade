@@ -23,6 +23,7 @@ export class ShaderWarmup {
       settings.bloomEnabled && settings.bloomStrength > 0,
       settings.sunRaysEnabled, settings.lensFlareEnabled, settings.volumetricEnabled,
       settings.fxaaEnabled, settings.sharpenEnabled && settings.sharpenStrength > 0,
+      settings.upscaling,
     ]);
     const directionals = scene.children.filter(node => node.isDirectionalLight && node.castShadow).length;
     if (this.configuration === configuration && this.directionals === directionals && this.meshCount === meshCount && this.nativeCSM === nativeCSM &&
