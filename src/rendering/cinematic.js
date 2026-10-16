@@ -41,6 +41,7 @@ export class CinematicRenderer {
       );
   }
   update(state, settings, now, camera) {
+    this.sceneState = state;
     this.configureProfiler(settings);
     this.brakeLights?.scan(settings, camera, state);
     this.brakeLights?.update(settings);
@@ -74,7 +75,8 @@ export class CinematicRenderer {
       this.sky.uniforms.time.value = now / 1000;
   }
   configureProfiler(settings) {
-    if (settings.debugProfile && this.profileSettings !== settings) {
+    const enabled=settings.debugProfile&&!this.useGPUProfiler;
+    if (enabled && this.profileSettings !== settings) {
       this.profileSettings = settings;
       const key = JSON.stringify(settings);
       if (this.profileKey !== key) {
@@ -83,9 +85,9 @@ export class CinematicRenderer {
         this.profileKey = key;
       }
     }
-    if (settings.debugProfile && !this.profiler)
+    if (enabled && !this.profiler)
       this.profiler = new PassProfiler(this.renderer, this.capabilities);
-    if (!settings.debugProfile && this.profiler) {
+    if (!enabled && this.profiler) {
       this.profiler.dispose();
       this.profiler = null;
     }
@@ -137,6 +139,7 @@ export class CinematicRenderer {
     };
   }
   detachScene() {
+    this.sceneState = null;
     this.warmup.clear();
     this.shadows.dispose();
     this.brakeLights?.dispose();

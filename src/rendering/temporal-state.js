@@ -18,7 +18,16 @@ export function selectUpscaling(settings, capabilities, failed = false) {
   const supported = capabilities.webgl2 && capabilities.halfFloat &&
     capabilities.features?.depthTexture;
   const available = supported && !failed;
-  // Compute is deliberately unsupported: do not label a spatial fallback SGSR2.
+  const gpu = capabilities.webgpu === true;
+  if (gpu) {
+    const available = capabilities.compute === true && !failed;
+    const backend = requested === 'reduced' ? 'reduced' : available &&
+      (requested === 'auto' || requested === 'sgsr2-compute') ? 'sgsr2-compute' : 'native';
+    const scale = backend === 'native' ? (requested === 'native' ? settings.renderScale ?? 1 : 1) :
+      UPSCALE_SCALES[settings.upscaleQuality ?? 'quality'] ?? settings.upscaleCustomScale ?? .67;
+    return { requested, backend, scale, supported: available, compute: backend === 'sgsr2-compute',
+      reason: backend === 'native' && requested !== 'native' ? 'Requested temporal path unavailable on WebGPU; using Native.' : null };
+  }
   const backend = requested === "reduced" ? "reduced" :
     available && (requested === "sgsr2-fragment" || requested === "auto") ? "sgsr2-fragment" : "native";
   const scale = backend === "native" ? (requested === "native" ? settings.renderScale ?? 1 : 1) :
@@ -54,6 +63,7 @@ export class TemporalState {
     this.lastReset = "first frame";
   }
   invalidate(reason = "explicit reset") {
+    this.valid = false;
     this.pending = reason;
     this.ready = false;
   }
@@ -99,10 +109,10 @@ export class TemporalState {
     // Geometry moves +jitter pixels. The reference samples colour at UV+jitter/size.
     if (camera.isPerspectiveCamera) {
       camera.projectionMatrix.elements[8] -= 2 * this.jitter.x / width;
-      camera.projectionMatrix.elements[9] -= 2 * this.jitter.y / height;
+      camera.projectionMatrix.elements[9] += (camera.coordinateSystem === 2001 ? 2 : -2) * this.jitter.y / height;
     } else {
       camera.projectionMatrix.elements[12] += 2 * this.jitter.x / width;
-      camera.projectionMatrix.elements[13] += 2 * this.jitter.y / height;
+      camera.projectionMatrix.elements[13] += (camera.coordinateSystem === 2001 ? -2 : 2) * this.jitter.y / height;
     }
     camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
     this.currentJitteredVP.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
@@ -117,7 +127,9 @@ export class TemporalState {
     this.renderedPreviousJitter.copy(this.previousJitter);
     this.clipToPrevious.multiplyMatrices(this.previousJitteredVP, this.inverseJitteredVP);
     this.previousInverseProjection.copy(this.valid ? this.previousProjection : this.projection).invert();
-    const difference = this.currentJitteredVP.elements.reduce((sum, v, i) => sum + Math.abs(v - this.previousJitteredVP.elements[i]), 0);
+    // Jitter is sampling motion, not camera motion. A stationary camera must
+    // retain upstream's still-camera kernel/history behaviour while jittering.
+    const difference = this.currentVP.elements.reduce((sum, v, i) => sum + Math.abs(v - this.previousVP.elements[i]), 0);
     this.stillFrames = difference < 1e-5 ? (this.stillFrames ?? 0) + 1 : 0;
   }
   restoreCamera() {

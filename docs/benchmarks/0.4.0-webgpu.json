@@ -1,0 +1,2253 @@
+{
+  "date": "2026-10-16T20:02:55.319Z",
+  "browser": "155.0.4283.45",
+  "viewport": [
+    1280,
+    720
+  ],
+  "gpu": "ANGLE (NVIDIA, NVIDIA T500 (0x00001FBB) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "method": "Fixed Summer 2 #1 replay scene and camera after renderer initialization and four captures; test-only simulation freeze keeps both renderer schedulers alive. Real hooked renderer at browser RAF, identical snapshot per mode. 2s case warmup then 5s asynchronous GPU samples; no motion blur.",
+  "cases": [
+    {
+      "name": "native-100",
+      "scale": 1,
+      "sceneMedianMs": 1.836512,
+      "reconstructionMedianMs": 0,
+      "totalMedianMs": 2.641792,
+      "totalP95Ms": 3.103456,
+      "samples": 25,
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0.020000001788139342,
+            "p95": 0.10000000894069672,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 2.0070050909090913,
+            "p95": 2.429984,
+            "samples": 11
+          },
+          "cpu": {
+            "average": 2.215833331892888,
+            "p95": 3.5,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.0000026666666666666664,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.008333333084980648,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.1432055652173913,
+            "p95": 0.149504,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.07499999987582366,
+            "p95": 0.20000000298023224,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.31333008695652176,
+            "p95": 1.091648,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.02583333378036817,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.09579269565217391,
+            "p95": 0.512768,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.010833333184321722,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.044886260869565216,
+            "p95": 0.047104,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.013333333532015483,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.03669565217391304,
+            "p95": 0.022528,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.012500000124176344,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.024001391304347825,
+            "p95": 0.02624,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.005833333358168602,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.26264208695652175,
+            "p95": 0.709216,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.03166666738688946,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.1387158260869565,
+            "p95": 0.1952,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.03166666689018408,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        }
+      }
+    },
+    {
+      "name": "reduced-100",
+      "scale": 1,
+      "sceneMedianMs": 2.062432,
+      "reconstructionMedianMs": 0,
+      "totalMedianMs": 2.76384,
+      "totalP95Ms": 3.262336,
+      "samples": 24,
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0.03999999761581421,
+            "p95": 0.09999999403953552,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 2.0889687272727273,
+            "p95": 2.628768,
+            "samples": 11
+          },
+          "cpu": {
+            "average": 2.253333334128062,
+            "p95": 3.2999999970197678,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0,
+            "p95": 0,
+            "samples": 11
+          },
+          "cpu": {
+            "average": 0.017500000074505806,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.1566225454545454,
+            "p95": 0.168128,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.0766666665673256,
+            "p95": 0.20000000298023224,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.1962618181818182,
+            "p95": 0.685888,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.01749999982615312,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.11478254545454547,
+            "p95": 0.542688,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.010000000273187955,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.06935563636363636,
+            "p95": 0.049152,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.014166666815678278,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.08437527272727273,
+            "p95": 0.034816,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.02166666661699613,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.048367999999999994,
+            "p95": 0.026624,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.009999999900658925,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.44770327272727267,
+            "p95": 1.654016,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.03583333318432172,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.1394589090909091,
+            "p95": 0.129024,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.017499999950329463,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        }
+      }
+    },
+    {
+      "name": "reduced-77",
+      "scale": 0.77,
+      "sceneMedianMs": 1.517568,
+      "reconstructionMedianMs": 0,
+      "totalMedianMs": 2.029568,
+      "totalP95Ms": 2.67312,
+      "samples": 25,
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0,
+            "p95": 0,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 1.5224,
+            "p95": 2.056192,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 2.018333333854874,
+            "p95": 2.7000000029802322,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.000005333333333333333,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.012499999751647313,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.0987408695652174,
+            "p95": 0.100352,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.05583333348234495,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.0339255652173913,
+            "p95": 0.037568,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.021666667113701504,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.09511652173913043,
+            "p95": 0.548032,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.00916666661699613,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.10436452173913043,
+            "p95": 0.548928,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.01666666641831398,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.03272347826086957,
+            "p95": 0.022528,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.015833333134651184,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.06116452173913044,
+            "p95": 0.022816,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.00999999965230624,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.37818573913043474,
+            "p95": 0.78832,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.02333333355685075,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.16685913043478262,
+            "p95": 0.614848,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.025833333656191827,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        }
+      }
+    },
+    {
+      "name": "reduced-67",
+      "scale": 0.67,
+      "sceneMedianMs": 1.36528,
+      "reconstructionMedianMs": 0,
+      "totalMedianMs": 1.718496,
+      "totalP95Ms": 2.55248,
+      "samples": 25,
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0.020000001788139342,
+            "p95": 0.10000000894069672,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 1.2558373333333332,
+            "p95": 1.609632,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 2.092500000074506,
+            "p95": 2.8999999910593033,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.000005333333333333333,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.014166666318972905,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.08085565217391305,
+            "p95": 0.086144,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0566666666418314,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.028233739130434785,
+            "p95": 0.03072,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.019999999677141507,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.0722128695652174,
+            "p95": 0.035328,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.008333333830038706,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.07938643478260869,
+            "p95": 0.568544,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.022499999528129897,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.10564869565217391,
+            "p95": 0.562688,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.018333333482344946,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.06602295652173913,
+            "p95": 0.529696,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.009166666492819785,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.3035547826086956,
+            "p95": 1.127296,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.021666666368643443,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.2978379130434783,
+            "p95": 0.849312,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.028333333258827528,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        }
+      }
+    },
+    {
+      "name": "reduced-59",
+      "scale": 0.59,
+      "sceneMedianMs": 1.110048,
+      "reconstructionMedianMs": 0,
+      "totalMedianMs": 1.677312,
+      "totalP95Ms": 2.49952,
+      "samples": 25,
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0,
+            "p95": 0,
+            "samples": 4
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 1.0182826666666667,
+            "p95": 1.468416,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 2.0741666673372188,
+            "p95": 2.800000011920929,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.000010666666666666666,
+            "p95": 0.000064,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.015000000099341075,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.06446886956521738,
+            "p95": 0.067584,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.06249999950329463,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.08188521739130436,
+            "p95": 0.028416,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.025000000496705373,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.044094608695652175,
+            "p95": 0.026624,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.006666666393478711,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.04541773913043478,
+            "p95": 0.028672,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.015000000099341075,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.02354086956521739,
+            "p95": 0.024576,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.015000000223517418,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.07073808695652174,
+            "p95": 0.415744,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.006666666517655055,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.49828591304347825,
+            "p95": 0.891136,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.028333333134651185,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.21409808695652177,
+            "p95": 0.788608,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.019166666517655053,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        }
+      }
+    },
+    {
+      "name": "reduced-50",
+      "scale": 0.5,
+      "sceneMedianMs": 1.063296,
+      "reconstructionMedianMs": 0,
+      "totalMedianMs": 1.745504,
+      "totalP95Ms": 2.453376,
+      "samples": 25,
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0.02499999850988388,
+            "p95": 0.09999999403953552,
+            "samples": 4
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 0.9574000000000001,
+            "p95": 1.263808,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 2.0808333326131105,
+            "p95": 2.7999999970197678,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.000008,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.007499999925494194,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.051468521739130454,
+            "p95": 0.053824,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.07500000049670537,
+            "p95": 0.20000000298023224,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.050086956521739126,
+            "p95": 0.02032,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.01333333303531011,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.01964939130434783,
+            "p95": 0.022208,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.013333333904544513,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.1577335652173913,
+            "p95": 1.589984,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.012499999875823656,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.022818782608695656,
+            "p95": 0.026592,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.014166666939854623,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.07527513043478261,
+            "p95": 0.49984,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.00750000017384688,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.40975721739130433,
+            "p95": 0.9216,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.024166666716337205,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.2747464347826087,
+            "p95": 0.776256,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.022499999528129897,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        }
+      }
+    },
+    {
+      "name": "sgsr2-fragment-100",
+      "scale": 1,
+      "sceneMedianMs": 1.368064,
+      "reconstructionMedianMs": 1.04096,
+      "totalMedianMs": 3.667968,
+      "totalP95Ms": 4.007616,
+      "samples": 25,
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0,
+            "p95": 0,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 1.3658000000000001,
+            "p95": 1.87392,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 2.127499999354283,
+            "p95": 3,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.0000026666666666666664,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.015000000099341075,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "static-velocity": {
+          "gpu": {
+            "average": 0.22913113043478264,
+            "p95": 0.531328,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0649999998509884,
+            "p95": 0.19999998807907104,
+            "samples": 120
+          }
+        },
+        "car-velocity": {
+          "gpu": {
+            "average": 0.3979617391304348,
+            "p95": 2.254176,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.08500000052154064,
+            "p95": 0.20000000298023224,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.11266643478260872,
+            "p95": 0.136032,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.030000000074505807,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.11886191304347828,
+            "p95": 0.504992,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.014166666815678278,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.06405843478260868,
+            "p95": 0.273856,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.009166666741172473,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.04661704347826087,
+            "p95": 0.049152,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.009166666492819785,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.020851478260869565,
+            "p95": 0.022304,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.017499999950329463,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.06962086956521739,
+            "p95": 0.026208,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.005833333358168602,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.23231582608695653,
+            "p95": 0.619136,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.03333333358168602,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "sgsr2": {
+          "gpu": {
+            "average": 1.077165913043478,
+            "p95": 2.17984,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.048333333184321724,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "temporal-geometry": {
+          "gpu": {
+            "average": 0.36319443478260877,
+            "p95": 0.743808,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.018333333358168603,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.32034365217391303,
+            "p95": 0.633824,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.025,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        }
+      }
+    },
+    {
+      "name": "sgsr2-fragment-77",
+      "scale": 0.77,
+      "sceneMedianMs": 0.866432,
+      "reconstructionMedianMs": 0.866176,
+      "totalMedianMs": 2.81968,
+      "totalP95Ms": 3.316384,
+      "samples": 25,
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0.019999998807907104,
+            "p95": 0.09999999403953552,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 1.0010693333333334,
+            "p95": 1.423424,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 2.3741666668405137,
+            "p95": 3.7000000029802322,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.0000026666666666666664,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.019166666766007742,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "static-velocity": {
+          "gpu": {
+            "average": 0.16158747826086955,
+            "p95": 0.538272,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.07583333328366279,
+            "p95": 0.20000000298023224,
+            "samples": 120
+          }
+        },
+        "car-velocity": {
+          "gpu": {
+            "average": 0.2938532173913043,
+            "p95": 2.097248,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.09416666589677333,
+            "p95": 0.20000000298023224,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.07740104347826086,
+            "p95": 0.0872,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.04250000057121118,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.07657599999999999,
+            "p95": 0.061792,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.024166666716337205,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.034038260869565226,
+            "p95": 0.037792,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.012499999875823656,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.053128347826086955,
+            "p95": 0.048832,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.00833333358168602,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.03963965217391304,
+            "p95": 0.022624,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.017500000074505806,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.02354504347826087,
+            "p95": 0.025632,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.010000000149011612,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.26500591304347826,
+            "p95": 0.681952,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.04250000007450581,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "sgsr2": {
+          "gpu": {
+            "average": 0.9341106086956522,
+            "p95": 2.586272,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.05583333298563957,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "temporal-geometry": {
+          "gpu": {
+            "average": 0.14999095652173916,
+            "p95": 0.531968,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.01833333360652129,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.25162434782608695,
+            "p95": 0.6016,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.025833333656191827,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        }
+      }
+    },
+    {
+      "name": "sgsr2-fragment-67",
+      "scale": 0.67,
+      "sceneMedianMs": 0.818176,
+      "reconstructionMedianMs": 0.453312,
+      "totalMedianMs": 2.805664,
+      "totalP95Ms": 3.07728,
+      "samples": 25,
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0,
+            "p95": 0,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 0.9444906666666667,
+            "p95": 1.329152,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 1.9841666669895253,
+            "p95": 2.6000000089406967,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.0000026666666666666664,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.00750000017384688,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "static-velocity": {
+          "gpu": {
+            "average": 0.11637704347826086,
+            "p95": 0.4256,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.06999999930461248,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "car-velocity": {
+          "gpu": {
+            "average": 0.4375499130434783,
+            "p95": 2.654464,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0725000003973643,
+            "p95": 0.20000000298023224,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.1578935652173913,
+            "p95": 0.493408,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.029166666915019353,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.027475478260869567,
+            "p95": 0.029056,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0191666666418314,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.028541217391304344,
+            "p95": 0.030976,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0033333333830038708,
+            "p95": 0,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.10087930434782609,
+            "p95": 0.567232,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.00833333320915699,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.06441321739130433,
+            "p95": 0.493568,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.012500000248352686,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.04389982608695652,
+            "p95": 0.028672,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.012500000248352686,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.1881168695652174,
+            "p95": 0.700992,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.019166666517655053,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "sgsr2": {
+          "gpu": {
+            "average": 0.7494622608695651,
+            "p95": 1.236544,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.04583333320915699,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "temporal-geometry": {
+          "gpu": {
+            "average": 0.14450226086956522,
+            "p95": 0.559104,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0158333337555329,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.4162907826086957,
+            "p95": 0.929824,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.020833333457509675,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        }
+      }
+    },
+    {
+      "name": "sgsr2-fragment-59",
+      "scale": 0.59,
+      "sceneMedianMs": 0.711808,
+      "reconstructionMedianMs": 0.879392,
+      "totalMedianMs": 2.50976,
+      "totalP95Ms": 2.803104,
+      "samples": 25,
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0,
+            "p95": 0,
+            "samples": 5
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 0.892296,
+            "p95": 1.317088,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 2.1449999993046123,
+            "p95": 2.9000000059604645,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.0000026666666666666664,
+            "p95": 0.000032,
+            "samples": 12
+          },
+          "cpu": {
+            "average": 0.009999999900658925,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "static-velocity": {
+          "gpu": {
+            "average": 0.08229704347826088,
+            "p95": 0.076704,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.06750000019868214,
+            "p95": 0.19999998807907104,
+            "samples": 120
+          }
+        },
+        "car-velocity": {
+          "gpu": {
+            "average": 0.4170476521739131,
+            "p95": 1.88496,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.0825000005463759,
+            "p95": 0.20000000298023224,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.05463234782608696,
+            "p95": 0.057568,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.029166666542490324,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.11809391304347826,
+            "p95": 0.024544,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.017500000447034834,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.024146086956521734,
+            "p95": 0.02704,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.007500000049670537,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.021771130434782605,
+            "p95": 0.024576,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.01333333303531011,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.02310260869565217,
+            "p95": 0.024224,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.014999999975164732,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.044705391304347815,
+            "p95": 0.026336,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.007499999801317851,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.2212633043478261,
+            "p95": 0.720512,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.02999999982615312,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "sgsr2": {
+          "gpu": {
+            "average": 0.7314810434782608,
+            "p95": 1.09568,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.036666666716337205,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "temporal-geometry": {
+          "gpu": {
+            "average": 0.3349078260869566,
+            "p95": 1.736704,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.019166666269302367,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.2501175652173913,
+            "p95": 0.65536,
+            "samples": 23
+          },
+          "cpu": {
+            "average": 0.029166665921608607,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        }
+      }
+    },
+    {
+      "name": "sgsr2-fragment-50",
+      "scale": 0.5,
+      "sceneMedianMs": 0.608928,
+      "reconstructionMedianMs": 0.374336,
+      "totalMedianMs": 1.85168,
+      "totalP95Ms": 2.523072,
+      "samples": 25,
+      "profile": {
+        "environment-generation-and-assignment": {
+          "gpu": null,
+          "cpu": {
+            "average": 0,
+            "p95": 0,
+            "samples": 4
+          }
+        },
+        "scene-including-shadows": {
+          "gpu": {
+            "average": 0.7040029090909091,
+            "p95": 1.247264,
+            "samples": 11
+          },
+          "cpu": {
+            "average": 3.017499998708566,
+            "p95": 6.799999997019768,
+            "samples": 120
+          }
+        },
+        "shadows": {
+          "gpu": {
+            "average": 0.000017454545454545452,
+            "p95": 0.000032,
+            "samples": 11
+          },
+          "cpu": {
+            "average": 0.016666666666666666,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "static-velocity": {
+          "gpu": {
+            "average": 0.04210472727272727,
+            "p95": 0.048384,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.07833333412806193,
+            "p95": 0.20000000298023224,
+            "samples": 120
+          }
+        },
+        "car-velocity": {
+          "gpu": {
+            "average": 0.42804072727272735,
+            "p95": 2.342944,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.12333333330849806,
+            "p95": 0.29999999701976776,
+            "samples": 120
+          }
+        },
+        "ao": {
+          "gpu": {
+            "average": 0.04472145454545456,
+            "p95": 0.0512,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.029999999701976775,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-horizontal": {
+          "gpu": {
+            "average": 0.08855127272727273,
+            "p95": 0.022528,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.04166666679084301,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "ao-blur-vertical": {
+          "gpu": {
+            "average": 0.01992436363636364,
+            "p95": 0.023328,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.01000000002483527,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom": {
+          "gpu": {
+            "average": 0.01791272727272727,
+            "p95": 0.01984,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.025833333532015484,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "bloom-blur-1": {
+          "gpu": {
+            "average": 0.1491941818181818,
+            "p95": 0.563136,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.014999999975164732,
+            "p95": 0.09999999403953552,
+            "samples": 120
+          }
+        },
+        "bloom-blur-2": {
+          "gpu": {
+            "average": 0.047282909090909084,
+            "p95": 0.02576,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.014166666939854623,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "grade": {
+          "gpu": {
+            "average": 0.42374836363636365,
+            "p95": 2.623808,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.030833333854873975,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "sgsr2": {
+          "gpu": {
+            "average": 0.7421120000000001,
+            "p95": 2.03504,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.07499999975164731,
+            "p95": 0.20000000298023224,
+            "samples": 120
+          }
+        },
+        "temporal-geometry": {
+          "gpu": {
+            "average": 0.13203054545454543,
+            "p95": 0.706496,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.024999999379118284,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        },
+        "finish": {
+          "gpu": {
+            "average": 0.23711854545454544,
+            "p95": 0.729088,
+            "samples": 22
+          },
+          "cpu": {
+            "average": 0.03083333298563957,
+            "p95": 0.10000000894069672,
+            "samples": 120
+          }
+        }
+      }
+    },
+    {
+      "name": "webgpu-native-100",
+      "scale": 1,
+      "sceneMedianMs": 0.786432,
+      "reconstructionMedianMs": 0,
+      "totalMedianMs": 2.62144,
+      "totalP95Ms": 3.1457280000000005,
+      "samples": 25,
+      "profile": {
+        "scene": {
+          "samples": 25,
+          "median": 0.786432,
+          "p95": 1.31072
+        },
+        "staticVelocity": {
+          "samples": 25,
+          "median": 0.131072,
+          "p95": 0.196608
+        },
+        "car-velocity": {
+          "samples": 25,
+          "median": 0,
+          "p95": 0.065536
+        },
+        "sun": {
+          "samples": 25,
+          "median": 0,
+          "p95": 0.065536
+        },
+        "ao": {
+          "samples": 25,
+          "median": 0.196608,
+          "p95": 0.262144
+        },
+        "blur": {
+          "samples": 25,
+          "median": 0.131072,
+          "p95": 0.196608
+        },
+        "bloom": {
+          "samples": 25,
+          "median": 0.131072,
+          "p95": 0.131072
+        },
+        "grade": {
+          "samples": 25,
+          "median": 0.524288,
+          "p95": 1.179648
+        },
+        "finish": {
+          "samples": 25,
+          "median": 0.262144,
+          "p95": 0.720896
+        },
+        "total": {
+          "samples": 25,
+          "median": 2.62144,
+          "p95": 3.1457280000000005
+        },
+        "reconstruction": {
+          "samples": 25,
+          "median": 0,
+          "p95": 0
+        }
+      }
+    },
+    {
+      "name": "sgsr2-compute-100",
+      "scale": 1,
+      "sceneMedianMs": 0.720896,
+      "reconstructionMedianMs": 1.769472,
+      "totalMedianMs": 4.194304,
+      "totalP95Ms": 5.57056,
+      "samples": 17,
+      "profile": {
+        "scene": {
+          "samples": 17,
+          "median": 0.720896,
+          "p95": 1.245184
+        },
+        "staticVelocity": {
+          "samples": 17,
+          "median": 0.196608,
+          "p95": 0.65536
+        },
+        "car-velocity": {
+          "samples": 17,
+          "median": 0,
+          "p95": 0.524288
+        },
+        "sun": {
+          "samples": 17,
+          "median": 0,
+          "p95": 0
+        },
+        "ao": {
+          "samples": 17,
+          "median": 0.196608,
+          "p95": 0.196608
+        },
+        "blur": {
+          "samples": 17,
+          "median": 0.131072,
+          "p95": 0.196608
+        },
+        "bloom": {
+          "samples": 17,
+          "median": 0.131072,
+          "p95": 0.131072
+        },
+        "grade": {
+          "samples": 17,
+          "median": 0.458752,
+          "p95": 0.98304
+        },
+        "sgsr2-convert": {
+          "samples": 17,
+          "median": 0.720896,
+          "p95": 1.31072
+        },
+        "sgsr2-upscale": {
+          "samples": 17,
+          "median": 0.786432,
+          "p95": 1.245184
+        },
+        "geometry": {
+          "samples": 17,
+          "median": 0.196608,
+          "p95": 0.786432
+        },
+        "finish": {
+          "samples": 17,
+          "median": 0.196608,
+          "p95": 0.720896
+        },
+        "total": {
+          "samples": 17,
+          "median": 4.194304,
+          "p95": 5.57056
+        },
+        "reconstruction": {
+          "samples": 17,
+          "median": 1.769472,
+          "p95": 2.228224
+        }
+      }
+    },
+    {
+      "name": "sgsr2-compute-77",
+      "scale": 0.77,
+      "sceneMedianMs": 0.524288,
+      "reconstructionMedianMs": 1.572864,
+      "totalMedianMs": 3.342336,
+      "totalP95Ms": 4.390912,
+      "samples": 16,
+      "profile": {
+        "scene": {
+          "samples": 16,
+          "median": 0.524288,
+          "p95": 1.179648
+        },
+        "staticVelocity": {
+          "samples": 16,
+          "median": 0.131072,
+          "p95": 0.131072
+        },
+        "car-velocity": {
+          "samples": 16,
+          "median": 0,
+          "p95": 0.065536
+        },
+        "sun": {
+          "samples": 16,
+          "median": 0,
+          "p95": 0.065536
+        },
+        "ao": {
+          "samples": 16,
+          "median": 0.131072,
+          "p95": 0.196608
+        },
+        "blur": {
+          "samples": 16,
+          "median": 0.065536,
+          "p95": 0.131072
+        },
+        "bloom": {
+          "samples": 16,
+          "median": 0.065536,
+          "p95": 0.065536
+        },
+        "grade": {
+          "samples": 16,
+          "median": 0.32768,
+          "p95": 0.851968
+        },
+        "sgsr2-convert": {
+          "samples": 16,
+          "median": 0.458752,
+          "p95": 1.114112
+        },
+        "sgsr2-upscale": {
+          "samples": 16,
+          "median": 0.917504,
+          "p95": 1.507328
+        },
+        "geometry": {
+          "samples": 16,
+          "median": 0.131072,
+          "p95": 0.131072
+        },
+        "finish": {
+          "samples": 16,
+          "median": 0.196608,
+          "p95": 0.720896
+        },
+        "total": {
+          "samples": 16,
+          "median": 3.342336,
+          "p95": 4.390912
+        },
+        "reconstruction": {
+          "samples": 16,
+          "median": 1.572864,
+          "p95": 2.031616
+        }
+      }
+    },
+    {
+      "name": "sgsr2-compute-67",
+      "scale": 0.67,
+      "sceneMedianMs": 0.393216,
+      "reconstructionMedianMs": 1.3762560000000001,
+      "totalMedianMs": 3.0146559999999996,
+      "totalP95Ms": 3.60448,
+      "samples": 16,
+      "profile": {
+        "scene": {
+          "samples": 16,
+          "median": 0.393216,
+          "p95": 1.048576
+        },
+        "staticVelocity": {
+          "samples": 16,
+          "median": 0.065536,
+          "p95": 0.131072
+        },
+        "car-velocity": {
+          "samples": 16,
+          "median": 0,
+          "p95": 0
+        },
+        "sun": {
+          "samples": 16,
+          "median": 0,
+          "p95": 0.065536
+        },
+        "ao": {
+          "samples": 16,
+          "median": 0.131072,
+          "p95": 0.131072
+        },
+        "blur": {
+          "samples": 16,
+          "median": 0.065536,
+          "p95": 0.196608
+        },
+        "bloom": {
+          "samples": 16,
+          "median": 0.065536,
+          "p95": 0.065536
+        },
+        "grade": {
+          "samples": 16,
+          "median": 0.262144,
+          "p95": 0.851968
+        },
+        "sgsr2-convert": {
+          "samples": 16,
+          "median": 0.32768,
+          "p95": 0.851968
+        },
+        "sgsr2-upscale": {
+          "samples": 16,
+          "median": 0.786432,
+          "p95": 1.31072
+        },
+        "geometry": {
+          "samples": 16,
+          "median": 0.065536,
+          "p95": 0.131072
+        },
+        "finish": {
+          "samples": 16,
+          "median": 0.262144,
+          "p95": 0.786432
+        },
+        "total": {
+          "samples": 16,
+          "median": 3.0146559999999996,
+          "p95": 3.60448
+        },
+        "reconstruction": {
+          "samples": 16,
+          "median": 1.3762560000000001,
+          "p95": 1.572864
+        }
+      }
+    },
+    {
+      "name": "sgsr2-compute-59",
+      "scale": 0.59,
+      "sceneMedianMs": 0.393216,
+      "reconstructionMedianMs": 1.3107199999999999,
+      "totalMedianMs": 2.490368,
+      "totalP95Ms": 2.883584,
+      "samples": 25,
+      "profile": {
+        "scene": {
+          "samples": 25,
+          "median": 0.393216,
+          "p95": 0.786432
+        },
+        "staticVelocity": {
+          "samples": 25,
+          "median": 0.065536,
+          "p95": 0.065536
+        },
+        "car-velocity": {
+          "samples": 25,
+          "median": 0,
+          "p95": 0
+        },
+        "sun": {
+          "samples": 25,
+          "median": 0,
+          "p95": 0.065536
+        },
+        "ao": {
+          "samples": 25,
+          "median": 0.065536,
+          "p95": 0.131072
+        },
+        "blur": {
+          "samples": 25,
+          "median": 0.065536,
+          "p95": 0.131072
+        },
+        "bloom": {
+          "samples": 25,
+          "median": 0,
+          "p95": 0.065536
+        },
+        "grade": {
+          "samples": 25,
+          "median": 0.196608,
+          "p95": 0.262144
+        },
+        "sgsr2-convert": {
+          "samples": 25,
+          "median": 0.262144,
+          "p95": 0.720896
+        },
+        "sgsr2-upscale": {
+          "samples": 25,
+          "median": 0.917504,
+          "p95": 1.376256
+        },
+        "geometry": {
+          "samples": 25,
+          "median": 0.065536,
+          "p95": 0.131072
+        },
+        "finish": {
+          "samples": 25,
+          "median": 0.262144,
+          "p95": 0.262144
+        },
+        "total": {
+          "samples": 25,
+          "median": 2.490368,
+          "p95": 2.883584
+        },
+        "reconstruction": {
+          "samples": 25,
+          "median": 1.3107199999999999,
+          "p95": 1.6383999999999999
+        }
+      }
+    },
+    {
+      "name": "sgsr2-compute-50",
+      "scale": 0.5,
+      "sceneMedianMs": 0.32768,
+      "reconstructionMedianMs": 1.3762560000000001,
+      "totalMedianMs": 2.6214399999999998,
+      "totalP95Ms": 3.2768,
+      "samples": 25,
+      "profile": {
+        "scene": {
+          "samples": 25,
+          "median": 0.32768,
+          "p95": 0.917504
+        },
+        "staticVelocity": {
+          "samples": 25,
+          "median": 0.065536,
+          "p95": 0.065536
+        },
+        "car-velocity": {
+          "samples": 25,
+          "median": 0,
+          "p95": 0.065536
+        },
+        "sun": {
+          "samples": 25,
+          "median": 0,
+          "p95": 0
+        },
+        "ao": {
+          "samples": 25,
+          "median": 0.065536,
+          "p95": 0.065536
+        },
+        "blur": {
+          "samples": 25,
+          "median": 0,
+          "p95": 0.065536
+        },
+        "bloom": {
+          "samples": 25,
+          "median": 0.065536,
+          "p95": 0.065536
+        },
+        "grade": {
+          "samples": 25,
+          "median": 0.131072,
+          "p95": 0.196608
+        },
+        "sgsr2-convert": {
+          "samples": 25,
+          "median": 0.196608,
+          "p95": 0.786432
+        },
+        "sgsr2-upscale": {
+          "samples": 25,
+          "median": 1.114112,
+          "p95": 1.507328
+        },
+        "geometry": {
+          "samples": 25,
+          "median": 0.065536,
+          "p95": 0.065536
+        },
+        "finish": {
+          "samples": 25,
+          "median": 0.262144,
+          "p95": 0.851968
+        },
+        "total": {
+          "samples": 25,
+          "median": 2.6214399999999998,
+          "p95": 3.2768
+        },
+        "reconstruction": {
+          "samples": 25,
+          "median": 1.3762560000000001,
+          "p95": 2.097152
+        }
+      }
+    }
+  ],
+  "errors": []
+}

@@ -2,7 +2,7 @@ import { SGSR2_CONVERT_FRAGMENT, SGSR2_UPSCALE_FRAGMENT } from "../shaders/sgsr2
 import { TEMPORAL_GEOMETRY_FRAGMENT } from "../shaders/temporal-inputs.js";
 
 // Backend boundary: native-size linear output + backend-owned ping-pong history.
-// There is intentionally no WebGPU backend or cross-API texture copying.
+// This reference path owns only WebGL resources; no cross-API texture copying.
 export class SGSR2Fragment {
   constructor(three) {
     this.three = three;

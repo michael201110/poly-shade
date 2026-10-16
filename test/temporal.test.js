@@ -3,6 +3,28 @@ import assert from "node:assert/strict";
 import * as THREE from "three";
 import { TemporalState, selectUpscaling } from "../src/rendering/temporal-state.js";
 
+test('WebGPU uses top-down jitter and the actual previous rendered projection',()=>{
+  const state=new TemporalState(THREE),scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(60,16/9,.1,1000);
+  camera.coordinateSystem=THREE.WebGPUCoordinateSystem;camera.updateProjectionMatrix();
+  const settings={upscaleJitter:true};state.begin(scene,camera,640,360,1280,720,settings,100);
+  const old=state.currentJitteredVP.clone(),oldJitter=state.jitter.clone();state.commit();state.restoreCamera();
+  state.begin(scene,camera,640,360,1280,720,settings,116);
+  const point=new THREE.Vector4(1,2,-10,1),a=point.clone().applyMatrix4(state.currentJitteredVP),b=point.clone().applyMatrix4(old);
+  const x=a.x/a.w-b.x/b.w-2*(state.jitter.x-oldJitter.x)/640;
+  const y=a.y/a.w-b.y/b.w+2*(state.jitter.y-oldJitter.y)/360;
+  assert.ok(Math.abs(x)<1e-10&&Math.abs(y)<1e-10);assert.ok(state.previousJitteredVP.equals(old));assert.ok(state.stillFrames>0);
+  state.restoreCamera();
+});
+
+test('Auto and Compute require a real compatible WebGPU backend; Fragment is never mislabelled',()=>{
+  const gpu={webgpu:true,compute:true,features:{depthTexture:true}};
+  for(const requested of ['auto','sgsr2-compute']){const s=selectUpscaling({upscaling:requested,upscaleQuality:'quality'},gpu);assert.equal(s.backend,'sgsr2-compute');assert.equal(s.scale,.67);assert.equal(s.compute,true);}
+  assert.equal(selectUpscaling({upscaling:'sgsr2-fragment'},gpu).backend,'native');
+  assert.equal(selectUpscaling({upscaling:'auto'},gpu,true).backend,'native');
+  assert.equal(selectUpscaling({upscaling:'auto'},{...gpu,compute:false}).backend,'native');
+  assert.equal(selectUpscaling({upscaling:'reduced',upscaleQuality:'performance'},gpu).scale,.5);
+});
+
 test("depth reprojection uses the actual previous rendered jitter state and cancels jitter-only motion", () => {
   const state = new TemporalState(THREE), camera = new THREE.PerspectiveCamera(60, 16/9, 0.1, 1000), scene = new THREE.Scene();
   const projection = camera.projectionMatrix.clone(), inverse = camera.projectionMatrixInverse.clone();

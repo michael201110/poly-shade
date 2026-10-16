@@ -69,7 +69,7 @@ report.environment = {
   platform: process.platform,
   architecture: process.arch,
   viewport: [1280, 720],
-  release: process.env.POLYSHADE_RELEASE ?? "0.3.3",
+  release: process.env.POLYSHADE_RELEASE ?? "0.4.0",
   date: new Date().toISOString(),
 };
 const renderingErrors = [];
@@ -97,7 +97,7 @@ try {
   await page.route("https://polyshade.test/**", async (route) => {
     const path = new URL(route.request().url()).pathname.slice(1);
     try {
-      let body = await readFile(path, "utf8");
+      let body = (await readFile(path, "utf8")).replace(/wantsGPU\(\w+\) \{/, match => match + " return false;");
       if (path === "manifest.json" && process.env.POLYSHADE_RELEASE) {
         const manifest = JSON.parse(body);
         manifest.latest["0.6.3"] = process.env.POLYSHADE_RELEASE;
@@ -143,7 +143,7 @@ try {
         schemaVersion: 2,
         preset: "cinematic",
         enabled: false,
-        overrides: {},
+        overrides: {renderBackend:"webgl"},
       }),
     );
     localStorage.setItem(
@@ -283,7 +283,7 @@ try {
     .filter({ hasText: /^Show$/ })
     .click();
   await page.evaluate(() => document.activeElement?.blur());
-  await page.keyboard.press("F7");
+  await page.keyboard.press("Home");
   await page.waitForFunction(
     () => window.__polyShadeController?.cinematic?.post?.frames > 3,
   );
@@ -321,8 +321,8 @@ try {
       await page.locator("#polyshade-panel select").first().selectOption("recording");
       await page.waitForTimeout(700);
       await page.evaluate(() => document.activeElement?.blur());
-      await page.keyboard.press("F7"); await page.waitForTimeout(200);
-      await page.keyboard.press("F7"); await page.waitForTimeout(700);
+      await page.keyboard.press("Home"); await page.waitForTimeout(200);
+      await page.keyboard.press("Home"); await page.waitForTimeout(700);
       await page.evaluate(() => {
         const pml = window.polyModLoader;
         pml.settingClass.updateSettings([[pml.getFromPolyTrack("P.A.ShadowQuality"),"0"]]);
@@ -711,7 +711,7 @@ try {
     };
   });
   await page.evaluate(() => document.activeElement?.blur());
-  await page.keyboard.press("F7");
+  await page.keyboard.press("Home");
   await page.waitForTimeout(500);
   assert.equal(
     await page.evaluate(() => {
@@ -734,7 +734,7 @@ try {
   report.comparisons.restoration = difference(baseline, restored, true);
   assert.ok(report.comparisons.restoration.meanAbsolute < 0.5);
   await page.evaluate(() => document.activeElement?.blur());
-  await page.keyboard.press("F7");
+  await page.keyboard.press("Home");
   await page.waitForFunction(
     () => window.__polyShadeController.activeScene != null,
   );
@@ -744,6 +744,7 @@ try {
     const azimuth =
       ((Math.atan2(direction.x, direction.z) * 180) / Math.PI + 360) % 360;
     c.getSettings().overrides = {
+      renderBackend: "webgl",
       sunAzimuth: azimuth,
       sunElevation: 3,
       cloudsEnabled: true,
@@ -1068,7 +1069,7 @@ try {
   }
   for (let cycle = 0; cycle < 3; cycle++) {
     await page.evaluate(() => document.activeElement?.blur());
-    await page.keyboard.press("F7");
+    await page.keyboard.press("Home");
     await page.waitForTimeout(120);
     assert.equal(
       await page.evaluate(() => window.__polyShadeController.activeScene),
@@ -1086,7 +1087,7 @@ try {
       return n;
     });
     assert.equal(count, 0);
-    await page.keyboard.press("F7");
+    await page.keyboard.press("Home");
     await page.waitForTimeout(200);
   }
   await page
@@ -1311,13 +1312,13 @@ try {
   assert.equal(report.brakingStability.programsCreated,0,"braking never compiles lighting shaders");
   assert.equal(report.brakingStability.targetAllocations,0,"braking never allocates effect targets");
   await page.evaluate(() => document.activeElement?.blur());
-  await page.keyboard.press("F7");
+  await page.keyboard.press("Home");
   await page.waitForTimeout(300);
   assert.equal(
     await page.evaluate(() => window.__polyShadeController.activeScene),
     null,
   );
-  await page.keyboard.press("F7");
+  await page.keyboard.press("Home");
   await page.waitForTimeout(500);
   assert.deepEqual(renderingErrors, []);
   report.shaderWarnings = await page.evaluate(() => {

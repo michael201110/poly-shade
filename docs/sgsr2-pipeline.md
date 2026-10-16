@@ -1,3 +1,5 @@
+> Historical inspection for the 0.3.5 fragment implementation. The current WebGPU/compute architecture is documented in [0.4.0-webgpu.md](0.4.0-webgpu.md).
+
 # SGSR2 integration: inspected pipeline
 
 ## Existing pipeline (before implementation)

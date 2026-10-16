@@ -113,6 +113,7 @@ export const OPTIONS = {
     sharpenStrength: ["Sharpen strength", 0.08, 0, 0.3],
   },
   Upscaling: {
+    renderBackend: ["Renderer backend", "auto", ["auto", "webgl", "webgpu"]],
     upscaling: ["Upscaling", "native", ["native", "sgsr2-fragment", "auto", "reduced", "sgsr2-compute"]],
     upscaleQuality: ["Render scale preset", "quality", ["native", "ultra-quality", "quality", "balanced", "performance", "custom"]],
     upscaleCustomScale: ["Custom internal scale", 0.67, 0.5, 1],

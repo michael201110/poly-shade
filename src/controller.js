@@ -1,4 +1,5 @@
 import { CinematicRenderer } from "./rendering/cinematic.js";
+import { RenderBackends } from "./rendering/backends/manager.js";
 import {
   applyRendererEffects,
   applySceneEffects,
@@ -134,7 +135,7 @@ export class RenderController {
       camera,
     );
     if (renderer.getRenderTarget() === null && !renderer.xr.isPresenting)
-      this.cinematic.warmup.run();
+      if (this.backends?.active !== 'WebGPU') this.cinematic.warmup.run();
     syncMaterialColors(this.sceneState, settings);
   }
 
@@ -210,7 +211,7 @@ export class RenderController {
   aroundRender(renderer, scene, camera, draw) {
     if (scene !== this.activeScene || renderer !== this.activeRenderer ||
         renderer.getRenderTarget?.() != null || !this.cinematic) return draw();
-    return this.cinematic.render(
+    return this.backends.render(
       scene,
       camera,
       this.resolveSettings(),
@@ -244,8 +245,10 @@ export class RenderController {
     this.sceneState = null;
     this.activeScene = null;
     if (this.rendererState) restoreRenderer(this.rendererState);
+    this.backends?.dispose();
     this.cinematic?.dispose();
     this.cinematic = new CinematicRenderer(this.three, renderer);
+    this.backends = new RenderBackends(this.cinematic);
     this.removeContextListener?.();
     const onRestored = () => this.restore();
     renderer.domElement?.addEventListener("webglcontextrestored", onRestored);
@@ -271,6 +274,8 @@ export class RenderController {
       });
       this.csmSnapshot = null;
     }
+    this.backends?.dispose();
+    this.backends = null;
     this.cinematic?.dispose();
     this.cinematic = null;
     if (this.sceneState) restoreScene(this.sceneState);
@@ -297,7 +302,7 @@ export class RenderController {
       Math.max(1, ordered.length);
     const p95 = ordered[Math.max(0, Math.ceil(ordered.length * 0.95) - 1)] ?? 0;
     this.onMetrics({
-      capabilities: this.cinematic?.report(),
+      capabilities: { ...this.cinematic?.report(), backend: this.backends?.report() },
       gpu: this.cinematic?.timer.metrics(),
       fps: this.renderCount / Math.max((now - this.lastMetricsAt) / 1000, 1),
       averageFrameTime: average,

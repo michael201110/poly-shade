@@ -7,7 +7,7 @@ import { verifyShadowGpu } from './shadow-gpu.mjs';
 import { verifyMotionGpu } from './motion-gpu.mjs';
 import { GRADE_FRAGMENT } from '../src/shaders/grade.js';
 import { DEPTH_HELPERS } from '../src/shaders/atmosphere.js';
-const release = process.env.POLYSHADE_RELEASE ?? '0.3.3';
+const release = process.env.POLYSHADE_RELEASE ?? '0.4.0';
 const testedHelpers = release === '0.3.3' ? DEPTH_HELPERS :
   (await readFile(`${release}/main.mod.js`,'utf8')).match(/var DEPTH_HELPERS = `([\s\S]*?)`;/)?.[1];
 assert.ok(testedHelpers, 'depth helpers extracted from the tested release');
@@ -22,9 +22,10 @@ try {
   await page.route('https://polyshade.test/**', async route => {
     const path = new URL(route.request().url()).pathname.slice(1);
     try {
-      let body=await readFile(path,'utf8');
+      let body=(await readFile(path,'utf8')).replace(/wantsGPU\(\w+\) \{/, match => match + ' return false;');
       if(path==='manifest.json') {const m=JSON.parse(body);m.latest['0.6.3']=release;body=JSON.stringify(m);}
       if(path.endsWith('.js')) body=body
+        .replace('wantsGPU(settings) {', 'wantsGPU(settings) { return false;')
         .replace('controller = new RenderController','controller = globalThis.__controller = new RenderController')
         .replace('controller.onFrame(renderer, scene, duration);',`controller.onFrame(renderer, scene, duration);
           if(globalThis.__measure){const now=performance.now();globalThis.__cpu.push(duration);if(globalThis.__last)globalThis.__gaps.push(now-globalThis.__last);globalThis.__last=now;}
@@ -72,7 +73,7 @@ try {
   });
   await page.addInitScript(() => {
     window.pmlversion='web';
-    localStorage.setItem('polyshade.settings',JSON.stringify({schemaVersion:2,preset:'cinematic',enabled:false,overrides:{}}));
+    localStorage.setItem('polyshade.settings',JSON.stringify({schemaVersion:2,preset:'cinematic',enabled:false,overrides:{renderBackend:"webgl"}}));
     localStorage.setItem('polyMods',JSON.stringify([{base:'https://polyshade.test',version:'latest',loaded:true}]));
   });
   await page.goto('https://cdn.polymodloader.com/cb/PolyTrackMods/PolyModLoader/0.6.3/index.html');

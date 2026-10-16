@@ -364,12 +364,24 @@ export function mountPanel(document, callbacks, initialSettings) {
       metrics.hidden = !settings.values.debugEnabled;
     },
     setMetrics(data) {
+      const backend=data.capabilities?.backend;
+      if(backend?.renderer==='WebGPU') {
+        const g=backend.webgpu;
+        upscaleStatus.textContent=`WebGPU | requested ${g.selection?.requested} | active ${g.selection?.backend} | internal ${g.internal?.join(' × ')} → output ${g.output?.join(' × ')} | history ${g.temporal?.valid?'valid':'reset'}`;
+        if(!metrics.hidden)metrics.textContent=[upscaleStatus.textContent,
+          `CPU render submission avg / p95: ${data.averageFrameTime.toFixed(2)} / ${data.p95FrameTime.toFixed(2)} ms`,
+          `History: ${JSON.stringify(g.temporal)}`,`Compute: ${JSON.stringify(g.compute)}`,
+          `GPU timings (ms, median/p95): ${JSON.stringify(g.profile)}`,
+          `Resources: ${JSON.stringify(g.resources)}`,g.computeFailure??''].join('\n');
+        return;
+      }
       const active = data.capabilities?.active;
       const upscale = active?.upscaling;
       upscaleStatus.textContent = upscale ?
         `${upscale.backend} | internal ${active.sceneSize.join(" × ")} → output ${active.outputSize.join(" × ")}` +
         (upscale.temporal ? ` | history ${upscale.temporal.valid ? "valid" : "reset"} (${upscale.temporal.lastReset}), jitter ${upscale.temporal.jitter.map(v => v.toFixed(3)).join(", ")}` : "") +
         (upscale.reason ? ` | ${upscale.reason}` : "") : "";
+      if(backend?.webgpuFailure)upscaleStatus.textContent+=` | WebGPU fallback: ${backend.webgpuFailure}`;
       if (metrics.hidden) return;
       const shadowSize = SHADOW_MAP_SIZES[data.shadowQuality] || "off";
       metrics.textContent = [

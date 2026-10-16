@@ -16,3 +16,5 @@ for (const [name, file] of [["CONVERT_REFERENCE", "sgsr2_convert.fs"], ["UPSCALE
   source += `export const ${name} = ${JSON.stringify(text)};\n`;
 }
 await writeFile("src/vendor/sgsr2/reference.js", source);
+for(const file of ['sgsr2_convert.comp','sgsr2_upscale.comp'])
+  await writeFile(`src/vendor/sgsr2/${file}`,await readFile(join(root,'sgsr/v2/include/glsl_2_pass_cs',file)));
