@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import * as THREE from "three";
 import { TargetPool } from "../src/rendering/render-targets.js";
-import { PostProcess } from "../src/rendering/postprocess.js";
+import { PostProcess } from "./reference/postprocess.js";
 import {
   SunVisibility,
   sunScreenVisibility,

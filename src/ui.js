@@ -1,5 +1,5 @@
 import { OPTIONS, MATERIAL_KINDS } from "./options.js";
-import { PRESET_IDS, PRESET_LABELS, SHADOW_MAP_SIZES } from "./presets.js";
+import { PRESET_IDS, PRESET_LABELS } from "./presets.js";
 
 const STYLE_ID = "polyshade-styles";
 const PANEL_ID = "polyshade-panel";
@@ -213,7 +213,7 @@ export function mountPanel(document, callbacks, initialSettings) {
         };
       } else {
         const upscaleLabels = {
-          native: key === "upscaling" ? "Native" : "Native / 100%", "sgsr2-fragment": "SGSR2 Fragment", auto: "Auto",
+          native: key === "upscaling" ? "Native" : "Native / 100%", auto: "Auto",
           reduced: "Reduced resolution (bilinear benchmark)", "sgsr2-compute": "SGSR2 Compute (unsupported)",
           "ultra-quality": "Ultra Quality / 77%", quality: "Quality / 67%",
           balanced: "Balanced / 59%", performance: "Performance / 50%", custom: "Custom",
@@ -375,39 +375,10 @@ export function mountPanel(document, callbacks, initialSettings) {
           `Resources: ${JSON.stringify(g.resources)}`,g.computeFailure??''].join('\n');
         return;
       }
-      const active = data.capabilities?.active;
-      const upscale = active?.upscaling;
-      upscaleStatus.textContent = upscale ?
-        `${upscale.backend} | internal ${active.sceneSize.join(" × ")} → output ${active.outputSize.join(" × ")}` +
-        (upscale.temporal ? ` | history ${upscale.temporal.valid ? "valid" : "reset"} (${upscale.temporal.lastReset}), jitter ${upscale.temporal.jitter.map(v => v.toFixed(3)).join(", ")}` : "") +
-        (upscale.reason ? ` | ${upscale.reason}` : "") : "";
-      if(backend?.webgpuFailure)upscaleStatus.textContent+=` | WebGPU fallback: ${backend.webgpuFailure}`;
-      if (metrics.hidden) return;
-      const shadowSize = SHADOW_MAP_SIZES[data.shadowQuality] || "off";
-      metrics.textContent = [
-        `FPS (render calls): ${data.fps.toFixed(0)}`,
-        `CPU render submission avg / p95: ${data.averageFrameTime.toFixed(2)} / ${data.p95FrameTime.toFixed(2)} ms`,
-        `Preset: ${PRESET_LABELS[data.preset]} | scale: ${data.renderScale.toFixed(2)}x`,
-        `Shadow map: ${shadowSize} | tuned materials: ${data.modifiedMaterials}`,
-        data.gpu
-          ? `GPU render avg / p95: ${data.gpu.average.toFixed(2)} / ${data.gpu.p95.toFixed(2)} ms (${data.gpu.samples} samples)`
-          : "GPU timer unavailable / no completed queries",
-        ...(data.capabilities
-          ? [
-              `WebGL ${data.capabilities.webgl2 ? 2 : 1} | HDR ${data.capabilities.halfFloat} | depth ${data.capabilities.features.depthTexture}`,
-              `Passes: ${data.capabilities.passes?.join(" ? ")}`,
-              `Targets: ${JSON.stringify(data.capabilities.resources)}`,
-              `Environment: ${JSON.stringify(data.capabilities.environment)}`,
-              `Failures: ${JSON.stringify(data.capabilities.failures)}`,
-              ...(data.capabilities.profile
-                ? Object.entries(data.capabilities.profile).map(
-                    ([name, p]) =>
-                      `${name}: CPU ${p.cpu.average.toFixed(2)} / ${p.cpu.p95.toFixed(2)} ms; GPU ${p.gpu ? p.gpu.average.toFixed(2) + " / " + p.gpu.p95.toFixed(2) + " ms" : "unavailable"}`,
-                  )
-                : []),
-            ]
-          : []),
-      ].join("\n");
+      upscaleStatus.textContent = backend?.webgpuFailure
+        ? `WebGPU unavailable: ${backend.webgpuFailure}`
+        : backend?.renderer ?? "Initializing WebGPU";
+      if (!metrics.hidden) metrics.textContent = upscaleStatus.textContent;
     },
     dispose() {
       document.removeEventListener("pointerdown", pickHandler);

@@ -2,7 +2,7 @@
 import { chromium } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
-export async function openUpscalingHarness({ backend = "webgl" } = {}) {
+export async function openUpscalingHarness({ backend = "webgpu", reference = false } = {}) {
   const browser = await chromium.launch({
     channel: "msedge",
     headless: process.env.POLYSHADE_HEADED !== "1",
@@ -27,7 +27,9 @@ export async function openUpscalingHarness({ backend = "webgl" } = {}) {
   await page.route("https://polyshade.test/**", async (route) => {
     const path = new URL(route.request().url()).pathname.slice(1);
     try {
-      let body = await readFile(path, "utf8");
+      let body = path === 'manifest.json' && reference
+        ? JSON.stringify({name:'PolyShade',author:'PolyShade',id:'polyshade',latest:{'0.6.3':'0.4.0'}})
+        : await readFile(path, "utf8");
       if (path.endsWith(".js"))
         body = body
           .replace(
@@ -116,7 +118,7 @@ export async function openUpscalingHarness({ backend = "webgl" } = {}) {
       { waitUntil: "domcontentloaded", timeout: 60000 },
     );
     await page.waitForFunction(
-      () => window.__controller?.cinematic?.post?.frames > 10,
+      () => (window.__controller?.backends?.gpu?.frames ?? window.__controller?.cinematic?.post?.frames ?? 0) > 10,
       undefined,
       { timeout: 60000 },
     );
@@ -132,7 +134,7 @@ export async function resetHarnessGame(page) {
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: "domcontentloaded", timeout: 60000 });
   await page.waitForFunction(
-    () => window.__controller?.cinematic?.post?.frames > 10,
+    () => (window.__controller?.backends?.gpu?.frames ?? window.__controller?.cinematic?.post?.frames ?? 0) > 10,
     undefined,
     { timeout: 60000 },
   );

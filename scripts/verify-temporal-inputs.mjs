@@ -2,12 +2,12 @@ import { openUpscalingHarness } from "./upscaling-harness.mjs";
 import assert from "node:assert/strict";
 import { writeFile, mkdir } from "node:fs/promises";
 
-const { browser, page, errors } = await openUpscalingHarness();
+const { browser, page, errors } = await openUpscalingHarness({backend:"webgl",reference:true});
 const output = `${process.env.TEMP}/polyshade-sgsr2`;
 await mkdir(output, { recursive: true });
 try {
   const report = await page.evaluate(async () => {
-    const { PostProcess } = await import("https://polyshade.test/src/rendering/postprocess.js");
+    const { PostProcess } = await import("https://polyshade.test/test/reference/postprocess.js");
     const c = window.__controller, t = c.three, r = c.activeRenderer;
     const ext = r.getContext().getExtension("WEBGL_debug_renderer_info");
     const gpu = ext ? r.getContext().getParameter(ext.UNMASKED_RENDERER_WEBGL) : "unavailable";

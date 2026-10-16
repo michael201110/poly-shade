@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-16T22:42:54.939Z",
+  "method": "Frozen offline Summer 1 scene; shared camera, cloud animation and motion blur disabled; native resolution, same presets.",
+  "cases": [
+    {
+      "preset": "cinematic",
+      "backend": "WebGL2"
+    },
+    {
+      "preset": "clear-day",
+      "backend": "WebGL2"
+    },
+    {
+      "preset": "overcast",
+      "backend": "WebGL2"
+    },
+    {
+      "preset": "recording",
+      "backend": "WebGL2"
+    },
+    {
+      "preset": "cinematic",
+      "backend": "WebGPU"
+    },
+    {
+      "preset": "clear-day",
+      "backend": "WebGPU"
+    },
+    {
+      "preset": "overcast",
+      "backend": "WebGPU"
+    },
+    {
+      "preset": "recording",
+      "backend": "WebGPU"
+    }
+  ],
+  "skyComparison": [
+    {
+      "preset": "cinematic",
+      "meanAbsoluteChannelError": 0.15035714285714286,
+      "referenceRGB": [
+        196.00425,
+        208.19842857142856,
+        218.59707142857144
+      ],
+      "webgpuRGB": [
+        196.0072857142857,
+        208.23021428571428,
+        218.45975
+      ]
+    },
+    {
+      "preset": "clear-day",
+      "meanAbsoluteChannelError": 0.19773809523809524,
+      "referenceRGB": [
+        195.75467857142857,
+        217.54885714285714,
+        226.90139285714287
+      ],
+      "webgpuRGB": [
+        195.75542857142858,
+        217.5115357142857,
+        226.65775
+      ]
+    },
+    {
+      "preset": "overcast",
+      "meanAbsoluteChannelError": 0.15048809523809523,
+      "referenceRGB": [
+        205.24632142857143,
+        212.04492857142858,
+        215.5072142857143
+      ],
+      "webgpuRGB": [
+        205.25935714285714,
+        212.05782142857143,
+        215.61210714285716
+      ]
+    },
+    {
+      "preset": "recording",
+      "meanAbsoluteChannelError": 0.15035714285714286,
+      "referenceRGB": [
+        196.00425,
+        208.19842857142856,
+        218.59707142857144
+      ],
+      "webgpuRGB": [
+        196.0072857142857,
+        208.23021428571428,
+        218.45975
+      ]
+    }
+  ]
+}

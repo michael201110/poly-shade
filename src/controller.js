@@ -1,4 +1,4 @@
-import { CinematicRenderer } from "./rendering/cinematic.js";
+import { SceneEffects } from "./rendering/scene-effects.js";
 import { RenderBackends } from "./rendering/backends/manager.js";
 import {
   applyRendererEffects,
@@ -115,15 +115,8 @@ export class RenderController {
       applyRendererEffects(this.rendererState, this.three, settings);
       this.cinematic.update(this.sceneState, settings, now, camera);
       applySceneEffects(this.sceneState, this.three, settings, camera, now);
-      this.cinematic.shadows.scan(scene);
-      this.cinematic.warmup.schedule(scene, camera, settings, this.cinematic.post,
-        this.cinematic.brakeLights, this.sceneState.processedMeshes.size, this.sceneState.nativeCSM);
       this.modifiedMaterials = this.sceneState.originalMaterials.size;
       this.appliedRevision = this.revision;
-    }
-    if (this.cinematic.guard.failures.has("material")) {
-      restoreMaterials(this.sceneState);
-      (this.sceneState.failedEffects ??= new Set()).add("material response");
     }
     this.cinematic.frame(settings, now, camera);
     this.updateCSM(settings);
@@ -134,8 +127,6 @@ export class RenderController {
       settings,
       camera,
     );
-    if (renderer.getRenderTarget() === null && !renderer.xr.isPresenting)
-      if (this.backends?.active !== 'WebGPU') this.cinematic.warmup.run();
     syncMaterialColors(this.sceneState, settings);
   }
 
@@ -231,7 +222,6 @@ export class RenderController {
   attachScene(scene) {
     if (this.sceneState) restoreScene(this.sceneState);
     this.cinematic?.detachScene();
-    this.cinematic?.post?.pool.dispose();
     this.activeScene = scene;
     this.sceneState = createSceneState(scene);
     this.sceneState.maxShadowSize = this.cinematic?.capabilities.maxTextureSize;
@@ -247,7 +237,7 @@ export class RenderController {
     if (this.rendererState) restoreRenderer(this.rendererState);
     this.backends?.dispose();
     this.cinematic?.dispose();
-    this.cinematic = new CinematicRenderer(this.three, renderer);
+    this.cinematic = new SceneEffects(this.three, renderer);
     this.backends = new RenderBackends(this.cinematic);
     this.removeContextListener?.();
     const onRestored = () => this.restore();
@@ -259,7 +249,7 @@ export class RenderController {
       );
     this.activeRenderer = renderer;
     this.rendererState = createRendererState(renderer);
-    this.rendererState.postScale = !!this.cinematic.post;
+    this.rendererState.postScale = true;
     this.appliedRevision = -1;
   }
 
@@ -303,7 +293,7 @@ export class RenderController {
     const p95 = ordered[Math.max(0, Math.ceil(ordered.length * 0.95) - 1)] ?? 0;
     this.onMetrics({
       capabilities: { ...this.cinematic?.report(), backend: this.backends?.report() },
-      gpu: this.cinematic?.timer.metrics(),
+      gpu: this.backends?.gpu?.profiler?.report().passes.total,
       fps: this.renderCount / Math.max((now - this.lastMetricsAt) / 1000, 1),
       averageFrameTime: average,
       p95FrameTime: p95,

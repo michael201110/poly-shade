@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import * as THREE from "three";
 import { ObjectMotion } from "../src/rendering/object-motion.js";
-import { PostProcess } from "../src/rendering/postprocess.js";
+import { PostProcess } from "./reference/postprocess.js";
 import { normalizeSettings, validateOption } from "../src/settings.js";
 
 function setup() {

@@ -1,17 +1,19 @@
 {
   "name": "poly-shade",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "esbuild src/mod.js --bundle --format=esm --platform=browser --target=es2022 --external:https://* --outfile=0.4.0/main.mod.js",
+    "build": "esbuild src/mod.js --bundle --format=esm --platform=browser --target=es2022 --alias:three/webgpu=three/src/Three.WebGPU.js --alias:three/tsl=three/src/Three.TSL.js --external:https://* --outfile=0.4.1/main.mod.js",
     "test": "node --test",
     "check": "npm run build && npm test",
-    "verify:live": "npm run build && node scripts/verify-live.mjs",
-    "verify:replay": "npm run build && node scripts/verify-replay.mjs",
-    "verify:temporal": "npm run build && node scripts/verify-temporal-inputs.mjs",
+    "verify:temporal": "npm run verify:webgpu",
     "verify:upscaling": "npm run build && node scripts/benchmark-upscaling.mjs",
-    "verify:webgpu": "npm run build && node scripts/verify-compute-kernel.mjs && node scripts/verify-webgpu.mjs"
+    "verify:webgpu": "npm run build && node scripts/verify-compute-kernel.mjs && node scripts/verify-webgpu.mjs",
+    "verify:reference:live": "npm run build && node scripts/verify-live.mjs",
+    "verify:reference:replay": "npm run build && node scripts/verify-replay.mjs",
+    "verify:reference:temporal": "node scripts/verify-temporal-inputs.mjs",
+    "verify:visual": "npm run build && node scripts/verify-visual-match.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",

@@ -61,11 +61,9 @@ try {
   assert.equal(report.device.realDevice, "GPUDevice");
   assert.equal(report.device.backend, "WebGPUBackend");
   assert.equal(
-    await page.evaluate(
-      () => window.__controller.cinematic.post.pool.targets.size,
-    ),
-    0,
-    "inactive WebGL post targets are released",
+    await page.evaluate(() => !!window.__controller.cinematic.post),
+    false,
+    "there is no legacy WebGL post pipeline",
   );
   const glFrames = await page.evaluate(
     () => window.__controller.activeRenderer.info.render.frame,
@@ -295,7 +293,7 @@ try {
     window.__controller.backends.gpu.profiler.report(),
   );
   assert.deepEqual(errors, []);
-  // Deliberate device loss must restore the original input canvas and GL renderer.
+  // Device loss stops enhancement, with an explicit notice and no GL fallback.
   await page.evaluate(() => {
     const c = window.__controller;
     const gpu = c.backends.gpu;
@@ -312,9 +310,17 @@ try {
       hidden: c.backends.gpu.canvas.hidden,
     };
   });
-  assert.equal(report.deviceLoss.active, "WebGL2");
+  assert.equal(report.deviceLoss.active, "WebGPU unavailable");
   assert.equal(report.deviceLoss.hidden, true);
   assert.notEqual(report.deviceLoss.opacity, "0");
+  assert.ok(await page.locator('#polyshade-renderer-error').isVisible());
+  const stoppedFrame = await page.evaluate(() => window.__controller.activeRenderer.info.render.frame);
+  await page.waitForTimeout(200);
+  assert.equal(await page.evaluate(() => window.__controller.activeRenderer.info.render.frame), stoppedFrame, 'failure never draws a WebGL fallback');
+  await page.keyboard.press('Home');
+  await page.waitForTimeout(300);
+  assert.equal(await page.locator('#polyshade-renderer-error').count(), 0);
+  assert.equal(await page.evaluate(()=>window.__controller.cinematic), null);
   report.expectedDeviceLossDiagnostics = errors.filter(
     (e) =>
       e.includes("WebGPU Device Lost:") && e.includes("Device was destroyed."),

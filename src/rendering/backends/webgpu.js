@@ -1,4 +1,7 @@
-import * as T from "three/webgpu";
+import * as T from "three/src/Three.WebGPU.js";
+import Renderer from "three/src/renderers/common/Renderer.js";
+import ThreeGPUBackend from "three/src/renderers/webgpu/WebGPUBackend.js";
+import StandardNodeLibrary from "three/src/renderers/webgpu/nodes/StandardNodeLibrary.js";
 import { TemporalState, selectUpscaling } from "../temporal-state.js";
 import { GPUResources } from "../webgpu/resources.js";
 import { GPUScene } from "../webgpu/scene.js";
@@ -20,7 +23,7 @@ export class WebGPUBackend {
     this.onFailure = onFailure;
     this.frames = 0;
     this.warmFrames = 0;
-    this.temporal = new TemporalState(T);
+    this.temporal = new TemporalState({Matrix4:T.Matrix4,Vector2:T.Vector2,Vector4:T.Vector4});
     this.params = new Float32Array(184);
     this.disposed = false;
     this.capabilities = {
@@ -39,11 +42,16 @@ export class WebGPUBackend {
       zIndex: "0",
     });
     this.nativeCanvas.after(this.canvas);
-    this.renderer = new T.WebGPURenderer({
+    const parameters = {
       canvas: this.canvas,
       antialias: false,
       powerPreference: "high-performance",
-    });
+    };
+    // The convenience WebGPURenderer installs a WebGL fallback. Use the
+    // pinned common renderer and GPU backend directly to exclude that path.
+    this.renderer = new Renderer(new ThreeGPUBackend(parameters), parameters);
+    this.renderer.library = new StandardNodeLibrary();
+    this.renderer.isWebGPURenderer = true;
     await this.renderer.init();
     if (this.disposed) {
       this.renderer.dispose();
@@ -57,6 +65,8 @@ export class WebGPUBackend {
     this.renderer.outputColorSpace = T.LinearSRGBColorSpace;
     this.renderer.setPixelRatio(1);
     this.renderer.shadowMap.enabled = true;
+    // Adjacent, interpolated taps avoid the sparse PCF grid at large softness.
+    this.renderer.shadowMap.type = T.PCFSoftShadowMap;
     this.device = this.renderer.backend.device;
     this.device.addEventListener(
       "uncapturederror",
@@ -83,7 +93,10 @@ export class WebGPUBackend {
       sunMask: SH.SUN_MASK,
       ao: SH.AO,
       bloom: SH.BLOOM,
-      blur: SH.BLUR,
+      aoHorizontal: SH.AO_BLUR_HORIZONTAL,
+      aoVertical: SH.AO_BLUR_VERTICAL,
+      bloomBlur: SH.BLOOM_BLUR,
+      bloomBlurWide: SH.BLOOM_BLUR_WIDE,
       rays: SH.RAYS,
       volume: SH.VOLUME,
       grade: SH.GRADE,
@@ -285,12 +298,13 @@ export class WebGPUBackend {
         this.passes.draw(encoder, "ao", a, inputs, this.profiler);
         this.passes.draw(
           encoder,
-          "blur",
+          "aoHorizontal",
           b,
           { ...inputs, color: a },
           this.profiler,
         );
-        inputs.ao = b;
+        this.passes.draw(encoder, "aoVertical", a, { ...inputs, color: b }, this.profiler);
+        inputs.ao = a;
       }
       if (settings.bloomEnabled) {
         const a = this.resources.get(
@@ -302,12 +316,13 @@ export class WebGPUBackend {
         this.passes.draw(encoder, "bloom", a, inputs, this.profiler);
         this.passes.draw(
           encoder,
-          "blur",
+          "bloomBlur",
           b,
           { ...inputs, color: a },
           this.profiler,
         );
-        inputs.bloom = b;
+        this.passes.draw(encoder, "bloomBlurWide", a, { ...inputs, color: b }, this.profiler);
+        inputs.bloom = a;
       }
       if (settings.sunRaysEnabled && this.params[107] > 0) {
         const maskSize = Math.min(512, Math.max(128, Math.round(w * 0.4)));
@@ -430,7 +445,7 @@ export class WebGPUBackend {
         s.aoStrength,
         s.aoRadius,
         s.aoBias,
-        { low: 8, medium: 12, high: 24 }[s.aoQuality],
+        { low: 8, medium: 12, high: 16 }[s.aoQuality],
       ],
       [
         s.bloomThreshold,
@@ -503,6 +518,7 @@ export class WebGPUBackend {
         0,
       ],
     ];
+    cfg.push([s.postQuality === "high" ? 2 : 1.5, 0, 0, 0]);
     cfg.forEach((v, i) =>
       f.set(
         v.map((x) => (Number.isFinite(x) ? x : 0)),

@@ -1,4 +1,4 @@
-import * as T from "three/webgpu";
+import * as T from "three/src/Three.WebGPU.js";
 import {
   uniform,
   positionLocal,
@@ -11,7 +11,7 @@ import {
   smoothstep,
   length,
   wgslFn,
-} from "three/tsl";
+} from "three/src/Three.TSL.js";
 import { CSMShadowNode } from "three/addons/csm/CSMShadowNode.js";
 
 // PolyTrack shader uniforms use both Color and Vector3 representations.
@@ -273,6 +273,15 @@ export class GPUScene {
       "polygonOffsetFactor",
       "polygonOffsetUnits",
       "flatShading",
+      "shininess",
+      "reflectivity",
+      "refractionRatio",
+      "normalMapType",
+      "bumpScale",
+      "displacementScale",
+      "displacementBias",
+      "aoMapIntensity",
+      "lightMapIntensity",
       "roughness",
       "metalness",
       "emissiveIntensity",
@@ -291,8 +300,13 @@ export class GPUScene {
       "emissiveMap",
       "alphaMap",
       "aoMap",
+      "specularMap",
+      "bumpMap",
+      "lightMap",
+      "displacementMap",
     ])
-      if (source[key]) m[key] = this.texture(source[key]);
+      m[key] = source[key] ? this.texture(source[key]) : null;
+    if (source.normalScale && m.normalScale) m.normalScale.copy(source.normalScale);
     if (m.userData.opacity)
       m.userData.opacity.value = source.uniforms.opacity.value;
     return m;
@@ -552,6 +566,8 @@ export class GPUScene {
         side: T.BackSide,
         depthWrite: false,
         depthTest: false,
+        fog: false,
+        toneMapped: false,
       });
       m.colorNode = fn({
         direction: positionLocal,

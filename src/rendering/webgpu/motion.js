@@ -1,4 +1,4 @@
-import * as T from "three/webgpu";
+import * as T from "three/src/Three.WebGPU.js";
 import { checkedModule } from "./passes.js";
 
 const SHADER = `

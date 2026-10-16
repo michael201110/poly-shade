@@ -15,9 +15,6 @@ export const UPSCALE_SCALES = Object.freeze({
 
 export function selectUpscaling(settings, capabilities, failed = false) {
   const requested = settings.upscaling ?? "native";
-  const supported = capabilities.webgl2 && capabilities.halfFloat &&
-    capabilities.features?.depthTexture;
-  const available = supported && !failed;
   const gpu = capabilities.webgpu === true;
   if (gpu) {
     const available = capabilities.compute === true && !failed;
@@ -28,14 +25,8 @@ export function selectUpscaling(settings, capabilities, failed = false) {
     return { requested, backend, scale, supported: available, compute: backend === 'sgsr2-compute',
       reason: backend === 'native' && requested !== 'native' ? 'Requested temporal path unavailable on WebGPU; using Native.' : null };
   }
-  const backend = requested === "reduced" ? "reduced" :
-    available && (requested === "sgsr2-fragment" || requested === "auto") ? "sgsr2-fragment" : "native";
-  const scale = backend === "native" ? (requested === "native" ? settings.renderScale ?? 1 : 1) :
-    UPSCALE_SCALES[settings.upscaleQuality ?? "quality"] ?? settings.upscaleCustomScale ?? 0.67;
-  return { requested, backend, scale, supported: !!supported, compute: false,
-    reason: requested === "sgsr2-compute" ? "SGSR2 Compute is unsupported by this WebGL renderer." :
-      backend === "native" && requested !== "native" ?
-        failed ? "SGSR2 failed; using native rendering." : "SGSR2 requires WebGL2, RGBA16F targets and depth textures." : null };
+  return {requested,backend:'unavailable',scale:1,supported:false,compute:false,
+    reason:'PolyShade requires WebGPU; no WebGL rendering backend is included.'};
 }
 
 export class TemporalState {

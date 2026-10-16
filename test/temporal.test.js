@@ -65,16 +65,16 @@ test("camera cuts, resize, projection, scene, mode, frame gaps and explicit run 
   assert.equal(frame(scene,new THREE.PerspectiveCamera()),false);
 });
 
-test("Auto uses real Fragment support; missing capabilities, failure and Compute fall back to native 100%", () => {
+test("a WebGL-only device cannot select an enhanced rendering backend", () => {
   const capabilities={webgl2:true,halfFloat:true,features:{depthTexture:true}};
   const s={upscaling:"auto",upscaleQuality:"quality",renderScale:1.25};
-  assert.equal(selectUpscaling(s,capabilities).backend,"sgsr2-fragment");
-  assert.equal(selectUpscaling(s,capabilities).scale,0.67);
+  assert.equal(selectUpscaling(s,capabilities).backend,"unavailable");
+  assert.equal(selectUpscaling(s,capabilities).scale,1);
   for(const c of [{...capabilities,webgl2:false},{...capabilities,halfFloat:false}]) {
     const selected=selectUpscaling(s,c);
-    assert.equal(selected.backend,"native"); assert.equal(selected.scale,1);
+    assert.equal(selected.backend,"unavailable"); assert.equal(selected.scale,1);
   }
-  assert.equal(selectUpscaling(s,capabilities,true).backend,"native");
-  assert.equal(selectUpscaling({...s,upscaling:"sgsr2-compute"},capabilities).backend,"native");
-  assert.equal(selectUpscaling({...s,upscaling:"native"},capabilities).scale,1.25);
+  assert.equal(selectUpscaling(s,capabilities,true).backend,"unavailable");
+  assert.equal(selectUpscaling({...s,upscaling:"sgsr2-compute"},capabilities).backend,"unavailable");
+  assert.equal(selectUpscaling({...s,upscaling:"native"},capabilities).scale,1);
 });

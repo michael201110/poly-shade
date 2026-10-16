@@ -20,7 +20,7 @@ struct Vertex { @builtin(position) position:vec4f,@location(0) uv:vec2f };
  let xy=vec2f(f32((id<<1u)&2u),f32(id&2u));var out:Vertex;out.position=vec4f(xy*2.-1.,0,1);out.uv=vec2f(xy.x,1.-xy.y);return out;
 }
 fn D(uv:vec2f)->f32{return textureLoad(depth,clamp(vec2i(uv*vec2f(textureDimensions(depth))),vec2i(0),vec2i(textureDimensions(depth))-1),0);}
-fn viewPosition(uv:vec2f)->vec3f{let q=p.inverseProjection*vec4f(uv*vec2f(2,-2)+vec2f(-1,1),D(uv),1);return q.xyz/max(q.w,1./65000.);}
+fn viewPosition(uv:vec2f)->vec3f{let size=vec2f(textureDimensions(depth));let pixel=clamp(floor(uv*size),vec2f(0),size-1.);let center=(pixel+.5)/size;let q=p.inverseProjection*vec4f(center*vec2f(2,-2)+vec2f(-1,1),D(center),1);return q.xyz/max(q.w,1./65000.);}
 fn previousDepth(clip:vec4f)->f32{let q=p.previousInverseProjection*clip;return clamp(-q.z/max(q.w,1e-6),0.,65000.);}
 fn sampleColor(uv:vec2f)->vec3f{return textureSampleLevel(inputColor,linearSampler,uv,0).rgb;}
 fn shoulder(c:vec3f)->vec3f{return clamp((c*(2.51*c+.03))/(c*(2.43*c+.59)+.14),vec3f(0),vec3f(1));}
@@ -45,17 +45,26 @@ export const SUN_VISIBILITY = `
 }`;
 export const AO = `
 @fragment fn fragment(v:Vertex)->@location(0) vec4f{
- let uv=v.uv;let pos=viewPosition(uv);if(D(uv)>.999999){return vec4f(1);}
- let texel=1./p.size.xy;let a=viewPosition(uv+vec2f(texel.x,0))-pos;let b=viewPosition(uv+vec2f(0,texel.y))-pos;let n=normalize(cross(b,a));
- var occ=0.;let count=i32(p.cfg[3].w);for(var i=0;i<24;i++){if(i>=count){break;}let angle=f32(i)*2.399963;
- let r=sqrt((f32(i)+.5)/f32(count));let delta=vec2f(cos(angle),sin(angle))*r*p.cfg[3].y*vec2f(p.projection[0][0],p.projection[1][1])/max(-pos.z,.1)*.5;
- let diff=viewPosition(uv+delta)-pos;let dist=length(diff);occ+=max(0.,dot(n,diff)/max(dist,.001)-p.cfg[3].z)*smoothstep(p.cfg[3].y,0.,dist);}
- return vec4f(vec3f(clamp(1.-occ/f32(count)*p.cfg[3].x*2.,.55,1.)),1);
+ let uv=v.uv;let pos=viewPosition(uv);var normal=cross(dpdx(pos),dpdy(pos));let normalLength=length(normal);
+ if(D(uv)>.999999||-pos.z>120.||normalLength<1e-6){return vec4f(1);}
+ normal/=normalLength;if(dot(normal,-pos)<0.){normal=-normal;}
+ let screenRadius=clamp(p.cfg[3].y*p.projection[1][1]*.5/max(-pos.z,.1),.0001,.12);
+ var occ=0.;let count=i32(p.cfg[3].w);for(var i=0;i<16;i++){if(i>=count){break;}let angle=f32(i)*2.3999632;
+ let offset=vec2f(cos(angle),sin(angle))*screenRadius*sqrt((f32(i)+.5)/f32(count));let at=uv+offset;
+ if(any(at<vec2f(0))||any(at>vec2f(1))){continue;}let diff=viewPosition(at)-pos;let dist=length(diff);
+ occ+=max(0.,dot(normal,diff)/max(dist,.001)-p.cfg[3].z)*(1.-smoothstep(p.cfg[3].y*.4,p.cfg[3].y,dist));}
+ let fade=1.-smoothstep(80.,120.,-pos.z);return vec4f(vec3f(clamp(1.-occ/f32(count)*p.cfg[3].x*fade*3.,.55,1.)),1);
 }`;
 export const BLOOM = `
-@fragment fn fragment(v:Vertex)->@location(0) vec4f{let t=2./p.size.xy;let c=(sampleColor(v.uv+t)+sampleColor(v.uv-t)+sampleColor(v.uv+vec2f(t.x,-t.y))+sampleColor(v.uv+vec2f(-t.x,t.y)))*.25;return vec4f(max(c-p.cfg[4].x,vec3f(0)),1);}`;
-export const BLUR = `
-@fragment fn fragment(v:Vertex)->@location(0) vec4f{let t=1.2/vec2f(textureDimensions(inputColor));var sum=sampleColor(v.uv)*4.;var weights=4.;let z=-viewPosition(v.uv).z;for(var i=0;i<4;i++){let o=array<vec2f,4>(vec2f(1,0),vec2f(-1,0),vec2f(0,1),vec2f(0,-1))[i]*t;let w=exp(-abs(-viewPosition(v.uv+o).z-z)*.7);sum+=sampleColor(v.uv+o)*w;weights+=w;}return vec4f(sum/weights,1);}`;
+@fragment fn fragment(v:Vertex)->@location(0) vec4f{let c=sampleColor(v.uv);let bright=max(max(c.r,c.g),c.b);let threshold=p.cfg[4].x;let soft=smoothstep(threshold*.8,threshold*1.2,bright);return vec4f(c*max(bright-threshold,0.)/max(bright,.001)*soft,1);}`;
+const aoBlur = (axis) => `
+@fragment fn fragment(v:Vertex)->@location(0) vec4f{let stepUV=vec2f(${axis})/vec2f(textureDimensions(inputColor));let center=-viewPosition(v.uv).z;var sum=0.;var weights=0.;for(var i=-2;i<=2;i++){let at=v.uv+stepUV*f32(i);let d=-viewPosition(at).z;let weight=exp(-abs(d-center)/max(.05,center*.002))*exp(-f32(i*i)*.4);sum+=sampleColor(at).r*weight;weights+=weight;}return vec4f(vec3f(sum/max(weights,.001)),1);}`;
+export const AO_BLUR_HORIZONTAL = aoBlur('1,0');
+export const AO_BLUR_VERTICAL = aoBlur('0,1');
+const bloomBlur = (multiplier) => `
+@fragment fn fragment(v:Vertex)->@location(0) vec4f{let t=p.cfg[4].z*${multiplier}/vec2f(textureDimensions(inputColor));return vec4f((sampleColor(v.uv-t)+sampleColor(v.uv+t)+sampleColor(v.uv+vec2f(t.x,-t.y))+sampleColor(v.uv+vec2f(-t.x,t.y)))*.25,1);}`;
+export const BLOOM_BLUR = bloomBlur('1.');
+export const BLOOM_BLUR_WIDE = bloomBlur('p.cfg[13].x');
 export const SUN_MASK = `
 fn skyCoverage(uv:vec2f)->f32{return select(0.,1.,D(uv)>.999999&&all(uv>=vec2f(0))&&all(uv<=vec2f(1)));}
 @fragment fn fragment(v:Vertex)->@location(0) vec4f{
@@ -85,6 +94,7 @@ fn sunlit(pos:vec3f,distance:f32)->f32{
  let sd=(transpose(p.cameraWorld)*vec4f(p.sunDirection.xyz,0)).xyz;let phase=.1+.9*pow(max(dot(ray,sd),0.),2.);return vec4f(p.sunColor.rgb*total*phase*gate,end/p.cfg[7].x);
 }`;
 export const GRADE = `
+fn softenedRays(uv:vec2f)->vec3f{let t=1.1/vec2f(textureDimensions(rays));var c=textureSampleLevel(rays,linearSampler,uv,0).rgb*4.;for(var i=0;i<4;i++){let o=array<vec2f,4>(vec2f(1,0),vec2f(-1,0),vec2f(0,1),vec2f(0,-1))[i]*t;c+=textureSampleLevel(rays,linearSampler,uv+o,0).rgb;}c+=(textureSampleLevel(rays,linearSampler,uv+t,0).rgb+textureSampleLevel(rays,linearSampler,uv-t,0).rgb+textureSampleLevel(rays,linearSampler,uv+vec2f(t.x,-t.y),0).rgb+textureSampleLevel(rays,linearSampler,uv+vec2f(-t.x,t.y),0).rgb)*.5;return c/10.;}
 fn motionBlur(uv:vec2f)->vec3f{
  let center=sampleColor(uv);let m=textureLoad(velocity,clamp(vec2i(uv*p.size.xy),vec2i(0),vec2i(p.size.xy)-1),0);
  var delta=m.xy*vec2f(.5,-.5)*p.cfg[9].x/max(p.cfg[9].z,1.);let pixels=length(delta*p.size.xy);if(pixels<.5){return center;}delta*=min(1.,p.cfg[9].y/max(pixels,.001));
@@ -104,7 +114,7 @@ fn lens(uv:vec2f)->vec3f{
  let uv=v.uv;var c=motionBlur(uv);
  if(p.cfg[4].w>.5){c*=clamp(textureSampleLevel(ao,linearSampler,uv,0).r,.55,1.);}
  if(p.cfg[7].y>0.&&D(uv)<.999999){let pos=viewPosition(uv);let direction=normalize((p.cameraWorld*vec4f(normalize(pos),0)).xyz);let haze=(1.-exp(-max(length(pos)-p.cfg[7].z,0.)*p.cfg[7].y*.0015))*(.5+.5*pow(1.-abs(direction.y),2.));let tint=mix(p.horizon.rgb,p.sunColor.rgb,max(dot(direction,p.sunDirection.xyz),0.)*p.cfg[7].w);c=mix(c,tint,clamp(haze,0.,.5));}
- c+=textureSampleLevel(bloom,linearSampler,uv,0).rgb*p.cfg[4].y+textureSampleLevel(rays,linearSampler,uv,0).rgb*p.cfg[5].x+lens(uv);
+ c+=textureSampleLevel(bloom,linearSampler,uv,0).rgb*p.cfg[4].y+softenedRays(uv)*p.cfg[5].x+lens(uv);
  if(p.cfg[6].x>0.){let z=min(length(viewPosition(uv)),p.cfg[7].x)/p.cfg[7].x;let texel=.65/vec2f(textureDimensions(volume));var sum=vec3f(0);var total=0.;for(var i=0;i<5;i++){let at=uv+array<vec2f,5>(vec2f(0),vec2f(1,0),vec2f(-1,0),vec2f(0,1),vec2f(0,-1))[i]*texel;let sample=textureSampleLevel(volume,linearSampler,at,0);let weight=select(1.,4.,i==0)*exp(-abs(sample.a-z)*p.cfg[7].x*.7);sum+=sample.rgb*weight;total+=weight;}c+=sum/max(total,.0001)*p.cfg[6].x;}
  if(p.cfg[11].x>.5){c*=vec3f(1.+p.cfg[1].x,1.+p.cfg[1].y,1.-p.cfg[1].x);let l=dot(c,vec3f(.2126,.7152,.0722));let sat=max(max(c.r,c.g),c.b)-min(min(c.r,c.g),c.b);c=mix(vec3f(l),c,p.cfg[0].z+p.cfg[0].w*(1.-clamp(sat/max(l,.01),0.,1.)));c+=p.cfg[1].z*pow(1.-clamp(l,0.,1.),3.);c=max(c-p.cfg[2].x,vec3f(0))/max(p.cfg[2].y,.001);let pivot=max(dot(c,vec3f(.2126,.7152,.0722)),.001);c*=pow(pivot/.18,p.cfg[0].y-1.);c/=1.+p.cfg[1].w*max(c-1.,vec3f(0));}
  c=shoulder(max(c,vec3f(0))*p.cfg[0].x);if(p.cfg[11].x>.5){c*=1.-p.cfg[2].z*smoothstep(p.cfg[2].w,1.,length(uv-.5)*1.4142);}return vec4f(c,1);

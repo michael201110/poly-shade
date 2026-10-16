@@ -62,6 +62,8 @@ function normalizeOverrides(overrides) {
       /* Ignore unknown or invalid saved keys. */
     }
   }
+  // Preserve the user's temporal-upscaling intent after retiring WebGL.
+  if (overrides.upscaling === "sgsr2-fragment") normalized.upscaling = "sgsr2-compute";
   // The original shutter control was a fraction of a 60 Hz frame.
   // Preserve saved exposure duration while replacing that limited control.
   if (!Object.hasOwn(overrides, "motionBlurExposureMs") &&

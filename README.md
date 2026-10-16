@@ -1,22 +1,34 @@
-# PolyShade 0.4.0
+# PolyShade 0.4.1
 
 A graphics mod for **PolyTrack 0.6.3**, loaded through PolyModLoader. Warm directional sunlight, cool shaded faces, glossy car paint and broad soft clouds give the low-poly world a cinematic racing-game look.
 
 ## Install
 
-Install [PolyModLoader](https://polymodloader.com/), then paste this **0.4.0 install link** into its mod manager:
+Install [PolyModLoader](https://polymodloader.com/), then paste this **0.4.1 install link** into its mod manager:
 
 ```text
 https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/
 ```
 
-[Install PolyShade 0.4.0](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/) · [Pinned 0.4.0](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.4.0/)
+[Install PolyShade 0.4.1](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/) · [Pinned 0.4.1](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.4.1/)
 
-Select **0.4.0 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.4.0**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
+Select **0.4.1 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.4.1**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
 
-PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.4.0/version.json` and `0.4.0/main.mod.js`; historical bundles are preserved.
+PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.4.1/version.json` and `0.4.1/main.mod.js`; historical bundles are preserved.
+
+## What's changed in 0.4.1
+
+**PolyShade now renders exclusively with WebGPU.** Fragment and renderer-backend controls, the active WebGL effects pipeline and Three's automatic WebGL fallback have been removed. Saved Fragment settings migrate to SGSR2 Compute. Native, Reduced, Auto and Compute all use WebGPU; the DOM HUD remains at native resolution.
+
+The WebGPU shaders now follow the established Fragment presentation more closely: authored car gloss and texture maps, sky without world fog, bloom thresholds/colour, depth-aware AO filtering and softened sun rays. Interpolated shadow filtering removes the sparse shadow grid; depth reconstruction uses actual depth-texel centres to prevent AO stripes on smooth roads.
+
+WebGPU failures stop enhanced rendering and display an error. Press Home to disable the mod and return to the native game. **PolyTrack's own bootstrap, utility renderers and disabled-mod renderer still use WebGL**; removing those would require changing PolyTrack itself. Historical release bundles and test-only GL comparison fixtures remain preserved.
+
+See [visual comparisons, verification and limits](docs/0.4.1.md). Run `npm run verify:webgpu` for real-device temporal/lifecycle checks, `npm run verify:visual` for paired reference captures, or `npm run verify:upscaling` for the current GPU-only benchmark. Set `POLYSHADE_HEADED=1` to watch these browser checks.
 
 ## What's changed in 0.4.0
+
+The entries below describe historical releases; their GL behavior does not apply to 0.4.1.
 
 **WebGPU now renders the complete 3D scene, effects and native-resolution presentation on one GPUDevice.** The renderer defaults to Auto: compatible browsers use the isolated Three r181 WebGPU renderer; unavailable devices or unsupported material callbacks restore the established WebGL path. The original canvas keeps gameplay input, and the HTML HUD/panel stay sharp at native resolution.
 
@@ -102,23 +114,24 @@ Brake lamps use real short-range, unshadowed SpotLights aimed rearward/downward 
 
 ## Rendering and diagnostics
 
-The selected renderer draws the scene into GPU-owned HDR colour and depth. WebGPU uses a synchronized scene/material compatibility layer; WebGL uses the game's native Three.js renderer. Reduced-resolution AO with bilateral filtering and small bloom buffers feed one colour-grade/tone-map pass and optional FXAA. Scattering uses a low-sample screen-space approximation rather than expensive world-space volumetrics. Extinction weights advance incrementally instead of evaluating exponential/power functions at every slice. Screen-space scattering cannot see offscreen occluders; reflections represent the generated sky.
+WebGPU draws the scene into GPU-owned HDR colour and depth through a synchronized scene/material compatibility layer. Reduced-resolution AO with bilateral filtering and small bloom buffers feed one colour-grade/tone-map pass and optional FXAA. Scattering uses a low-sample screen-space approximation rather than expensive world-space volumetrics. Extinction weights advance incrementally instead of evaluating exponential/power functions at every slice. Screen-space scattering cannot see offscreen occluders; reflections represent the generated sky.
 
-The material inspector supports Alt-click picking and persistent `material:`, `mesh:` and `parent:` overrides with `*` wildcards. Arbitrary shader callbacks, transparency, ghosts and brake emissive handles are preserved. Known native paint/metal/rubber materials receive reversible scalar surface tuning.
+The material inspector supports Alt-click picking and persistent `material:`, `mesh:` and `parent:` overrides with `*` wildcards. Known native paint, CSM, morph and PolyShade callbacks have GPU adapters. Unknown custom shader callbacks, skinned meshes and compressed textures need dedicated adapters and stop enhanced rendering. Transparent ghosts render, but independent ghost motion remains a temporal limitation.
 
-Diagnostics expose passes, target sizes/estimated bytes, allocation counts, contact shadows, shader warming, CPU/GPU timings and failures. Per-pass profiling is optional. Asynchronous visibility/GPU feedback never waits for a GPU fence during gameplay. Optional shader failures fall back safely, and render state restores in `finally`. Native offscreen/XR rendering bypasses post effects. Manager-only unloading may require a reload if PML does not call the mod's disposal lifecycle.
+Diagnostics expose target sizes/estimated bytes, allocations, temporal state, compute dispatches, CPU/GPU timings and failures. Per-pass profiling is optional. Asynchronous visibility/GPU feedback never waits for a GPU fence during gameplay. Compute reconstruction failures select native-resolution WebGPU rendering; renderer failures stop enhancement. Render state restores in `finally`. Native offscreen/XR rendering bypasses post effects. Manager-only unloading may require a reload if PML does not call the mod's disposal lifecycle.
 
 ## Build and verify
 
 ```sh
 npm ci
 npm run check
-npm run verify:live
-npm run verify:replay
+npm run verify:webgpu
+npm run verify:visual
+npm run verify:upscaling
 ```
 
-Three.js 0.181.2 is a pinned production dependency for the isolated WebGPU renderer. Playwright, esbuild and PNG tooling are development dependencies. Live verification uses Microsoft Edge and the official PML CDN with a fresh profile. It checks presets, restoration, resizing, braking, cameras, driving, native CSM, occlusion and resource cycles. The replay verifier watches Summer 2's #1 replay and runs a GPU near/far/sky-depth regression; its public replay API bridge exists only in the test harness. WebGPU verification and benchmarks fall back to the offline default track when that public leaderboard is unavailable, and record the actual scene used.
+Three.js 0.181.2 is pinned for the isolated WebGPU renderer. Playwright, esbuild and PNG tooling are development dependencies. Current verification uses Microsoft Edge and the official PML CDN with a fresh profile. The GPU verifier checks real-device dispatch, all five scales, presets, debug views, resize, history rejection, camera motion, static marking stability and device loss. It attempts Summer 2's #1 replay and records an offline live-driving substitute if the public leaderboard is unavailable.
 
-To watch the WebGPU tests in a visible Edge window, set `$env:POLYSHADE_HEADED='1'` in PowerShell before `npm run verify:webgpu`. Screenshots and reports are saved in `%TEMP%/polyshade-webgpu`.
+To watch the tests, set `$env:POLYSHADE_HEADED='1'` in PowerShell. Reports and screenshots go to `%TEMP%/polyshade-webgpu`, `%TEMP%/polyshade-visual-match` and `%TEMP%/polyshade-sgsr2` respectively.
 
-Reports/screenshots are written under `%TEMP%/polyshade-0.3.2/` and `%TEMP%/polyshade-replay-0.3.2/`. `POLYSHADE_RELEASE`, `POLYSHADE_OUTPUT`, `POLYSHADE_PRESET` and `POLYSHADE_CSM` select replay comparison settings. Older release calibration/optimization reports remain in [docs](docs/).
+`verify:reference:live`, `verify:reference:replay` and `verify:reference:temporal` retain historical WebGL checks for comparison; they do not verify the current renderer. Earlier calibration reports and immutable bundles remain in [docs](docs/).

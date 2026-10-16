@@ -1,18 +1,18 @@
-import { SUN_MASK_FRAGMENT, SUN_RAYS_FRAGMENT } from "../shaders/sun-rays.js";
-import { SUN_VISIBILITY_FRAGMENT } from "../shaders/sun-optics.js";
-import { SunVisibility, sunScreenVisibility } from "./sun-visibility.js";
-import { VOLUMETRIC_FRAGMENT } from "../shaders/volumetric.js";
-import { FULLSCREEN_VERTEX } from "../shaders/fullscreen.js";
-import { SSAO_FRAGMENT, AO_BLUR_FRAGMENT } from "../shaders/ssao.js";
-import { BLOOM_FRAGMENT, BLOOM_BLUR_FRAGMENT } from "../shaders/bloom.js";
-import { GRADE_FRAGMENT } from "../shaders/grade.js";
-import { FINISH_FRAGMENT } from "../shaders/finish.js";
-import { RenderState, TargetPool } from "./render-targets.js";
-import { ObjectMotion } from "./object-motion.js";
+import { SUN_MASK_FRAGMENT, SUN_RAYS_FRAGMENT } from "../../src/shaders/sun-rays.js";
+import { SUN_VISIBILITY_FRAGMENT } from "../../src/shaders/sun-optics.js";
+import { SunVisibility, sunScreenVisibility } from "../../src/rendering/sun-visibility.js";
+import { VOLUMETRIC_FRAGMENT } from "../../src/shaders/volumetric.js";
+import { FULLSCREEN_VERTEX } from "../../src/shaders/fullscreen.js";
+import { SSAO_FRAGMENT, AO_BLUR_FRAGMENT } from "../../src/shaders/ssao.js";
+import { BLOOM_FRAGMENT, BLOOM_BLUR_FRAGMENT } from "../../src/shaders/bloom.js";
+import { GRADE_FRAGMENT } from "../../src/shaders/grade.js";
+import { FINISH_FRAGMENT } from "../../src/shaders/finish.js";
+import { RenderState, TargetPool } from "../../src/rendering/render-targets.js";
+import { ObjectMotion } from "../../src/rendering/object-motion.js";
 import { TemporalState, selectUpscaling } from "./temporal-state.js";
-import { STATIC_VELOCITY_FRAGMENT, TEMPORAL_DEBUG_FRAGMENT } from "../shaders/temporal-inputs.js";
+import { STATIC_VELOCITY_FRAGMENT, TEMPORAL_DEBUG_FRAGMENT } from "../../src/shaders/temporal-inputs.js";
 import { SGSR2Fragment } from "./sgsr2-fragment.js";
-import { SGSR2_VERTEX, SGSR2_CONVERT_FRAGMENT, SGSR2_UPSCALE_FRAGMENT } from "../shaders/sgsr2.js";
+import { SGSR2_VERTEX, SGSR2_CONVERT_FRAGMENT, SGSR2_UPSCALE_FRAGMENT } from "../../src/shaders/sgsr2.js";
 const DEBUG_VIEWS = [
   "final",
   "depth",

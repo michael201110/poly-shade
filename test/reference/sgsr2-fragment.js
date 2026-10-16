@@ -1,5 +1,5 @@
-import { SGSR2_CONVERT_FRAGMENT, SGSR2_UPSCALE_FRAGMENT } from "../shaders/sgsr2.js";
-import { TEMPORAL_GEOMETRY_FRAGMENT } from "../shaders/temporal-inputs.js";
+import { SGSR2_CONVERT_FRAGMENT, SGSR2_UPSCALE_FRAGMENT } from "../../src/shaders/sgsr2.js";
+import { TEMPORAL_GEOMETRY_FRAGMENT } from "../../src/shaders/temporal-inputs.js";
 
 // Backend boundary: native-size linear output + backend-owned ping-pong history.
 // This reference path owns only WebGL resources; no cross-API texture copying.
