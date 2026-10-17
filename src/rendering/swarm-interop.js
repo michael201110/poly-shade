@@ -9,7 +9,7 @@ export class SwarmInstances {
     const {maxCars,groups}=description;
     if(description.version!==1||!Number.isSafeInteger(maxCars)||maxCars<1||maxCars>500||
       !Array.isArray(groups)||groups.length<1||groups.length>32)throw Error('invalid swarm descriptor');
-    const handle=this.next++,source={groups:[],onUnavailable:description.onUnavailable,bytes:0,updates:0};
+    const handle=this.next++,source={groups:[],scene:description.scene,onUnavailable:description.onUnavailable,bytes:0,updates:0};
     try {
       for(let index=0;index<groups.length;index++){
         const g=groups[index];
@@ -92,7 +92,8 @@ export class SwarmInstances {
   }
   release(source){for(const g of source.groups){this.mirror.scene.remove(g.mesh);g.mesh.dispose();g.mesh.geometry.dispose();g.mesh.material.dispose();}source.groups.length=0;}
   unregister(handle){const source=this.sources.get(handle);if(!source)return;this.sources.delete(handle);this.release(source);this.mirror.topologyVersion++;}
-  clear(reason){for(const [handle,source]of this.sources){this.unregister(handle);if(reason)queueMicrotask(()=>source.onUnavailable?.(reason));}}
+  clear(reason,preserveScene=null){for(const [handle,source]of this.sources){if(preserveScene&&source.scene===preserveScene)continue;
+    this.unregister(handle);if(reason)queueMicrotask(()=>source.onUnavailable?.(reason));}}
   report(){let draws=0,triangles=0,bytes=0,uploadMs=0;
     for(const s of this.sources.values()){draws+=s.groups.filter(g=>g.mesh.visible).length;triangles+=s.triangles||0;bytes+=s.bytes;uploadMs+=s.uploadMs||0;}
     return {sources:this.sources.size,colourDraws:draws,triangles,bytes,uploadMs};}
@@ -106,7 +107,7 @@ export function createSwarmInterop(getController) {
     capabilities(){try{backend();return {version:1,ready:true,backend:'PolyShade WebGPU',maxCars:500};}catch{return {version:1,ready:false};}},
     registerSwarmSource(description){const b=backend(),mirror=b.scene;
       if(description.scene&&description.scene!==getController().activeScene)throw Error('swarm belongs to another track');
-      const id=next++,handle=mirror.swarms.register({...description,onUnavailable:reason=>{registrations.delete(id);description.onUnavailable?.(reason);}});registrations.set(id,{mirror,handle});return id;},
+      const id=next++,handle=mirror.swarms.register({...description,scene:description.scene||getController().activeScene,onUnavailable:reason=>{registrations.delete(id);description.onUnavailable?.(reason);}});registrations.set(id,{mirror,handle});return id;},
     updateSwarmInstances(id,data,offsets,counts){backend();const r=registrations.get(id);if(!r)throw Error('unknown swarm handle');return r.mirror.swarms.update(r.handle,data,offsets,counts);},
     unregisterSwarmSource(id){const r=registrations.get(id);if(r){r.mirror.swarms.unregister(r.handle);registrations.delete(id);}},
     diagnostics(){try{return backend().scene.swarms.report();}catch{return {sources:0,unavailable:true};}},

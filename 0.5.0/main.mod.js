@@ -55982,7 +55982,7 @@ var SwarmInstances = class {
   register(description) {
     const { maxCars, groups } = description;
     if (description.version !== 1 || !Number.isSafeInteger(maxCars) || maxCars < 1 || maxCars > 500 || !Array.isArray(groups) || groups.length < 1 || groups.length > 32) throw Error("invalid swarm descriptor");
-    const handle = this.next++, source = { groups: [], onUnavailable: description.onUnavailable, bytes: 0, updates: 0 };
+    const handle = this.next++, source = { groups: [], scene: description.scene, onUnavailable: description.onUnavailable, bytes: 0, updates: 0 };
     try {
       for (let index = 0; index < groups.length; index++) {
         const g = groups[index];
@@ -56123,8 +56123,9 @@ var SwarmInstances = class {
     this.release(source);
     this.mirror.topologyVersion++;
   }
-  clear(reason) {
+  clear(reason, preserveScene = null) {
     for (const [handle, source] of this.sources) {
+      if (preserveScene && source.scene === preserveScene) continue;
       this.unregister(handle);
       if (reason) queueMicrotask(() => source.onUnavailable?.(reason));
     }
@@ -56162,7 +56163,7 @@ function createSwarmInterop(getController) {
     registerSwarmSource(description) {
       const b = backend(), mirror = b.scene;
       if (description.scene && description.scene !== getController().activeScene) throw Error("swarm belongs to another track");
-      const id = next++, handle = mirror.swarms.register({ ...description, onUnavailable: (reason) => {
+      const id = next++, handle = mirror.swarms.register({ ...description, scene: description.scene || getController().activeScene, onUnavailable: (reason) => {
         registrations.delete(id);
         description.onUnavailable?.(reason);
       } });
@@ -68848,7 +68849,7 @@ var GPUScene = class {
   }
   sync(source, camera, settings2, palette, sky, shadowSnapshots, movingSources) {
     if (this.source !== source) {
-      this.clear();
+      this.clear(source);
       this.source = source;
     }
     this.shadowSnapshots = shadowSnapshots;
@@ -69091,8 +69092,8 @@ var GPUScene = class {
     this.skyMesh.position.setFromMatrixPosition(camera.matrixWorld);
     this.skyMesh.scale.setScalar(camera.far * 0.4);
   }
-  clear() {
-    this.swarms.clear("track or renderer changed");
+  clear(preserveSwarmScene = null) {
+    this.swarms.clear("track or renderer changed", preserveSwarmScene);
     this.topologyVersion++;
     this.materialLists = /* @__PURE__ */ new WeakMap();
     for (const light of this.nativeFill.values()) this.scene.remove(light);

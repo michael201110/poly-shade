@@ -326,7 +326,7 @@ export class GPUScene {
   }
   sync(source, camera, settings, palette, sky, shadowSnapshots, movingSources) {
     if (this.source !== source) {
-      this.clear();
+      this.clear(source);
       this.source = source;
     }
     this.shadowSnapshots = shadowSnapshots;
@@ -599,8 +599,8 @@ export class GPUScene {
     this.skyMesh.position.setFromMatrixPosition(camera.matrixWorld);
     this.skyMesh.scale.setScalar(camera.far * 0.4);
   }
-  clear() {
-    this.swarms.clear("track or renderer changed");
+  clear(preserveSwarmScene = null) {
+    this.swarms.clear("track or renderer changed", preserveSwarmScene);
     this.topologyVersion++;
     this.materialLists = new WeakMap();
     for (const light of this.nativeFill.values()) this.scene.remove(light);
