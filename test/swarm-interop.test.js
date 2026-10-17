@@ -45,7 +45,8 @@ test('morphs, fade alpha and track cleanup use shared GPU attributes',async()=>{
   mirror.swarms.update(h,data,[32],[2]);const row=mirror.swarms.sources.get(h).groups[0];
   assert.equal(row.parameters.array[0],Math.fround(.4));assert.equal(row.parameters.array[4],Math.fround(.7));
   assert.equal(row.alpha.array[0],.5);assert.equal(row.mesh.material.transparent,true);
-  assert.ok(row.mesh.material.geometryNode);mirror.swarms.clear('track changed');await Promise.resolve();
+  assert.ok(row.mesh.material.positionNode);assert.equal(row.mesh.material.geometryNode,null);
+  assert.equal(row.mesh.material.castShadowPositionNode,row.mesh.material.positionNode);mirror.swarms.clear('track changed');await Promise.resolve();
   assert.equal(reason,'track changed');assert.equal(mirror.scene.children.length,0);
 });
 test('optional capability API refuses unavailable backends without dependencies',()=>{

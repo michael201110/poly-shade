@@ -56062,8 +56062,9 @@ var SwarmInstances = class {
           material.name = `Swarm ${g.name}`;
           material.opacityNode = attribute2("swarmOpacity", "float");
           if (g.paintMode === 2) material.colorNode = mix2(vec32(g.colour[0], g.colour[1], g.colour[2]), vec32(1, 0, 0), attribute2("swarmParameters", "vec4").x);
+          let morphPosition = null, morphNormal = null;
           if (g.kind === 2) {
-            let p = positionLocal2, n = normalLocal2;
+            let p = attribute2("position", "vec3"), n = attribute2("normal", "vec3");
             for (let i = 0; i < 4; i++) {
               const a = g.morphs?.[i];
               if (!(a instanceof Float32Array) || a.length !== positions.length) throw Error("invalid suspension morphs");
@@ -56075,10 +56076,8 @@ var SwarmInstances = class {
                 n = n.add(attribute2(`swarmNormal${i}`, "vec3").mul(weight));
               }
             }
-            material.geometryNode = Fn2(() => {
-              positionLocal2.assign(p);
-              normalLocal2.assign(n);
-            })();
+            morphPosition = p;
+            morphNormal = n;
             const names = Object.keys(geometry.attributes).filter((name) => !geometry.attributes[name].isInstancedBufferAttribute);
             const stride = names.length * 3, packed = new Float32Array(positions.length / 3 * stride);
             for (let vertex = 0; vertex < positions.length / 3; vertex++) for (let a = 0; a < names.length; a++) {
@@ -56091,6 +56090,13 @@ var SwarmInstances = class {
             names.forEach((name, index2) => geometry.setAttribute(name, new InterleavedBufferAttribute(interleaved, 3, index2 * 3)));
           }
           const mesh = new InstancedMesh(geometry, material, capacity);
+          if (morphPosition) {
+            const matrix = buffer2(mesh.instanceMatrix.array, "mat4", capacity).element(instanceIndex2);
+            material.positionNode = matrix.mul(vec42(morphPosition, 1)).xyz;
+            material.castShadowPositionNode = material.positionNode;
+            if (!material.flatShading)
+              material.normalNode = varying2(transformNormalToView2(transformNormal2(morphNormal, matrix))).normalize();
+          }
           mesh.instanceColor = new InstancedBufferAttribute(new Float32Array(capacity * 3).fill(1), 3);
           mesh.instanceMatrix.setUsage(DynamicDrawUsage);
           mesh.instanceColor.setUsage(DynamicDrawUsage);
