@@ -1,3 +1,4 @@
+import { SwarmInstances } from "../swarm-interop.js";
 import * as T from "three/src/Three.WebGPU.js";
 import {
   uniform,
@@ -31,6 +32,7 @@ export function copyLinearColour(target, value) {
 export class GPUScene {
   constructor() {
     this.scene = new T.Scene();
+    this.swarms = new SwarmInstances(this);
     this.objects = new Map();
     this.materials = new Map();
     this.materialLists = new WeakMap();
@@ -598,6 +600,7 @@ export class GPUScene {
     this.skyMesh.scale.setScalar(camera.far * 0.4);
   }
   clear() {
+    this.swarms.clear("track or renderer changed");
     this.topologyVersion++;
     this.materialLists = new WeakMap();
     for (const light of this.nativeFill.values()) this.scene.remove(light);

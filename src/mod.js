@@ -1,5 +1,6 @@
 import { describeMaterial, classifyMaterialEvidence } from "./materials.js";
 import { PolyMod } from "https://cdn.polymodloader.com/cb/PolyTrackMods/PolyModLoader/0.6.3/PolyTypes.js";
+import { createSwarmInterop } from "./rendering/swarm-interop.js";
 import { RenderController } from "./controller.js";
 import {
   findThreeNamespace,
@@ -26,6 +27,7 @@ let removeHotkey;
 let removeHistoryEvents;
 let unloadListener;
 let confirmedScene;
+const swarmInterop = createSwarmInterop(() => controller);
 
 function getStorage() {
   try {
@@ -181,6 +183,8 @@ function makePanel() {
 }
 
 function restoreAndDispose() {
+  swarmInterop.dispose();
+  if (globalThis.polyShadeSwarm === swarmInterop) delete globalThis.polyShadeSwarm;
   controller?.restore();
   removeRenderHook?.();
   removeHotkey?.();
@@ -202,7 +206,7 @@ class PolyShadeMod extends PolyMod {}
 export const polyMod = Object.assign(new PolyShadeMod(), {
   modName: "PolyShade",
   modID: "polyshade",
-  modVersion: "0.4.1",
+  modVersion: "0.5.0",
   modAuthor: "PolyShade",
   modDescription:
     "<p>Lighting, shadows, material response, and atmosphere for PolyTrack's live Three.js scene. Rendering only; no physics or simulation changes.</p>",
@@ -214,6 +218,7 @@ export const polyMod = Object.assign(new PolyShadeMod(), {
     pml ??= pmlInstance;
     settings = loadSettings(getStorage());
     attachRenderer();
+    globalThis.polyShadeSwarm = swarmInterop;
   },
   postInit() {
     if (!settings) settings = loadSettings(getStorage());
