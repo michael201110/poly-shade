@@ -7,6 +7,7 @@ import { GPUResources } from "../webgpu/resources.js";
 import { GPUScene } from "../webgpu/scene.js";
 import { GPUPasses } from "../webgpu/passes.js";
 import { GPUProfiler } from "../webgpu/profiler.js";
+import { SwarmMotion } from "../webgpu/swarm-motion.js";
 import { GPUMotion } from "../webgpu/motion.js";
 import { GPUShadowCache } from "../webgpu/shadows.js";
 import {
@@ -116,6 +117,8 @@ export class WebGPUBackend {
       }
     }
     await this.motion.init();
+    this.swarmMotion = new SwarmMotion(this.device);
+    await this.swarmMotion.init();
     this.compute = new SGSR2Compute(this.device, this.resources);
     try {
       await this.compute.init();
@@ -269,6 +272,7 @@ export class WebGPUBackend {
         this.temporal,
         this.profiler,
       );
+      this.swarmMotion.render(encoder, velocity, depth, this.scene.swarms, this.temporal, this.profiler);
       let debugVelocity = velocity;
       if (settings.upscaleDebugView === "static-velocity") {
         debugVelocity = this.resources.get("static-debug", w, h);
@@ -555,6 +559,9 @@ export class WebGPUBackend {
       ),
       meshes: this.scene?.objects.size,
       cars: this.motion?.entries.size,
+      swarm: this.scene?.swarms.report(),
+      sceneDrawCalls: this.renderer?.info.render.drawCalls,
+      sceneTriangles: this.renderer?.info.render.triangles,
       projectedShadowProxiesReplaced: this.scene?.skippedProjected,
     };
   }
@@ -568,6 +575,7 @@ export class WebGPUBackend {
     this.removeTimestamps?.();
     this.compute?.dispose();
     this.motion?.dispose();
+    this.swarmMotion?.dispose();
     this.passes?.dispose();
     this.profiler?.dispose();
     this.resources?.dispose();

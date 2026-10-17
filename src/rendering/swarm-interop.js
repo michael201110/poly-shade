@@ -49,6 +49,17 @@ export class SwarmInstances {
             // Geometry node runs before native instance/model transforms and
             // is reused by the regular and shadow pipelines.
             material.geometryNode=Fn(()=>{positionLocal.assign(p);normalLocal.assign(n);})();
+            // WebGPU guarantees only eight vertex-buffer bindings. Suspension
+            // positions/normals + eight morph channels must share one static
+            // interleaved buffer, rather than consuming ten bindings.
+            const names=Object.keys(geometry.attributes).filter(name=>!geometry.attributes[name].isInstancedBufferAttribute);
+            const stride=names.length*3,packed=new Float32Array(positions.length/3*stride);
+            for(let vertex=0;vertex<positions.length/3;vertex++)for(let a=0;a<names.length;a++){
+              const source=geometry.attributes[names[a]],offset=vertex*stride+a*3;
+              packed[offset]=source.getX(vertex);packed[offset+1]=source.getY(vertex);packed[offset+2]=source.getZ(vertex);
+            }
+            const interleaved=new T.InterleavedBuffer(packed,stride);
+            names.forEach((name,index)=>geometry.setAttribute(name,new T.InterleavedBufferAttribute(interleaved,3,index*3)));
           }
           const mesh=new T.InstancedMesh(geometry,material,capacity);
           mesh.instanceColor=new T.InstancedBufferAttribute(new Float32Array(capacity*3).fill(1),3);
@@ -110,7 +121,8 @@ export function createSwarmInterop(getController) {
       const id=next++,handle=mirror.swarms.register({...description,scene:description.scene||getController().activeScene,onUnavailable:reason=>{registrations.delete(id);description.onUnavailable?.(reason);}});registrations.set(id,{mirror,handle});return id;},
     updateSwarmInstances(id,data,offsets,counts){backend();const r=registrations.get(id);if(!r)throw Error('unknown swarm handle');return r.mirror.swarms.update(r.handle,data,offsets,counts);},
     unregisterSwarmSource(id){const r=registrations.get(id);if(r){r.mirror.swarms.unregister(r.handle);registrations.delete(id);}},
-    diagnostics(){try{return backend().scene.swarms.report();}catch{return {sources:0,unavailable:true};}},
+    diagnostics(){try{const b=backend();return {...b.scene.swarms.report(),sceneDrawCalls:b.renderer.info.render.drawCalls,
+      sceneTriangles:b.renderer.info.render.triangles,gpu:b.profiler.report().passes};}catch{return {sources:0,unavailable:true};}},
     dispose(){for(const id of registrations.keys())this.unregisterSwarmSource(id);}
   });
 }
