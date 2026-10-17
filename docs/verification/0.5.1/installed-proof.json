@@ -1,0 +1,152 @@
+{
+  "end": 1792274878036,
+  "endStatus": {
+    "clock": 5.24559999999992,
+    "colours": [
+      "#00ff00"
+    ],
+    "loaded": 500,
+    "performance": {
+      "frame_ms": 16.661666666467983,
+      "renderer": {
+        "calls": 2,
+        "height": 947,
+        "render_cpu_ms": 5.931666665772597,
+        "triangles": 210,
+        "width": 1327
+      },
+      "replay_update_ms": 1.641666665673256,
+      "samples": 60
+    },
+    "visible": 500,
+    "worker": {
+      "backend": "Worker + PolyShade WebGPU",
+      "canonicalBytes": 34077304,
+      "cars": 500,
+      "clock": 5.162199999999926,
+      "failure": null,
+      "frames": 2733,
+      "geometryBytes": 82512,
+      "inFlight": 1,
+      "interop": {
+        "bytes": 104834544,
+        "colourDraws": 12,
+        "gpu": {},
+        "sceneDrawCalls": 101,
+        "sceneTriangles": 6460316,
+        "skidSegments": 3281,
+        "sources": 1,
+        "triangles": 1557562,
+        "uploadMs": 0.800000011920929
+      },
+      "interpolationMs": 0.800000011920929,
+      "lod": {
+        "far": 0,
+        "full": 30,
+        "medium": 0
+      },
+      "mainThreadMs": 0.05105916732327619,
+      "packingMs": 0.800000011920929,
+      "ready": true,
+      "renderClock": 5.228799999999917,
+      "sharedMemory": false,
+      "visible": 30,
+      "workerMedianMs": 1.9000000059604645,
+      "workerP95Ms": 2.9000000059604645,
+      "workerP99Ms": 3.300000011920929
+    }
+  },
+  "fps": 59.964667844405184,
+  "frame": {
+    "median": 16.69999999999709,
+    "p95": 16.89999999999418,
+    "p99": 16.90000000000873
+  },
+  "frames": 1799,
+  "heap": 991252071,
+  "mods": [
+    {
+      "base": "https://cdn.polymodloader.com/pml/PolyModLoader/pmlcore",
+      "loaded": true,
+      "version": "latest"
+    },
+    {
+      "base": "https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.5.1",
+      "loaded": true,
+      "version": "0.5.1"
+    },
+    {
+      "base": "https://cdn.polymodloader.com/gh/michael201110/poly-bot/0b844c5/pml-mod",
+      "loaded": true,
+      "version": "0.1.48"
+    }
+  ],
+  "settings": {
+    "enabled": true,
+    "overrides": {
+      "debugEnabled": false,
+      "debugProfile": false,
+      "upscaleQuality": "performance",
+      "upscaling": "sgsr2-compute"
+    },
+    "preset": "cinematic",
+    "schemaVersion": 2
+  },
+  "start": 1792274848035,
+  "startStatus": {
+    "clock": 6.626299999999986,
+    "colours": [
+      "#00ff00"
+    ],
+    "loaded": 500,
+    "performance": {
+      "frame_ms": 16.666666666666668,
+      "renderer": {
+        "calls": 2,
+        "height": 947,
+        "render_cpu_ms": 5.753333333631357,
+        "triangles": 210,
+        "width": 1327
+      },
+      "replay_update_ms": 1.591666667163372,
+      "samples": 60
+    },
+    "visible": 456,
+    "worker": {
+      "backend": "Worker + PolyShade WebGPU",
+      "canonicalBytes": 34077304,
+      "cars": 500,
+      "clock": 6.55959999999999,
+      "failure": null,
+      "frames": 934,
+      "geometryBytes": 82512,
+      "inFlight": 1,
+      "interop": {
+        "bytes": 104834544,
+        "colourDraws": 12,
+        "gpu": {},
+        "sceneDrawCalls": 100,
+        "sceneTriangles": 6468040,
+        "skidSegments": 7253,
+        "sources": 1,
+        "triangles": 1565506,
+        "uploadMs": 0.7000000178813934
+      },
+      "interpolationMs": 0.699999988079071,
+      "lod": {
+        "far": 0,
+        "full": 25,
+        "medium": 0
+      },
+      "mainThreadMs": 0.05586353948375563,
+      "packingMs": 0.30000001192092896,
+      "ready": true,
+      "renderClock": 6.609499999999998,
+      "sharedMemory": false,
+      "visible": 25,
+      "workerMedianMs": 2,
+      "workerP95Ms": 2.800000011920929,
+      "workerP99Ms": 3.0999999940395355
+    }
+  }
+}
