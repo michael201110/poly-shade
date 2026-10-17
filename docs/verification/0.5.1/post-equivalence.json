@@ -1,0 +1,103 @@
+{
+  "cases": [
+    {
+      "effect": "grade",
+      "scenario": "active",
+      "maximum": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "effect": "grade",
+      "scenario": "sun-hidden",
+      "maximum": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "effect": "grade",
+      "scenario": "sun-occluded",
+      "maximum": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "effect": "grade",
+      "scenario": "no-blur",
+      "maximum": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "effect": "grade",
+      "scenario": "no-optics",
+      "maximum": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "effect": "grade",
+      "scenario": "fxaa",
+      "maximum": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "effect": "grade",
+      "scenario": "sharpen",
+      "maximum": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "effect": "finish",
+      "scenario": "active",
+      "maximum": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "effect": "finish",
+      "scenario": "sun-hidden",
+      "maximum": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "effect": "finish",
+      "scenario": "sun-occluded",
+      "maximum": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "effect": "finish",
+      "scenario": "no-blur",
+      "maximum": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "effect": "finish",
+      "scenario": "no-optics",
+      "maximum": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "effect": "finish",
+      "scenario": "fxaa",
+      "maximum": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "effect": "finish",
+      "scenario": "sharpen",
+      "maximum": 0,
+      "mean": 0,
+      "changed": 0
+    }
+  ],
+  "errors": []
+}

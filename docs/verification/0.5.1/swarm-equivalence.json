@@ -1,0 +1,40 @@
+{
+  "cases": [
+    {
+      "frame": 0,
+      "changedBytes": 0,
+      "nonzeroBytes": 629
+    },
+    {
+      "frame": 1,
+      "changedBytes": 0,
+      "nonzeroBytes": 706
+    },
+    {
+      "frame": 2,
+      "changedBytes": 0,
+      "nonzeroBytes": 235
+    },
+    {
+      "frame": 3,
+      "changedBytes": 0,
+      "nonzeroBytes": 710
+    },
+    {
+      "frame": 4,
+      "changedBytes": 0,
+      "nonzeroBytes": 705
+    },
+    {
+      "frame": 5,
+      "changedBytes": 0,
+      "nonzeroBytes": 701
+    },
+    {
+      "frame": 6,
+      "changedBytes": 0,
+      "nonzeroBytes": 710
+    }
+  ],
+  "errors": []
+}

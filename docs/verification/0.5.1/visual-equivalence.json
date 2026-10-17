@@ -1,0 +1,69 @@
+{
+  "method": "Full-frame frozen 0.5.0 versus candidate, shared native transforms, paint, camera, cloud time; full preset effects.",
+  "cases": [
+    {
+      "name": "cinematic-native",
+      "meanAbsoluteChannelError": 0,
+      "max": 0,
+      "changedPixels": 0,
+      "pixelsOver8": 0,
+      "totalPixels": 921600
+    },
+    {
+      "name": "cinematic-sgsr2-compute",
+      "meanAbsoluteChannelError": 0,
+      "max": 0,
+      "changedPixels": 0,
+      "pixelsOver8": 0,
+      "totalPixels": 921600
+    },
+    {
+      "name": "clear-day-native",
+      "meanAbsoluteChannelError": 0,
+      "max": 0,
+      "changedPixels": 0,
+      "pixelsOver8": 0,
+      "totalPixels": 921600
+    },
+    {
+      "name": "clear-day-sgsr2-compute",
+      "meanAbsoluteChannelError": 0,
+      "max": 0,
+      "changedPixels": 0,
+      "pixelsOver8": 0,
+      "totalPixels": 921600
+    },
+    {
+      "name": "overcast-native",
+      "meanAbsoluteChannelError": 0,
+      "max": 0,
+      "changedPixels": 0,
+      "pixelsOver8": 0,
+      "totalPixels": 921600
+    },
+    {
+      "name": "overcast-sgsr2-compute",
+      "meanAbsoluteChannelError": 0.12120298032407407,
+      "max": 255,
+      "changedPixels": 78162,
+      "pixelsOver8": 2763,
+      "totalPixels": 921600
+    },
+    {
+      "name": "recording-native",
+      "meanAbsoluteChannelError": 0,
+      "max": 0,
+      "changedPixels": 0,
+      "pixelsOver8": 0,
+      "totalPixels": 921600
+    },
+    {
+      "name": "recording-sgsr2-compute",
+      "meanAbsoluteChannelError": 0,
+      "max": 0,
+      "changedPixels": 0,
+      "pixelsOver8": 0,
+      "totalPixels": 921600
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "release": "0.5.1",
+  "commands": [
+    {
+      "command": "npm ci",
+      "result": "PASS",
+      "detail": "7 packages installed, 0 vulnerabilities; existing esbuild allowScripts notice"
+    },
+    {
+      "command": "npm run check",
+      "result": "PASS",
+      "detail": "build + 92/92 unit tests"
+    },
+    {
+      "command": "npm run verify:webgpu",
+      "result": "PASS",
+      "detail": "compute kernel + real Edge/T500 lifecycle/temporal checks; zero unexpected errors"
+    },
+    {
+      "command": "npm run verify:visual",
+      "result": "PASS",
+      "detail": "4 preset comparisons against historical WebGL sky reference"
+    },
+    {
+      "command": "npm run verify:upscaling",
+      "result": "PASS",
+      "detail": "11 native/reduced/SGSR2 configurations, zero errors"
+    },
+    {
+      "command": "node scripts/verify-post-equivalence.mjs",
+      "result": "PASS",
+      "detail": "14 GPU cases; output byte-identical"
+    },
+    {
+      "command": "node scripts/verify-swarm-equivalence.mjs",
+      "result": "PASS",
+      "detail": "7 GPU frames; output byte-identical"
+    },
+    {
+      "command": "node scripts/verify-performance-visual.mjs",
+      "result": "PASS",
+      "detail": "8 full-frame before/after cases; 7 identical, Overcast SGSR2 mean error 0.1212"
+    }
+  ],
+  "protectedCheckpoints": 34,
+  "polybotWorkingTree": "clean",
+  "archived050GitBlob": "73183e5c6b5ed8ff452e11a40693f5831851668b",
+  "releaseSHA256": "826e4bae83bcb094dbf2db0991247c869ad5085dd4df29cf6bf5c69df491aab4"
+}

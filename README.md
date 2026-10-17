@@ -1,20 +1,26 @@
-# PolyShade 0.4.1
+# PolyShade 0.5.1
 
 A graphics mod for **PolyTrack 0.6.3**, loaded through PolyModLoader. Warm directional sunlight, cool shaded faces, glossy car paint and broad soft clouds give the low-poly world a cinematic racing-game look.
 
 ## Install
 
-Install [PolyModLoader](https://polymodloader.com/), then paste this **0.4.1 install link** into its mod manager:
+Install [PolyModLoader](https://polymodloader.com/), then paste this **0.5.1 install link** into its mod manager:
 
 ```text
 https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/
 ```
 
-[Install PolyShade 0.4.1](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/) · [Pinned 0.4.1](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.4.1/)
+[Install PolyShade 0.5.1](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/) · [Pinned 0.5.1](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.5.1/)
 
-Select **0.4.1 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.4.1**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
+Select **0.5.1 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.5.1**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
 
-PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.4.1/version.json` and `0.4.1/main.mod.js`; historical bundles are preserved.
+PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.5.1/version.json` and `0.5.1/main.mod.js`; historical bundles are preserved.
+
+## What's changed in 0.5.1
+
+Performance release based on **0.5.0**, with the same visuals and settings. Version-driven swarm/skid uploads, GPU motion history, exact indexed velocity geometry, cached scene discovery/material synchronization and persistent post/SGSR2 bindings reduce CPU work and frame spikes.
+
+On the T500, live Golden Hour + SGSR2 50% + 500 recorded cars improved from **47.8 to 59.9 FPS**, p99 **70.3 to 20.1 ms**. No cars, geometry, skid marks or effect quality were removed. PolyBot remains optional; its API v1 and native fallback are unchanged. See [measurements, fidelity checks and remaining limits](docs/0.5.1-performance.md).
 
 ## What's changed in 0.4.1
 

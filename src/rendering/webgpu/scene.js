@@ -1,4 +1,5 @@
 import { SwarmInstances } from "../swarm-interop.js";
+import { SourceIndex } from "./source-index.js";
 import * as T from "three/src/Three.WebGPU.js";
 import {
   uniform,
@@ -39,6 +40,12 @@ export class GPUScene {
     this.geometries = new Map();
     this.textures = new Map();
     this.topologyVersion = 0;
+    this.sourceIndex = new SourceIndex();
+    this.syncEpoch = 0;
+    this.materialEpochs = new WeakMap();
+    this.geometryEpochs = new WeakMap();
+    this.visited = new Set();
+    this.fills = new Set();
     this.camera = new T.PerspectiveCamera();
     this.camera.matrixAutoUpdate = false;
     this.camera.matrixWorldAutoUpdate = false;
@@ -112,6 +119,8 @@ export class GPUScene {
     return e.texture;
   }
   geometry(source) {
+    if (this.syncing && this.geometryEpochs.get(source) === this.syncEpoch)
+      return this.geometries.get(source).geo;
     if (!this.geometries.has(source)) {
       const geo = new T.BufferGeometry();
       geo.groups = source.groups.map((g) => ({ ...g }));
@@ -146,9 +155,12 @@ export class GPUScene {
       }
       versions.set(key, a.version);
     }
+    if (this.syncing) this.geometryEpochs.set(source, this.syncEpoch);
     return geo;
   }
   material(source) {
+    if (this.syncing && this.materialEpochs.get(source) === this.syncEpoch)
+      return this.materials.get(source);
     if (!this.materials.has(source)) {
       let material;
       if (source.name === "PolyShade car contact shadow") {
@@ -311,6 +323,7 @@ export class GPUScene {
     if (source.normalScale && m.normalScale) m.normalScale.copy(source.normalScale);
     if (m.userData.opacity)
       m.userData.opacity.value = source.uniforms.opacity.value;
+    if (this.syncing) this.materialEpochs.set(source, this.syncEpoch);
     return m;
   }
   materialList(source) {
@@ -330,6 +343,9 @@ export class GPUScene {
       this.source = source;
     }
     this.shadowSnapshots = shadowSnapshots;
+    this.syncEpoch++;
+    this.syncing = true;
+    try {
     source.updateMatrixWorld(true);
     camera.updateMatrixWorld(true);
     const c = this.camera;
@@ -345,13 +361,14 @@ export class GPUScene {
     for (const i of [2, 6, 10, 14]) p[i] = 0.5 * (p[i] + p[i + 1]);
     c.projectionMatrixInverse.copy(c.projectionMatrix).invert();
     c.layers.mask = camera.layers.mask;
-    const visited = new Set();
+    const visited = this.visited;
+    visited.clear();
+    const index = this.sourceIndex.get(source);
     this.skippedProjected = 0;
-    source.traverse((o) => {
+    index.eachMesh((o) => {
       if (!o.isMesh) return;
       if (o.name === "PolyShade sky") return;
-      let visible = true;
-      for (let n = o; n; n = n.parent) if (!n.visible) visible = false;
+      const visible = index.visible(o);
       const a = o.matrixWorld.elements;
       if (
         Math.abs(a[15] - 1) > 1e-5 ||
@@ -434,12 +451,12 @@ export class GPUScene {
     // The logical scene has already applied the preset to native ambient
     // lights. Preserve those contributions instead of dropping the game's
     // base fill and replacing it with a single, darker hemisphere.
-    const fills = new Set();
+    const fills = this.fills;
+    fills.clear();
     let nativeSun = 0;
-    source.traverse((light) => {
-      if (light.isDirectionalLight && light.visible)
-        nativeSun = Math.max(nativeSun, light.intensity);
-      if (!light.isAmbientLight && !light.isHemisphereLight) return;
+    for (const light of index.directionals)
+      if (light.visible) nativeSun = Math.max(nativeSun, light.intensity);
+    for (const light of index.fills) {
       fills.add(light);
       let copy = this.nativeFill.get(light);
       if (!copy) {
@@ -455,7 +472,7 @@ export class GPUScene {
       copy.visible = light.visible;
       copy.position.setFromMatrixPosition(light.matrixWorld);
       if (light.isHemisphereLight) copy.groundColor.copy(light.groundColor);
-    });
+    }
     for (const [light, copy] of this.nativeFill)
       if (!fills.has(light)) {
         this.scene.remove(copy);
@@ -499,15 +516,12 @@ export class GPUScene {
       for (const key of ["density", "near", "far"])
         if (fog[key] !== undefined) this.scene.fog[key] = fog[key];
     } else this.scene.fog = null;
-    this.scene.background = source.background?.isColor
-      ? new T.Color().copy(source.background)
-      : new T.Color().copy(palette.horizon);
+    this.scene.background ??= new T.Color();
+    this.scene.background.copy(source.background?.isColor
+      ? source.background : palette.horizon);
     this.syncSky(sky, c);
     // Brake spill is actual GPU light transport, not an emissive-only substitute.
-    const lightSources = [];
-    source.traverse((o) => {
-      if (o.isSpotLight || o.isPointLight) lightSources.push(o);
-    });
+    const lightSources = index.spills;
     this.spills ??= [];
     while (this.spills.length < lightSources.length) {
       const src = lightSources[this.spills.length];
@@ -529,6 +543,9 @@ export class GPUScene {
         l.target.position.setFromMatrixPosition(s.target.matrixWorld);
     });
     return c;
+    } finally {
+      this.syncing = false;
+    }
   }
   syncSky(sky, camera) {
     if (!sky) {
@@ -600,6 +617,8 @@ export class GPUScene {
     this.skyMesh.scale.setScalar(camera.far * 0.4);
   }
   clear(preserveSwarmScene = null) {
+    this.sourceIndex.clear();
+    this.visited.clear(); this.fills.clear();
     this.swarms.clear("track or renderer changed", preserveSwarmScene);
     this.topologyVersion++;
     this.materialLists = new WeakMap();

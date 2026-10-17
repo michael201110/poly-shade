@@ -10,12 +10,13 @@ export function gpuTexture(renderer, texture) {
 export function gpuContext(renderer) {
   return renderer.backend.getContext();
 }
-export function sceneTimestamps(renderer, profiler) {
+export function sceneTimestamps(renderer, profiler, isShadowTarget) {
   const backend = renderer.backend,
     original = backend.initTimestampQuery;
   backend.initTimestampQuery = function (type, uid, descriptor) {
     if (profiler.current)
-      Object.assign(descriptor, profiler.descriptor("scene"));
+      Object.assign(descriptor, profiler.descriptor(
+        isShadowTarget?.(renderer.getRenderTarget()) ? "shadows" : "scene"));
     else {
       delete descriptor.timestampWrites;
       original.call(this, type, uid, descriptor);

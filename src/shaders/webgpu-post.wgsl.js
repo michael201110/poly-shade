@@ -96,7 +96,7 @@ fn sunlit(pos:vec3f,distance:f32)->f32{
 export const GRADE = `
 fn softenedRays(uv:vec2f)->vec3f{let t=1.1/vec2f(textureDimensions(rays));var c=textureSampleLevel(rays,linearSampler,uv,0).rgb*4.;for(var i=0;i<4;i++){let o=array<vec2f,4>(vec2f(1,0),vec2f(-1,0),vec2f(0,1),vec2f(0,-1))[i]*t;c+=textureSampleLevel(rays,linearSampler,uv+o,0).rgb;}c+=(textureSampleLevel(rays,linearSampler,uv+t,0).rgb+textureSampleLevel(rays,linearSampler,uv-t,0).rgb+textureSampleLevel(rays,linearSampler,uv+vec2f(t.x,-t.y),0).rgb+textureSampleLevel(rays,linearSampler,uv+vec2f(-t.x,t.y),0).rgb)*.5;return c/10.;}
 fn motionBlur(uv:vec2f)->vec3f{
- let center=sampleColor(uv);let m=textureLoad(velocity,clamp(vec2i(uv*p.size.xy),vec2i(0),vec2i(p.size.xy)-1),0);
+ let center=sampleColor(uv);if(p.cfg[9].x==0.){return center;}let m=textureLoad(velocity,clamp(vec2i(uv*p.size.xy),vec2i(0),vec2i(p.size.xy)-1),0);
  var delta=m.xy*vec2f(.5,-.5)*p.cfg[9].x/max(p.cfg[9].z,1.);let pixels=length(delta*p.size.xy);if(pixels<.5){return center;}delta*=min(1.,p.cfg[9].y/max(pixels,.001));
  let count=i32(clamp(ceil(min(pixels,p.cfg[9].y)*.5),4.,16.));var sum=center;var total=1.;let inverse=1./max(-viewPosition(uv).z,.0001);let t=1./p.size.xy;
  let slope=vec2f(1./max(-viewPosition(uv+vec2f(t.x,0)).z,.0001)-inverse,1./max(-viewPosition(uv+vec2f(0,t.y)).z,.0001)-inverse);let tolerance=max(inverse*.025,dot(abs(slope),vec2f(.75)));
@@ -106,6 +106,7 @@ fn motionBlur(uv:vec2f)->vec3f{
 }
 fn lens(uv:vec2f)->vec3f{
  if(p.cfg[8].x<=0.){return vec3f(0);}let mask=textureLoad(sunVisibility,vec2i(0),0).rgb;let visible=clamp(mask.r+mask.g*.2,0.,1.)*mix(mask.b,1.,.18)*p.sunUV.w;
+ if(visible<=0.){return vec3f(0);}
  let delta=(uv-p.sunUV.xy)*vec2f(p.sunUV.z,1);let r=length(delta);let sky=select(0.,1.,D(uv)>.999999);var f=p.sunColor.rgb*(exp(-r*r/.00042)*.62+exp(-r*r/.0035)*4.*mask.b*(1.-mask.b)*.055)*sky;
  for(var i=0;i<4;i++){let axis=array<f32,4>(.22,.63,1.12,1.64)[i];let radius=array<f32,4>(.010,.027,.051,.016)[i];let weight=array<f32,4>(.37,.30,.15,.24)[i];let center=p.sunUV.xy+(vec2f(.5)-p.sunUV.xy)*axis;let d=length((uv-center)*vec2f(p.sunUV.z,1));let width=.0025+radius*.11;let rd=(vec3f(d-radius)+vec3f(-.65,0,.65)*p.cfg[8].z*radius*.14)/width;let ring=exp(-rd*rd);let core=(1.-smoothstep(radius*.2,radius*.9,d))*.08;f+=(mix(p.sunColor.rgb*vec3f(.72,.8,.9)*dot(ring,vec3f(.333)),ring,p.cfg[8].z*.62)+p.sunColor.rgb*core)*p.cfg[8].y*weight;}
  f+=p.sunColor.rgb*exp(-abs(delta.x)*8.-delta.y*delta.y/.000008)*p.cfg[8].w*.2*sky;return f*p.cfg[8].x*visible;
@@ -114,16 +115,17 @@ fn lens(uv:vec2f)->vec3f{
  let uv=v.uv;var c=motionBlur(uv);
  if(p.cfg[4].w>.5){c*=clamp(textureSampleLevel(ao,linearSampler,uv,0).r,.55,1.);}
  if(p.cfg[7].y>0.&&D(uv)<.999999){let pos=viewPosition(uv);let direction=normalize((p.cameraWorld*vec4f(normalize(pos),0)).xyz);let haze=(1.-exp(-max(length(pos)-p.cfg[7].z,0.)*p.cfg[7].y*.0015))*(.5+.5*pow(1.-abs(direction.y),2.));let tint=mix(p.horizon.rgb,p.sunColor.rgb,max(dot(direction,p.sunDirection.xyz),0.)*p.cfg[7].w);c=mix(c,tint,clamp(haze,0.,.5));}
- c+=textureSampleLevel(bloom,linearSampler,uv,0).rgb*p.cfg[4].y+softenedRays(uv)*p.cfg[5].x+lens(uv);
- if(p.cfg[6].x>0.){let z=min(length(viewPosition(uv)),p.cfg[7].x)/p.cfg[7].x;let texel=.65/vec2f(textureDimensions(volume));var sum=vec3f(0);var total=0.;for(var i=0;i<5;i++){let at=uv+array<vec2f,5>(vec2f(0),vec2f(1,0),vec2f(-1,0),vec2f(0,1),vec2f(0,-1))[i]*texel;let sample=textureSampleLevel(volume,linearSampler,at,0);let weight=select(1.,4.,i==0)*exp(-abs(sample.a-z)*p.cfg[7].x*.7);sum+=sample.rgb*weight;total+=weight;}c+=sum/max(total,.0001)*p.cfg[6].x;}
+ var shafts=vec3f(0);if(p.cfg[5].x!=0.&&p.sunUV.w>0.){shafts=softenedRays(uv)*p.cfg[5].x;}
+ c+=textureSampleLevel(bloom,linearSampler,uv,0).rgb*p.cfg[4].y+shafts+lens(uv);
+ if(p.cfg[6].x>0.&&p.sunUV.w>0.){let z=min(length(viewPosition(uv)),p.cfg[7].x)/p.cfg[7].x;let texel=.65/vec2f(textureDimensions(volume));var sum=vec3f(0);var total=0.;for(var i=0;i<5;i++){let at=uv+array<vec2f,5>(vec2f(0),vec2f(1,0),vec2f(-1,0),vec2f(0,1),vec2f(0,-1))[i]*texel;let sample=textureSampleLevel(volume,linearSampler,at,0);let weight=select(1.,4.,i==0)*exp(-abs(sample.a-z)*p.cfg[7].x*.7);sum+=sample.rgb*weight;total+=weight;}c+=sum/max(total,.0001)*p.cfg[6].x;}
  if(p.cfg[11].x>.5){c*=vec3f(1.+p.cfg[1].x,1.+p.cfg[1].y,1.-p.cfg[1].x);let l=dot(c,vec3f(.2126,.7152,.0722));let sat=max(max(c.r,c.g),c.b)-min(min(c.r,c.g),c.b);c=mix(vec3f(l),c,p.cfg[0].z+p.cfg[0].w*(1.-clamp(sat/max(l,.01),0.,1.)));c+=p.cfg[1].z*pow(1.-clamp(l,0.,1.),3.);c=max(c-p.cfg[2].x,vec3f(0))/max(p.cfg[2].y,.001);let pivot=max(dot(c,vec3f(.2126,.7152,.0722)),.001);c*=pow(pivot/.18,p.cfg[0].y-1.);c/=1.+p.cfg[1].w*max(c-1.,vec3f(0));}
  c=shoulder(max(c,vec3f(0))*p.cfg[0].x);if(p.cfg[11].x>.5){c*=1.-p.cfg[2].z*smoothstep(p.cfg[2].w,1.,length(uv-.5)*1.4142);}return vec4f(c,1);
 }`;
 export const FINISH = `
 @fragment fn fragment(v:Vertex)->@location(0) vec4f{
- var c=sampleColor(v.uv);let t=1./vec2f(textureDimensions(inputColor));let n=sampleColor(v.uv+vec2f(0,t.y));let s=sampleColor(v.uv-vec2f(0,t.y));let e=sampleColor(v.uv+vec2f(t.x,0));let w=sampleColor(v.uv-vec2f(t.x,0));let lo=min(c,min(min(n,s),min(e,w)));let hi=max(c,max(max(n,s),max(e,w)));
+ var c=sampleColor(v.uv);if(p.cfg[11].w>.5||p.cfg[11].z!=0.){let t=1./vec2f(textureDimensions(inputColor));let n=sampleColor(v.uv+vec2f(0,t.y));let s=sampleColor(v.uv-vec2f(0,t.y));let e=sampleColor(v.uv+vec2f(t.x,0));let w=sampleColor(v.uv-vec2f(t.x,0));let lo=min(c,min(min(n,s),min(e,w)));let hi=max(c,max(max(n,s),max(e,w)));
  if(p.cfg[11].w>.5&&dot(hi-lo,vec3f(.2126,.7152,.0722))>max(.03,dot(hi,vec3f(.2126,.7152,.0722))*.12)){let grad=vec2f(dot(n-s,vec3f(.2126,.7152,.0722)),dot(w-e,vec3f(.2126,.7152,.0722)));let dir=grad/max(length(grad),.001)*t;c=mix(c,(sampleColor(v.uv+dir*.5)+sampleColor(v.uv-dir*.5))*.5,.55);}
- c=clamp(c+p.cfg[11].z*(4.*c-n-s-e-w),lo,hi);
+ c=clamp(c+p.cfg[11].z*(4.*c-n-s-e-w),lo,hi);}
  let debug=i32(p.cfg[11].y);let m=textureLoad(velocity,clamp(vec2i(v.uv*p.size.xy),vec2i(0),vec2i(p.size.xy)-1),0);
  if(debug==2){c=vec3f(clamp(-viewPosition(v.uv).z/100.,0.,1.));}
  if(debug>=3&&debug<=5){c=vec3f(.5+m.x*16.,.5-m.y*16.,.5);if(debug==4&&m.z<.5){c=vec3f(.5);}}

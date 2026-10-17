@@ -108,8 +108,12 @@ export class SGSR2Compute {
     );
     this.floats.set(temporal.jitterUV.toArray(), 16);
     this.device.queue.writeBuffer(this.uniform, 0, this.params);
+    const textures = [color,depth,velocity,geometry,converted,packed,rejection,
+      histories[0],histories[1],output];
+    if (!this.bindingTextures || textures.some((t,i)=>t!==this.bindingTextures[i])) {
+    this.bindingTextures = textures;
     const view = (t) => t.view ?? t.createView();
-    const convert = this.device.createBindGroup({
+    this.convertGroup = this.device.createBindGroup({
       layout: this.convertLayout,
       entries: [
         { binding: 0, resource: { buffer: this.uniform } },
@@ -118,24 +122,25 @@ export class SGSR2Compute {
         ),
       ],
     });
-    const upscale = this.device.createBindGroup({
+    this.upscaleGroups = [0,1].map(ping=>this.device.createBindGroup({
       layout: this.upscaleLayout,
       entries: [
         { binding: 0, resource: { buffer: this.uniform } },
         ...[
-          histories[this.ping],
+          histories[ping],
           converted,
           packed,
           rejection,
           output,
-          histories[1 - this.ping],
+          histories[1 - ping],
         ].map((t, i) => ({ binding: i + 1, resource: view(t) })),
         { binding: 7, resource: this.sampler },
       ],
-    });
+    }));
+    }
     for (const [name, pipeline, group, x, y] of [
-      ["convert", this.convert, convert, w, h],
-      ["upscale", this.upscale, upscale, ow, oh],
+      ["convert", this.convert, this.convertGroup, w, h],
+      ["upscale", this.upscale, this.upscaleGroups[this.ping], ow, oh],
     ]) {
       const pass = encoder.beginComputePass({
         label: `SGSR2 ${name}`,
@@ -160,6 +165,7 @@ export class SGSR2Compute {
     return output;
   }
   dispose() {
+    this.bindingTextures = this.convertGroup = this.upscaleGroups = null;
     this.uniform.destroy();
   }
   report() {

@@ -101,6 +101,7 @@ export class GPUProfiler {
               samples: a.length,
               median: b[Math.floor(b.length * 0.5)],
               p95: b[Math.floor(b.length * 0.95)],
+              p99: b[Math.floor(b.length * 0.99)],
             },
           ];
         }),

@@ -21,6 +21,7 @@ export class GPUMotion {
     this.device = device;
     this.entries = new Map();
     this.geometry = new Map();
+    this.visible = [];
     this.lastScan = -Infinity;
     this.mvp = new T.Matrix4();
     this.previousMVP = new T.Matrix4();
@@ -156,6 +157,14 @@ export class GPUMotion {
   }
   render(encoder, target, depth, source, camera, temporal, profiler) {
     this.scan(source);
+    const entries = this.visible;
+    entries.length = 0;
+    for(const [object,entry] of this.entries) {
+      let visible = true;
+      for(let parent=object;parent;parent=parent.parent)if(!parent.visible){visible=false;break;}
+      if(visible)entries.push(object,entry);
+    }
+    if(!entries.length)return;
     const pass = encoder.beginRenderPass({
       label: "Car velocity",
       colorAttachments: [
@@ -164,10 +173,8 @@ export class GPUMotion {
       ...profiler?.descriptor("car-velocity"),
     });
     pass.setPipeline(this.pipeline);
-    for (const [o, e] of this.entries) {
-      let visible = true;
-      for (let n = o; n; n = n.parent) if (!n.visible) visible = false;
-      if (!visible) continue;
+    for (let i=0;i<entries.length;i+=2) {
+      const o=entries[i],e=entries[i+1];
       const a = o.matrixWorld.elements,
         b = e.previous.elements;
       const moving = a.some((v, i) => Math.abs(v - b[i]) > 1e-6);
@@ -203,7 +210,9 @@ export class GPUMotion {
         72,
       );
       this.device.queue.writeBuffer(e.uniform, 0, e.data);
-      const group = this.device.createBindGroup({
+      if (e.depth !== depth || e.morphBuffer !== g.morphs) {
+      e.depth = depth; e.morphBuffer = g.morphs;
+      e.group = this.device.createBindGroup({
         layout: this.pipeline.getBindGroupLayout(0),
         entries: [
           { binding: 0, resource: { buffer: e.uniform } },
@@ -211,7 +220,8 @@ export class GPUMotion {
           { binding: 2, resource: { buffer: g.morphs } },
         ],
       });
-      pass.setBindGroup(0, group);
+      }
+      pass.setBindGroup(0, e.group);
       pass.setVertexBuffer(0, g.vertices);
       if (g.indices) {
         pass.setIndexBuffer(g.indices, g.indexFormat);
@@ -226,6 +236,7 @@ export class GPUMotion {
     pass.end();
   }
   clear() {
+    this.visible.length = 0;
     for (const e of this.entries.values()) e.uniform.destroy();
     this.entries.clear();
     for (const g of this.geometry.values()) {

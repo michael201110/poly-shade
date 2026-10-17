@@ -1,4 +1,6 @@
 import { GPU_POST_COMMON } from "../../shaders/webgpu-post.wgsl.js";
+const INPUT_BINDINGS = [[1,'color'],[2,'depth'],[3,'velocity'],[4,'ao'],
+  [5,'bloom'],[6,'rays'],[8,'volume'],[9,'sun'],[10,'rejection'],[11,'sunMask']];
 
 export async function checkedModule(device, code, label) {
   const module = device.createShaderModule({ code, label });
@@ -16,8 +18,7 @@ export class GPUPasses {
     this.resources = resources;
     this.pipelines = new Map();
     this.groups = new Map();
-    this.ids = new WeakMap();
-    this.nextID = 0;
+    this.views = new WeakMap();
     this.uniform = device.createBuffer({
       label: "PolyShade post parameters",
       size: 736,
@@ -92,51 +93,43 @@ export class GPUPasses {
     this.pipelines.set(name, pipeline);
   }
   draw(encoder, name, target, inputs, profiler, load = false) {
-    const view = (value) =>
-      value?.view ?? value?.createView?.() ?? this.zero.view;
-    const entries = [
-      { binding: 0, resource: { buffer: this.uniform } },
-      { binding: 7, resource: this.sampler },
-    ];
-    const identities = [];
+    if (this.resizeVersion !== this.resources.resizes) {
+      this.groups.clear();
+      this.resizeVersion = this.resources.resizes;
+    }
+    let binding = this.groups.get(name);
+    if (!binding) {
+      binding = {textures: [], resources: [], group: null};
+      this.groups.set(name, binding);
+    }
+    let changed = !binding.group;
     // Bind groups include unused entries too. Never bind the writable target
     // as a sampled input, even when this particular entry point ignores it.
-    for (const [binding, key] of [
-      [1, "color"],
-      [2, "depth"],
-      [3, "velocity"],
-      [4, "ao"],
-      [5, "bloom"],
-      [6, "rays"],
-      [8, "volume"],
-      [9, "sun"],
-      [10, "rejection"],
-      [11, "sunMask"],
-    ]) {
+    for (let i=0;i<INPUT_BINDINGS.length;i++) {
+      const key = INPUT_BINDINGS[i][1];
       const value = inputs[key];
       const aliases =
         value && (value.texture ?? value) === (target.texture ?? target);
       const resource = aliases ? this.zero : (value ?? this.zero);
       const texture = resource.texture ?? resource;
-      if (!this.ids.has(texture)) this.ids.set(texture, ++this.nextID);
-      identities.push(this.ids.get(texture));
-      entries.push({ binding, resource: view(resource) });
+      if (binding.textures[i] !== texture) {
+        changed = true;
+        binding.textures[i] = texture;
+        binding.resources[i] = resource;
+      }
     }
-    if (this.resizeVersion !== this.resources.resizes) {
-      this.groups.clear();
-      this.resizeVersion = this.resources.resizes;
-    }
-    const key = identities.join(":");
-    let group = this.groups.get(key);
-    if (!group) {
-      group = this.device.createBindGroup({ layout: this.layout, entries });
-      this.groups.set(key, group);
+    if (changed) {
+      const entries = [{binding:0,resource:{buffer:this.uniform}},
+        {binding:7,resource:this.sampler}];
+      for(let i=0;i<INPUT_BINDINGS.length;i++)
+        entries.push({binding:INPUT_BINDINGS[i][0],resource:this.view(binding.resources[i])});
+      binding.group = this.device.createBindGroup({layout:this.layout,entries});
     }
     const pass = encoder.beginRenderPass({
       label: name,
       colorAttachments: [
         {
-          view: view(target),
+          view: this.view(target),
           loadOp: load ? "load" : "clear",
           clearValue: [0, 0, 0, 0],
           storeOp: "store",
@@ -145,9 +138,16 @@ export class GPUPasses {
       ...profiler?.descriptor(name),
     });
     pass.setPipeline(this.pipelines.get(name));
-    pass.setBindGroup(0, group);
+    pass.setBindGroup(0, binding.group);
     pass.draw(3);
     pass.end();
+  }
+  view(value) {
+    if (value?.view) return value.view;
+    if (!value?.createView) return this.zero.view;
+    let view = this.views.get(value);
+    if (!view) { view = value.createView(); this.views.set(value, view); }
+    return view;
   }
   dispose() {
     this.uniform.destroy();

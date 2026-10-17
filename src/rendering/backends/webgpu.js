@@ -86,7 +86,8 @@ export class WebGPUBackend {
     this.shadows = new GPUShadowCache();
     // This hook is isolated in the adapter boundary: timestamps enclose actual
     // Three render passes, excluding CPU submission gaps and without GPU fences.
-    this.removeTimestamps = sceneTimestamps(this.renderer, this.profiler);
+    this.removeTimestamps = sceneTimestamps(this.renderer, this.profiler,
+      target => this.scene.sun.shadow.shadowNode.lights.some(light => light.shadow.map === target));
     const shaders = {
       staticVelocity: SH.STATIC_VELOCITY,
       geometry: SH.GEOMETRY_HISTORY,
@@ -194,6 +195,7 @@ export class WebGPUBackend {
     const nativeDebug = settings.upscaleDebugView === "native";
     const w = Math.max(1, Math.round(ow * (nativeDebug ? 1 : choice.scale))),
       h = Math.max(1, Math.round(oh * (nativeDebug ? 1 : choice.scale)));
+    this.scene.sourceIndex.supported = logical.three?.discovery?.topologyEvents === true;
     const c = this.scene.sync(
       source,
       sourceCamera,
@@ -562,6 +564,7 @@ export class WebGPUBackend {
       meshes: this.scene?.objects.size,
       cars: this.motion?.entries.size,
       swarm: this.scene?.swarms.report(),
+      swarmVelocity: this.swarmMotion?.report(),
       sceneDrawCalls: this.lastSceneDraws,
       sceneTriangles: this.lastSceneTriangles,
       projectedShadowProxiesReplaced: this.scene?.skippedProjected,

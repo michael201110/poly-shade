@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-17T22:00:13.319Z",
+  "method": "Frozen offline Summer 1 scene; shared camera, cloud animation and motion blur disabled; native resolution, same presets.",
+  "cases": [
+    {
+      "preset": "cinematic",
+      "backend": "WebGL2"
+    },
+    {
+      "preset": "clear-day",
+      "backend": "WebGL2"
+    },
+    {
+      "preset": "overcast",
+      "backend": "WebGL2"
+    },
+    {
+      "preset": "recording",
+      "backend": "WebGL2"
+    },
+    {
+      "preset": "cinematic",
+      "backend": "WebGPU"
+    },
+    {
+      "preset": "clear-day",
+      "backend": "WebGPU"
+    },
+    {
+      "preset": "overcast",
+      "backend": "WebGPU"
+    },
+    {
+      "preset": "recording",
+      "backend": "WebGPU"
+    }
+  ],
+  "skyComparison": [
+    {
+      "preset": "cinematic",
+      "meanAbsoluteChannelError": 0.15028571428571427,
+      "referenceRGB": [
+        196.0049642857143,
+        208.19857142857143,
+        218.59696428571428
+      ],
+      "webgpuRGB": [
+        196.0077142857143,
+        208.23035714285714,
+        218.45964285714285
+      ]
+    },
+    {
+      "preset": "clear-day",
+      "meanAbsoluteChannelError": 0.1975357142857143,
+      "referenceRGB": [
+        195.75517857142856,
+        217.54889285714285,
+        226.90135714285714
+      ],
+      "webgpuRGB": [
+        195.7562142857143,
+        217.51192857142857,
+        226.65796428571429
+      ]
+    },
+    {
+      "preset": "overcast",
+      "meanAbsoluteChannelError": 0.15042857142857144,
+      "referenceRGB": [
+        205.24664285714286,
+        212.04503571428572,
+        215.5074642857143
+      ],
+      "webgpuRGB": [
+        205.25957142857143,
+        212.05803571428572,
+        215.61239285714285
+      ]
+    },
+    {
+      "preset": "recording",
+      "meanAbsoluteChannelError": 0.15028571428571427,
+      "referenceRGB": [
+        196.0049642857143,
+        208.19857142857143,
+        218.59696428571428
+      ],
+      "webgpuRGB": [
+        196.0077142857143,
+        208.23035714285714,
+        218.45964285714285
+      ]
+    }
+  ]
+}

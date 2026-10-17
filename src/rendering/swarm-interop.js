@@ -80,8 +80,10 @@ export class SwarmInstances {
             }
           }
           mesh.instanceColor=new T.InstancedBufferAttribute(new Float32Array(capacity*3).fill(1),3);
-          mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);mesh.instanceColor.setUsage(T.DynamicDrawUsage);
-          parameters.setUsage(T.DynamicDrawUsage);alpha.setUsage(T.DynamicDrawUsage);
+          // r181 uploads DynamicDrawUsage on every draw, even at the same
+          // version. These arrays already mark every actual change explicitly.
+          mesh.instanceMatrix.setUsage(T.StaticDrawUsage);mesh.instanceColor.setUsage(T.StaticDrawUsage);
+          parameters.setUsage(T.StaticDrawUsage);alpha.setUsage(T.StaticDrawUsage);
           mesh.count=0;mesh.frustumCulled=false;mesh.matrixAutoUpdate=false;mesh.matrixWorldAutoUpdate=false;
           mesh.castShadow=true;mesh.receiveShadow=true;
           mesh.userData.swarmInstances=true;this.mirror.scene.add(mesh);
@@ -100,19 +102,25 @@ export class SwarmInstances {
       if(!Number.isSafeInteger(count)||count<0||offset+count*24>data.length||count>(g.kind===1?g.mesh.instanceMatrix.count*2:g.mesh.instanceMatrix.count))
         throw Error('swarm packet exceeds instance capacity');
       const matrix=g.mesh.instanceMatrix.array,colours=g.mesh.instanceColor.array,parameters=g.parameters.array,alpha=g.alpha.array;
-      let packed=0,translucent=false;
+      let packed=0,translucent=false,coloursChanged=false,parametersChanged=false,alphaChanged=false;
       for(let i=0;i<count;i++){
         // The worker preserves wheel order in each compact group: 0,1,2,3.
         if(g.kind===1&&i%2!==g.variant)continue;
         const at=offset+i*24,m=packed*16;
         for(let j=0;j<16;j++)matrix[m+j]=data[at+j]*(g.kind===1&&g.variant===1&&j<3?-1:1);
-        for(let j=0;j<3;j++)colours[packed*3+j]=g.paintMode===1?data[at+16+j]:1;
-        for(let j=0;j<4;j++)parameters[packed*4+j]=data[at+20+j];
-        alpha[packed]=data[at+19];if(alpha[packed]<1)translucent=true;packed++;
+        for(let j=0;j<3;j++){const value=g.paintMode===1?data[at+16+j]:1,index=packed*3+j;
+          if(colours[index]!==value){colours[index]=value;coloursChanged=true;}}
+        for(let j=0;j<4;j++){const value=data[at+20+j],index=packed*4+j;
+          if(parameters[index]!==value){parameters[index]=value;parametersChanged=true;}}
+        if(alpha[packed]!==data[at+19]){alpha[packed]=data[at+19];alphaChanged=true;}
+        if(alpha[packed]<1)translucent=true;packed++;
       }
       if(g.mesh.material.transparent!==translucent){g.mesh.material.transparent=translucent;g.mesh.material.needsUpdate=true;}
       g.mesh.count=packed;g.mesh.visible=packed>0;
-      g.mesh.instanceMatrix.needsUpdate=true;g.mesh.instanceColor.needsUpdate=true;g.parameters.needsUpdate=true;g.alpha.needsUpdate=true;
+      g.mesh.instanceMatrix.needsUpdate=true;
+      if(coloursChanged)g.mesh.instanceColor.needsUpdate=true;
+      if(parametersChanged)g.parameters.needsUpdate=true;
+      if(alphaChanged)g.alpha.needsUpdate=true;
       triangles+=g.mesh.geometry.attributes.position.count/3*packed;instances+=packed;
     }
     source.updates++;source.uploadMs=performance.now()-start;source.triangles=triangles;source.instances=instances;
@@ -127,7 +135,8 @@ export class SwarmInstances {
       const geometry=new T.InstancedBufferGeometry();
       geometry.setAttribute('position',new T.BufferAttribute(new Float32Array([0,0,0,0,1,0,1,0,0,1,0,0,0,1,0,1,1,0]),3));
       geometry.setAttribute('normal',new T.BufferAttribute(new Float32Array([0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0]),3));
-      const buffer=new T.InstancedInterleavedBuffer(array,12);buffer.setUsage(T.DynamicDrawUsage);
+      const buffer=new T.InstancedInterleavedBuffer(array,12);buffer.setUsage(T.StaticDrawUsage);
+      buffer.name='PolyShade swarm skid corners';
       for(let i=0;i<4;i++)geometry.setAttribute(`trail${i}`,new T.InterleavedBufferAttribute(buffer,3,i*3));
       const material=new T.MeshBasicNodeMaterial({color:0x010101,side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:0,depthWrite:true});
       const p0=attribute('trail0','vec3'),p1=attribute('trail1','vec3'),p2=attribute('trail2','vec3'),p3=attribute('trail3','vec3');
@@ -138,14 +147,20 @@ export class SwarmInstances {
       this.mirror.topologyVersion++;
     }
     const t=source.trails;
-    if(reset){t.mapping.fill(0xffffffff);t.count=0;}
+    if(reset){t.mapping.fill(0xffffffff);t.count=0;t.buffer.clearUpdateRanges();}
     let min=Infinity,max=0;
     for(let i=0;i<count;i++){
       const at=offset+i*13,id=data[at];if(!Number.isSafeInteger(id)||id<0||id>=t.mapping.length)throw Error('invalid skid ring slot');
       let slot=t.mapping[id];if(slot===0xffffffff){slot=t.count++;t.mapping[id]=slot;}
       for(let j=0;j<12;j++)t.array[slot*12+j]=data[at+1+j];min=Math.min(min,slot);max=Math.max(max,slot);
     }
-    if(count){t.buffer.clearUpdateRanges();t.buffer.addUpdateRange(min*12,(max-min+1)*12);t.buffer.needsUpdate=true;}
+    if(count){
+      // Several completed worker frames can be presented before one GPU draw.
+      // Preserve their union until Three consumes the pending update ranges.
+      let from=min*12,to=(max+1)*12;
+      for(const range of t.buffer.updateRanges){from=Math.min(from,range.start);to=Math.max(to,range.start+range.count);}
+      t.buffer.clearUpdateRanges();t.buffer.addUpdateRange(from,to-from);t.buffer.needsUpdate=true;
+    }
     t.mesh.geometry.instanceCount=t.count;t.mesh.visible=t.count>0;
   }
   release(source){for(const g of source.groups){this.mirror.scene.remove(g.mesh);g.mesh.dispose();g.mesh.geometry.dispose();g.mesh.material.dispose();}source.groups.length=0;

@@ -1,6 +1,7 @@
 // Development-only: a fresh Edge profile and locally routed mod in the real PML game.
 import { chromium } from "@playwright/test";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { createHash } from "node:crypto";
 
 export async function openUpscalingHarness({ backend = "webgpu", reference = false } = {}) {
   const browser = await chromium.launch({
@@ -12,6 +13,37 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
     viewport: { width: 1280, height: 720 },
   });
   const errors = [];
+  // Keep public, version-pinned game assets identical across fresh profiles.
+  // No game assets are committed; this cache lives in the local temp folder.
+  const cache = `${process.env.TEMP}/polyshade-public-assets-063`;
+  await mkdir(cache, {recursive:true});
+  const pending = new Map();
+  await page.route('https://cdn.polymodloader.com/cb/PolyTrackMods/PolyModLoader/0.6.3/**', async route => {
+    const url=route.request().url(),key=createHash('sha256').update(url).digest('hex');
+    let task=pending.get(key);
+    if(!task){task=(async()=>{
+      try {
+        const metadata=JSON.parse(await readFile(`${cache}/${key}.json`,'utf8'));
+        const body=await readFile(`${cache}/${key}.bin`);
+        if(createHash('sha256').update(body).digest('hex')!==metadata.sha256)throw Error('cache checksum');
+        return {status:200,body,contentType:metadata.contentType};
+      }catch { /* Fetch missing/incomplete cache entries normally. */ }
+      let response;
+      for(let attempt=0;attempt<3;attempt++) {
+        try {
+          response=await route.fetch({timeout:45000,maxRetries:2});
+          if(response.status()<500&&response.status()!==429)break;
+        }catch(error){if(attempt===2)throw error;}
+      }
+      const body=await response.body(),contentType=response.headers()['content-type']??'application/octet-stream';
+      if(response.status()===200){
+        await writeFile(`${cache}/${key}.bin`,body);
+        await writeFile(`${cache}/${key}.json`,JSON.stringify({url,contentType,sha256:createHash('sha256').update(body).digest('hex')}));
+      }
+      return {status:response.status(),body,contentType};
+    })();pending.set(key,task);}
+    try{await route.fulfill(await task);}catch{await route.abort('failed');}
+  });
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => {
     if (
@@ -29,7 +61,8 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
     try {
       let body = path === 'manifest.json' && reference
         ? JSON.stringify({name:'PolyShade',author:'PolyShade',id:'polyshade',latest:{'0.6.3':'0.4.0'}})
-        : await readFile(path, "utf8");
+        : await readFile(!reference && path.endsWith('/main.mod.js') && process.env.POLYSHADE_BUNDLE
+          ? process.env.POLYSHADE_BUNDLE : path, "utf8");
       if (path.endsWith(".js"))
         body = body
           .replace(
@@ -122,6 +155,7 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
       undefined,
       { timeout: 60000 },
     );
+    await page.waitForLoadState('networkidle', {timeout:60000});
   } catch (error) {
     await browser.close();
     throw error;

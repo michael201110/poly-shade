@@ -28,7 +28,8 @@ test('saved Fragment settings migrate to Compute and legacy renderer controls ar
 });
 
 test('release excludes the GL backend and duplicate bundled Three node systems',()=>{
- const bundle=readFileSync(new URL('../0.4.1/main.mod.js',import.meta.url),'utf8');
+ const release=JSON.parse(readFileSync(new URL('../manifest.json',import.meta.url),'utf8')).latest['0.6.3'];
+ const bundle=readFileSync(new URL(`../${release}/main.mod.js`,import.meta.url),'utf8');
  assert.doesNotMatch(bundle,/webgl-fallback\/|class WebGLBackend|SGSR2Fragment|three\/build\/three\.webgpu/);
  assert.match(bundle,/class WebGPUBackend|WebGPUBackend = class/);
 });

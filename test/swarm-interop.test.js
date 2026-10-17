@@ -29,6 +29,18 @@ test('packed swarm uploads share one material/mesh for 100 and 500 bodies',()=>{
     mirror.swarms.unregister(handle);assert.equal(mirror.scene.children.length,0);
   }
 });
+test('unchanged colours, opacity and weights avoid uploads while live edits remain visible',()=>{
+  const {mirror,group}=fixture(),handle=mirror.swarms.register({version:1,maxCars:2,groups:[group]});
+  const data=packet(2);mirror.swarms.update(handle,data,[32],[2]);
+  const row=mirror.swarms.sources.get(handle).groups[0];
+  const versions=()=>[row.mesh.instanceColor.version,row.alpha.version,row.parameters.version];
+  const first=versions();mirror.swarms.update(handle,data,[32],[2]);assert.deepEqual(versions(),first);
+  data[32+16]=.5;data[32+19]=.75;data[32+20]=.25;
+  mirror.swarms.update(handle,data,[32],[2]);assert.deepEqual(versions(),first.map(v=>v+1));
+  assert.equal(row.mesh.instanceColor.array[0],.5);assert.equal(row.alpha.array[0],.75);
+  assert.equal(row.parameters.array[0],.25);assert.equal(row.mesh.material.transparent,true);
+  mirror.swarms.unregister(handle);
+});
 test('mirrored wheels bake winding once and receive positive determinant matrices',()=>{
   const {mirror,group}=fixture(1),handle=mirror.swarms.register({version:1,maxCars:1,groups:[group]});
   const data=packet(4);data[32+24]=data[32+72]=-1;

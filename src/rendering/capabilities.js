@@ -159,6 +159,10 @@ export function discoverThree(pml) {
   if (missing.length)
     throw new Error(`Missing Three.js classes: ${missing.join(", ")}`);
   three.discovery = {
+    topologyEvents: core.some(id => {
+      const source = String(require.m[id]);
+      return /["']childadded["']/.test(source) && /["']childremoved["']/.test(source);
+    }),
     classes: Object.fromEntries(
       CLASS_NAMES.map((name) => [name, found.has(name)]),
     ),
