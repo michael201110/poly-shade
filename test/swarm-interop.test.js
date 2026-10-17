@@ -58,3 +58,32 @@ test('protocol rejects malformed registration and oversized uploads',()=>{
   assert.throws(()=>mirror.swarms.update(h,packet(2),[32],[2]),/capacity/);
   assert.throws(()=>mirror.swarms.update(h,packet(1),[32],[-1]),/capacity/);mirror.swarms.clear();
 });
+
+
+test('native Standard and Physical materials retain flat shading and surface properties',()=>{
+  for(const type of ['MeshStandardMaterial','MeshPhysicalMaterial']){
+    const {mirror,group}=fixture();
+    Object.assign(group,{materialType:type,flatShading:true,roughness:.8285714387893677,
+      metalness:0,envMapIntensity:1,clearcoat:.2,clearcoatRoughness:.3});
+    const handle=mirror.swarms.register({version:1,maxCars:100,groups:[group]});
+    const material=mirror.swarms.sources.get(handle).groups[0].mesh.material;
+    assert.equal(material.type,type.replace('Material','NodeMaterial'));
+    assert.equal(material.flatShading,true);assert.equal(material.roughness,group.roughness);
+    assert.equal(material.metalness,0);assert.equal(material.envMapIntensity,1);
+    if(type==='MeshPhysicalMaterial'){assert.equal(material.clearcoat,.2);assert.equal(material.clearcoatRoughness,.3);}
+    mirror.swarms.clear();
+  }
+});
+
+test('skid ring updates replace existing slots and reset without retaining stale strips',()=>{
+  const {mirror,group}=fixture(),handle=mirror.swarms.register({version:1,maxCars:1,groups:[group]});
+  const packet=new Float32Array([0,1,2,3,4,5,6,7,8,9,10,11,12]);
+  mirror.swarms.updateTrails(handle,packet,0,1,false);
+  let trail=mirror.swarms.sources.get(handle).trails;
+  assert.equal(trail.count,1);assert.equal(trail.array[0],1);
+  packet[1]=20;mirror.swarms.updateTrails(handle,packet,0,1,false);
+  assert.equal(trail.count,1);assert.equal(trail.array[0],20);
+  mirror.swarms.updateTrails(handle,packet,0,0,true);
+  assert.equal(trail.count,0);assert.equal(trail.mesh.visible,false);
+  mirror.swarms.clear();assert.equal(mirror.scene.children.length,0);
+});

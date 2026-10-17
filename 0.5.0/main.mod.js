@@ -16942,6 +16942,30 @@ var LightProbe = class extends Light {
   }
 };
 
+// node_modules/three/src/core/InstancedBufferGeometry.js
+var InstancedBufferGeometry = class extends BufferGeometry {
+  /**
+   * Constructs a new instanced buffer geometry.
+   */
+  constructor() {
+    super();
+    this.isInstancedBufferGeometry = true;
+    this.type = "InstancedBufferGeometry";
+    this.instanceCount = Infinity;
+  }
+  copy(source) {
+    super.copy(source);
+    this.instanceCount = source.instanceCount;
+    return this;
+  }
+  toJSON() {
+    const data = super.toJSON();
+    data.instanceCount = this.instanceCount;
+    data.isInstancedBufferGeometry = true;
+    return data;
+  }
+};
+
 // node_modules/three/src/cameras/ArrayCamera.js
 var ArrayCamera = class extends PerspectiveCamera {
   /**
@@ -55982,7 +56006,7 @@ var SwarmInstances = class {
   register(description) {
     const { maxCars, groups } = description;
     if (description.version !== 1 || !Number.isSafeInteger(maxCars) || maxCars < 1 || maxCars > 500 || !Array.isArray(groups) || groups.length < 1 || groups.length > 32) throw Error("invalid swarm descriptor");
-    const handle = this.next++, source = { groups: [], scene: description.scene, onUnavailable: description.onUnavailable, bytes: 0, updates: 0 };
+    const handle = this.next++, source = { groups: [], maxCars, scene: description.scene, onUnavailable: description.onUnavailable, bytes: 0, updates: 0 };
     try {
       for (let index = 0; index < groups.length; index++) {
         const g = groups[index];
@@ -56012,13 +56036,22 @@ var SwarmInstances = class {
           const alpha = new InstancedBufferAttribute(new Float32Array(capacity).fill(1), 1);
           geometry.setAttribute("swarmParameters", parameters);
           geometry.setAttribute("swarmOpacity", alpha);
-          const material = new MeshPhongNodeMaterial_default({
-            color: g.paintMode === 1 ? 16777215 : new Color().fromArray(g.colour),
-            shininess: g.shininess ?? 65,
-            specular: new Color().fromArray(g.specular ?? [0.067, 0.067, 0.067]),
-            reflectivity: g.reflectivity ?? 0.4,
-            side: FrontSide
-          });
+          const Material2 = g.materialType === "MeshPhysicalMaterial" ? MeshPhysicalNodeMaterial_default : g.materialType === "MeshStandardMaterial" ? MeshStandardNodeMaterial_default : g.materialType === "MeshBasicMaterial" ? MeshBasicNodeMaterial_default : MeshPhongNodeMaterial_default;
+          const material = new Material2();
+          material.color = g.paintMode === 1 ? new Color(16777215) : new Color().fromArray(g.colour);
+          for (const key of [
+            "flatShading",
+            "roughness",
+            "metalness",
+            "envMapIntensity",
+            "clearcoat",
+            "clearcoatRoughness",
+            "shininess",
+            "reflectivity",
+            "emissiveIntensity"
+          ]) if (g[key] !== void 0) material[key] = g[key];
+          if (g.specular && material.specular) material.specular.fromArray(g.specular);
+          if (g.emissive && material.emissive) material.emissive.fromArray(g.emissive);
           material.name = `Swarm ${g.name}`;
           material.opacityNode = attribute2("swarmOpacity", "float");
           if (g.paintMode === 2) material.colorNode = mix2(vec32(0.0103, 0, 0), vec32(1, 0, 0), attribute2("swarmParameters", "vec4").x);
@@ -56117,6 +56150,57 @@ var SwarmInstances = class {
     source.instances = instances;
     return source.uploadMs;
   }
+  updateTrails(handle, data, offset, count, reset) {
+    const source = this.sources.get(handle);
+    if (!source) throw Error("unknown swarm trail source");
+    if (!Number.isSafeInteger(count) || count < 0 || offset + count * 13 > data.length) throw Error("invalid skid packet");
+    if (!source.trails && !count) return;
+    if (!source.trails) {
+      const capacity = source.maxCars * 4 * 999, array3 = new Float32Array(capacity * 12), mapping = new Uint32Array(capacity).fill(4294967295);
+      const geometry = new InstancedBufferGeometry();
+      geometry.setAttribute("position", new BufferAttribute(new Float32Array([0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0]), 3));
+      const buffer3 = new InstancedInterleavedBuffer(array3, 12);
+      buffer3.setUsage(DynamicDrawUsage);
+      for (let i = 0; i < 4; i++) geometry.setAttribute(`trail${i}`, new InterleavedBufferAttribute(buffer3, 3, i * 3));
+      const material = new MeshBasicNodeMaterial_default({ color: 65793, side: DoubleSide, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: 0, depthWrite: true });
+      const p0 = attribute2("trail0", "vec3"), p1 = attribute2("trail1", "vec3"), p2 = attribute2("trail2", "vec3"), p3 = attribute2("trail3", "vec3");
+      material.positionNode = mix2(mix2(p0, p2, positionLocal2.x), mix2(p1, p3, positionLocal2.x), positionLocal2.y);
+      const mesh = new Mesh(geometry, material);
+      mesh.frustumCulled = false;
+      geometry.instanceCount = 0;
+      mesh.matrixAutoUpdate = false;
+      mesh.matrixWorldAutoUpdate = false;
+      this.mirror.scene.add(mesh);
+      source.trails = { mesh, buffer: buffer3, array: array3, mapping, count: 0 };
+      source.bytes += array3.byteLength + mapping.byteLength;
+      this.mirror.topologyVersion++;
+    }
+    const t = source.trails;
+    if (reset) {
+      t.mapping.fill(4294967295);
+      t.count = 0;
+    }
+    let min4 = Infinity, max4 = 0;
+    for (let i = 0; i < count; i++) {
+      const at = offset + i * 13, id = data[at];
+      if (!Number.isSafeInteger(id) || id < 0 || id >= t.mapping.length) throw Error("invalid skid ring slot");
+      let slot = t.mapping[id];
+      if (slot === 4294967295) {
+        slot = t.count++;
+        t.mapping[id] = slot;
+      }
+      for (let j = 0; j < 12; j++) t.array[slot * 12 + j] = data[at + 1 + j];
+      min4 = Math.min(min4, slot);
+      max4 = Math.max(max4, slot);
+    }
+    if (count) {
+      t.buffer.clearUpdateRanges();
+      t.buffer.addUpdateRange(min4 * 12, (max4 - min4 + 1) * 12);
+      t.buffer.needsUpdate = true;
+    }
+    t.mesh.geometry.instanceCount = t.count;
+    t.mesh.visible = t.count > 0;
+  }
   release(source) {
     for (const g of source.groups) {
       this.mirror.scene.remove(g.mesh);
@@ -56125,6 +56209,12 @@ var SwarmInstances = class {
       g.mesh.material.dispose();
     }
     source.groups.length = 0;
+    if (source.trails) {
+      this.mirror.scene.remove(source.trails.mesh);
+      source.trails.mesh.geometry.dispose();
+      source.trails.mesh.material.dispose();
+      source.trails = null;
+    }
   }
   unregister(handle) {
     const source = this.sources.get(handle);
@@ -56142,13 +56232,19 @@ var SwarmInstances = class {
   }
   report() {
     let draws = 0, triangles = 0, bytes = 0, uploadMs = 0;
+    let skidSegments = 0;
     for (const s of this.sources.values()) {
       draws += s.groups.filter((g) => g.mesh.visible).length;
       triangles += s.triangles || 0;
       bytes += s.bytes;
       uploadMs += s.uploadMs || 0;
+      if (s.trails?.count) {
+        draws++;
+        skidSegments += s.trails.count;
+        triangles += s.trails.count * 2;
+      }
     }
-    return { sources: this.sources.size, colourDraws: draws, triangles, bytes, uploadMs };
+    return { sources: this.sources.size, colourDraws: draws, triangles, bytes, uploadMs, skidSegments };
   }
 };
 function createSwarmInterop(getController) {
@@ -56186,6 +56282,12 @@ function createSwarmInterop(getController) {
       if (!r) throw Error("unknown swarm handle");
       return r.mirror.swarms.update(r.handle, data, offsets, counts);
     },
+    updateSwarmTrails(id, data, offset, count, reset) {
+      backend();
+      const r = registrations.get(id);
+      if (!r) throw Error("unknown swarm handle");
+      return r.mirror.swarms.updateTrails(r.handle, data, offset, count, reset);
+    },
     unregisterSwarmSource(id) {
       const r = registrations.get(id);
       if (r) {
@@ -56198,8 +56300,8 @@ function createSwarmInterop(getController) {
         const b = backend();
         return {
           ...b.scene.swarms.report(),
-          sceneDrawCalls: b.renderer.info.render.drawCalls,
-          sceneTriangles: b.renderer.info.render.triangles,
+          sceneDrawCalls: b.lastSceneDraws,
+          sceneTriangles: b.lastSceneTriangles,
           gpu: b.profiler.report().passes
         };
       } catch {
@@ -70702,6 +70804,8 @@ var WebGPUBackend2 = class {
     try {
       this.renderer.setRenderTarget(this.target);
       this.renderer.render(this.scene.scene, c);
+      this.lastSceneDraws = this.renderer.info.render.drawCalls;
+      this.lastSceneTriangles = this.renderer.info.render.triangles;
       this.renderer.setRenderTarget(null);
       const color3 = gpuTexture(this.renderer, this.target.texture), depth3 = gpuTexture(this.renderer, this.target.depthTexture);
       this.updateParameters(
@@ -71002,8 +71106,8 @@ var WebGPUBackend2 = class {
       meshes: this.scene?.objects.size,
       cars: this.motion?.entries.size,
       swarm: this.scene?.swarms.report(),
-      sceneDrawCalls: this.renderer?.info.render.drawCalls,
-      sceneTriangles: this.renderer?.info.render.triangles,
+      sceneDrawCalls: this.lastSceneDraws,
+      sceneTriangles: this.lastSceneTriangles,
       projectedShadowProxiesReplaced: this.scene?.skippedProjected
     };
   }

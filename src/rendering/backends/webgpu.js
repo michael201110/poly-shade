@@ -232,6 +232,8 @@ export class WebGPUBackend {
     try {
       this.renderer.setRenderTarget(this.target);
       this.renderer.render(this.scene.scene, c);
+      this.lastSceneDraws = this.renderer.info.render.drawCalls;
+      this.lastSceneTriangles = this.renderer.info.render.triangles;
       this.renderer.setRenderTarget(null);
       const color = gpuTexture(this.renderer, this.target.texture),
         depth = gpuTexture(this.renderer, this.target.depthTexture);
@@ -560,8 +562,8 @@ export class WebGPUBackend {
       meshes: this.scene?.objects.size,
       cars: this.motion?.entries.size,
       swarm: this.scene?.swarms.report(),
-      sceneDrawCalls: this.renderer?.info.render.drawCalls,
-      sceneTriangles: this.renderer?.info.render.triangles,
+      sceneDrawCalls: this.lastSceneDraws,
+      sceneTriangles: this.lastSceneTriangles,
       projectedShadowProxiesReplaced: this.scene?.skippedProjected,
     };
   }
