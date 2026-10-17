@@ -88,3 +88,18 @@ test('skid ring updates replace existing slots and reset without retaining stale
   assert.equal(trail.count,0);assert.equal(trail.mesh.visible,false);
   mirror.swarms.clear();assert.equal(mirror.scene.children.length,0);
 });
+
+
+test('suspension position graph deforms raw local vertices without a second instance transform',()=>{
+  const {mirror,group}=fixture(2);group.flatShading=true;
+  const h=mirror.swarms.register({version:1,maxCars:500,groups:[group]});
+  const row=mirror.swarms.sources.get(h).groups[0],nodes=[];
+  row.mesh.material.positionNode.traverse(n=>nodes.push(n));
+  assert.ok(nodes.some(n=>n.getAttributeName?.()==='position'));
+  assert.equal(nodes.filter(n=>n.isBufferNode).length,0,'native instancing must apply the matrix exactly once');
+  assert.equal(row.mesh.material.geometryNode,null);
+  assert.equal(row.mesh.material.positionNode,row.mesh.material.castShadowPositionNode);
+  const staticBuffers=new Set(Object.values(row.mesh.geometry.attributes)
+    .filter(a=>!a.isInstancedBufferAttribute).map(a=>a.isInterleavedBufferAttribute?a.data:a));
+  assert.equal(staticBuffers.size,1);mirror.swarms.clear();
+});

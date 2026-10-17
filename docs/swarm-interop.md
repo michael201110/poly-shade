@@ -28,3 +28,15 @@ failure and track changes notify callers so they can fall back.
 81 Node tests pass after the material and skid-ring fixes. Final performance
 matrix, complete smoke/effect equivalence and live standalone fallback checks
 remain in progress; early smoothness is not final acceptance evidence.
+
+
+## Suspension correction
+
+Three r181 emits `geometryNode` assignments after projection. Suspension now
+uses `positionNode` with raw local morph attributes; native instancing applies
+exactly once afterwards. `castShadowPositionNode` shares this graph. The separate
+instanced velocity pass uses the same source deltas and four per-wheel weights.
+Live compiled WGSL confirms that ordering. A regression graph test prevents a
+second instance transform and keeps static attributes interleaved. Final suite:
+82 Node tests passed. The user requested wrap-up after the 500-car showcase;
+full benchmark/effect parity work remains documented in PolyBot's report.
