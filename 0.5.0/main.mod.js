@@ -56091,11 +56091,12 @@ var SwarmInstances = class {
           }
           const mesh = new InstancedMesh(geometry, material, capacity);
           if (morphPosition) {
-            const matrix = buffer2(mesh.instanceMatrix.array, "mat4", capacity).element(instanceIndex2);
-            material.positionNode = matrix.mul(vec42(morphPosition, 1)).xyz;
-            material.castShadowPositionNode = material.positionNode;
-            if (!material.flatShading)
+            material.positionNode = morphPosition;
+            material.castShadowPositionNode = morphPosition;
+            if (!material.flatShading) {
+              const matrix = buffer2(mesh.instanceMatrix.array, "mat4", capacity).element(instanceIndex2);
               material.normalNode = varying2(transformNormalToView2(transformNormal2(morphNormal, matrix))).normalize();
+            }
           }
           mesh.instanceColor = new InstancedBufferAttribute(new Float32Array(capacity * 3).fill(1), 3);
           mesh.instanceMatrix.setUsage(DynamicDrawUsage);

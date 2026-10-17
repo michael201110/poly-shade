@@ -1,5 +1,5 @@
 import * as T from 'three/src/Three.WebGPU.js';
-import {attribute, positionLocal, vec3, vec4, mix, buffer, instanceIndex, varying, transformNormal, transformNormalToView} from 'three/src/Three.TSL.js';
+import {attribute, positionLocal, vec3, mix, buffer, instanceIndex, varying, transformNormal, transformNormalToView} from 'three/src/Three.TSL.js';
 
 // Optional renderer-only DTO boundary. No PolyBot imports, game objects, physics
 // hooks, timers or per-car Object3D hierarchies enter this registry.
@@ -69,16 +69,15 @@ export class SwarmInstances {
           }
           const mesh=new T.InstancedMesh(geometry,material,capacity);
           if(morphPosition){
-            // In Three r181 geometryNode runs AFTER the MVP has been evaluated.
-            // positionNode replaces the default instanced position, so compute
-            // from raw local attributes and explicitly apply the instance once.
-            // The shadow override copies positionNode; velocity uses these same
-            // four source deltas and weights in SwarmMotion.
-            const matrix=buffer(mesh.instanceMatrix.array,'mat4',capacity).element(instanceIndex);
-            material.positionNode=matrix.mul(vec4(morphPosition,1)).xyz;
-            material.castShadowPositionNode=material.positionNode;
-            if(!material.flatShading)
+            // positionNode supplies the raw local POSITION sub-build. Three
+            // applies instancing afterwards. geometryNode is too late: its
+            // assignments appear after projection in the generated WGSL.
+            material.positionNode=morphPosition;
+            material.castShadowPositionNode=morphPosition;
+            if(!material.flatShading){
+              const matrix=buffer(mesh.instanceMatrix.array,'mat4',capacity).element(instanceIndex);
               material.normalNode=varying(transformNormalToView(transformNormal(morphNormal,matrix))).normalize();
+            }
           }
           mesh.instanceColor=new T.InstancedBufferAttribute(new Float32Array(capacity*3).fill(1),3);
           mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);mesh.instanceColor.setUsage(T.DynamicDrawUsage);
