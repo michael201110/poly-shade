@@ -37,12 +37,13 @@ export class SwarmInstances {
           const material=new Material();
           material.color=g.paintMode===1?new T.Color(0xffffff):new T.Color().fromArray(g.colour);
           for(const key of ['flatShading','roughness','metalness','envMapIntensity','clearcoat','clearcoatRoughness',
-            'shininess','reflectivity','emissiveIntensity'])if(g[key]!==undefined)material[key]=g[key];
+            'shininess','reflectivity','emissiveIntensity','specularIntensity','ior','side','shadowSide','toneMapped','fog'])if(g[key]!==undefined)material[key]=g[key];
           if(g.specular&&material.specular)material.specular.fromArray(g.specular);
           if(g.emissive&&material.emissive)material.emissive.fromArray(g.emissive);
+          if(g.specularColor&&material.specularColor)material.specularColor.fromArray(g.specularColor);
           material.name=`Swarm ${g.name}`;
           material.opacityNode=attribute('swarmOpacity','float');
-          if(g.paintMode===2)material.colorNode=mix(vec3(.0103,0,0),vec3(1,0,0),attribute('swarmParameters','vec4').x);
+          if(g.paintMode===2)material.colorNode=mix(vec3(g.colour[0],g.colour[1],g.colour[2]),vec3(1,0,0),attribute('swarmParameters','vec4').x);
           if(g.kind===2){let p=positionLocal,n=normalLocal;
             for(let i=0;i<4;i++){
               const a=g.morphs?.[i];if(!(a instanceof Float32Array)||a.length!==positions.length)throw Error('invalid suspension morphs');

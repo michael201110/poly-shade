@@ -56048,13 +56048,20 @@ var SwarmInstances = class {
             "clearcoatRoughness",
             "shininess",
             "reflectivity",
-            "emissiveIntensity"
+            "emissiveIntensity",
+            "specularIntensity",
+            "ior",
+            "side",
+            "shadowSide",
+            "toneMapped",
+            "fog"
           ]) if (g[key] !== void 0) material[key] = g[key];
           if (g.specular && material.specular) material.specular.fromArray(g.specular);
           if (g.emissive && material.emissive) material.emissive.fromArray(g.emissive);
+          if (g.specularColor && material.specularColor) material.specularColor.fromArray(g.specularColor);
           material.name = `Swarm ${g.name}`;
           material.opacityNode = attribute2("swarmOpacity", "float");
-          if (g.paintMode === 2) material.colorNode = mix2(vec32(0.0103, 0, 0), vec32(1, 0, 0), attribute2("swarmParameters", "vec4").x);
+          if (g.paintMode === 2) material.colorNode = mix2(vec32(g.colour[0], g.colour[1], g.colour[2]), vec32(1, 0, 0), attribute2("swarmParameters", "vec4").x);
           if (g.kind === 2) {
             let p = positionLocal2, n = normalLocal2;
             for (let i = 0; i < 4; i++) {
