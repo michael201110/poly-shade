@@ -56159,6 +56159,7 @@ var SwarmInstances = class {
       const capacity = source.maxCars * 4 * 999, array3 = new Float32Array(capacity * 12), mapping = new Uint32Array(capacity).fill(4294967295);
       const geometry = new InstancedBufferGeometry();
       geometry.setAttribute("position", new BufferAttribute(new Float32Array([0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0]), 3));
+      geometry.setAttribute("normal", new BufferAttribute(new Float32Array([0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0]), 3));
       const buffer3 = new InstancedInterleavedBuffer(array3, 12);
       buffer3.setUsage(DynamicDrawUsage);
       for (let i = 0; i < 4; i++) geometry.setAttribute(`trail${i}`, new InterleavedBufferAttribute(buffer3, 3, i * 3));

@@ -115,6 +115,7 @@ export class SwarmInstances {
       const capacity=source.maxCars*4*999,array=new Float32Array(capacity*12),mapping=new Uint32Array(capacity).fill(0xffffffff);
       const geometry=new T.InstancedBufferGeometry();
       geometry.setAttribute('position',new T.BufferAttribute(new Float32Array([0,0,0,0,1,0,1,0,0,1,0,0,0,1,0,1,1,0]),3));
+      geometry.setAttribute('normal',new T.BufferAttribute(new Float32Array([0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0]),3));
       const buffer=new T.InstancedInterleavedBuffer(array,12);buffer.setUsage(T.DynamicDrawUsage);
       for(let i=0;i<4;i++)geometry.setAttribute(`trail${i}`,new T.InterleavedBufferAttribute(buffer,3,i*3));
       const material=new T.MeshBasicNodeMaterial({color:0x010101,side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:0,depthWrite:true});
