@@ -164,8 +164,13 @@ export class SGSR2Compute {
     };
     return output;
   }
-  dispose() {
+  releaseResources() {
     this.bindingTextures = this.convertGroup = this.upscaleGroups = null;
+    this.previousHistory = this.geometry = this.output = this.rejection = this.converted = null;
+    this.ping = 0;
+  }
+  dispose() {
+    this.releaseResources();
     this.uniform.destroy();
   }
   report() {

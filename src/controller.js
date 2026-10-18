@@ -214,6 +214,12 @@ export class RenderController {
     if (scene !== this.activeScene || renderer !== this.activeRenderer) return;
     const settings = this.resolveSettings();
     if (settings.enabled) {
+      const gpu = this.backends?.gpu;
+      if (gpu) {
+        const changed = gpu !== this.metricsGPU || gpu.frames !== this.metricsGPUFrame;
+        this.metricsGPU = gpu; this.metricsGPUFrame = gpu.frames;
+        if (!changed || gpu.frames === 0) return;
+      }
       this.renderCount += 1;
       this.recordFrame(duration, performance.now(), settings);
     }

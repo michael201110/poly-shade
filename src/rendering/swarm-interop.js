@@ -35,6 +35,7 @@ export class SwarmInstances {
             g.materialType==='MeshStandardMaterial'?T.MeshStandardNodeMaterial:
             g.materialType==='MeshBasicMaterial'?T.MeshBasicNodeMaterial:T.MeshPhongNodeMaterial;
           const material=new Material();
+          material.mrtNode=this.mirror.mrtNode??null;
           material.color=g.paintMode===1?new T.Color(0xffffff):new T.Color().fromArray(g.colour);
           for(const key of ['flatShading','roughness','metalness','envMapIntensity','clearcoat','clearcoatRoughness',
             'shininess','reflectivity','emissiveIntensity','specularIntensity','ior','side','shadowSide','toneMapped','fog'])if(g[key]!==undefined)material[key]=g[key];

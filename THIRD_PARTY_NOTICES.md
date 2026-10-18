@@ -1,5 +1,22 @@
 # Third-party notices
 
+## AMD FidelityFX FSR 3.1 (experimental)
+
+The experimental branch includes AMD's SR 3.1.5 reference shaders translated to
+WGSL, and the unmodified frame interpolation 3.1.6 / optical-flow reference for
+the subsequent frame-generation phase. This is a community WebGPU port, not AMD
+certification. Frame generation is not enabled by this initial SR experiment.
+
+- Official repository: https://github.com/GPUOpen-LibrariesAndSDKs/FidelityFX-SDK
+- SDK tag: `v2.3.0`; revision `60f4ea81909200d8542eca14dccb2628b763a9a3`.
+- Copyright (C) 2026 Advanced Micro Devices, Inc.
+- MIT license: [vendor/fidelityfx/LICENSE.txt](vendor/fidelityfx/LICENSE.txt).
+- Unchanged sources and individual SHA-256 checksums: [vendor/fidelityfx/reference.json](vendor/fidelityfx/reference.json).
+- Adaptations and qualification status: [docs/fsr31-webgpu.md](docs/fsr31-webgpu.md).
+- Offline translation uses Microsoft DXC and Naga 30.0.1 through `naga-wasm`
+  30.2.0 (MIT OR Apache-2.0). The compiler is development-only and is not included
+  in the browser mod.
+
 ## Snapdragon Game Super Resolution 2
 
 PolyShade includes Qualcomm Innovation Center's actual SGSR2 two-pass fragment shaders and a WGSL port of its two-pass compute shaders under the BSD 3-Clause license.

@@ -13,17 +13,32 @@ export const UPSCALE_SCALES = Object.freeze({
   native: 1, "ultra-quality": 0.77, quality: 0.67, balanced: 0.59, performance: 0.5,
 });
 
+// Continuous perspective zoom is camera motion, already represented by the
+// current/previous VP matrices. Discarding history on every small FOV adjustment
+// prevents reconstruction from converging while accelerating or braking.
+export function projectionDiscontinuity(current, previous, perspective) {
+  const a = current.elements, b = previous.elements;
+  if (!perspective) return a.some((v, i) => Math.abs(v - b[i]) > .001);
+  if (a.some((v, i) => i !== 0 && i !== 5 && Math.abs(v - b[i]) > .001)) return true;
+  if (!(a[0] > 0 && a[5] > 0 && b[0] > 0 && b[5] > 0)) return true;
+  const aspectChange = Math.abs((a[5] / a[0]) / (b[5] / b[0]) - 1);
+  const angularChange = Math.abs(2 * Math.atan(1 / a[5]) - 2 * Math.atan(1 / b[5]));
+  return aspectChange > .001 || angularChange > Math.PI / 36;
+}
+
 export function selectUpscaling(settings, capabilities, failed = false) {
   const requested = settings.upscaling ?? "native";
   const gpu = capabilities.webgpu === true;
   if (gpu) {
     const available = capabilities.compute === true && !failed;
-    const backend = requested === 'reduced' ? 'reduced' : available &&
-      (requested === 'auto' || requested === 'sgsr2-compute') ? 'sgsr2-compute' : 'native';
+    const fsr = requested === 'fsr31' && capabilities.fsr31 === true;
+    const backend = fsr ? 'fsr31' : requested === 'reduced' ? 'reduced' : available &&
+      (requested === 'auto' || requested === 'sgsr2-compute' || requested === 'fsr31') ? 'sgsr2-compute' : 'native';
     const scale = backend === 'native' ? (requested === 'native' ? settings.renderScale ?? 1 : 1) :
       UPSCALE_SCALES[settings.upscaleQuality ?? 'quality'] ?? settings.upscaleCustomScale ?? .67;
-    return { requested, backend, scale, supported: available, compute: backend === 'sgsr2-compute',
-      reason: backend === 'native' && requested !== 'native' ? 'Requested temporal path unavailable on WebGPU; using Native.' : null };
+    return { requested, backend, scale, supported: fsr || available, compute: backend === 'sgsr2-compute' || fsr,
+      reason: requested === 'fsr31' && !fsr ? `FSR is initializing or unavailable; using ${backend}.` :
+        backend === 'native' && requested !== 'native' ? 'Requested temporal path unavailable on WebGPU; using Native.' : null };
   }
   return {requested,backend:'unavailable',scale:1,supported:false,compute:false,
     reason:'PolyShade requires WebGPU; no WebGL rendering backend is included.'};
@@ -75,7 +90,7 @@ export class TemporalState {
       const travel = Math.hypot(a[12] - b[12], a[13] - b[13], a[14] - b[14]);
       if (travel > Math.max(8, (now - this.at) * 0.8) ||
           a[8] * b[8] + a[9] * b[9] + a[10] * b[10] < 0.5) reason = "camera cut or teleport";
-      if (this.projection.elements.some((v, i) => Math.abs(v - this.previousProjection.elements[i]) > 0.001))
+      if (projectionDiscontinuity(this.projection, this.previousProjection, camera.isPerspectiveCamera))
         reason = "projection changed";
     }
     this.valid = this.ready && !reason;

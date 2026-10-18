@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-18T13:26:31.764Z",
+  "method": "Frozen offline Summer 1 scene; shared camera, cloud animation and motion blur disabled; native resolution, same presets.",
+  "cases": [
+    {
+      "preset": "cinematic",
+      "backend": "WebGL2"
+    },
+    {
+      "preset": "clear-day",
+      "backend": "WebGL2"
+    },
+    {
+      "preset": "overcast",
+      "backend": "WebGL2"
+    },
+    {
+      "preset": "recording",
+      "backend": "WebGL2"
+    },
+    {
+      "preset": "cinematic",
+      "backend": "WebGPU"
+    },
+    {
+      "preset": "clear-day",
+      "backend": "WebGPU"
+    },
+    {
+      "preset": "overcast",
+      "backend": "WebGPU"
+    },
+    {
+      "preset": "recording",
+      "backend": "WebGPU"
+    }
+  ],
+  "skyComparison": [
+    {
+      "preset": "cinematic",
+      "meanAbsoluteChannelError": 0.13947619047619048,
+      "referenceRGB": [
+        196.02017857142857,
+        208.25589285714287,
+        218.64953571428572
+      ],
+      "webgpuRGB": [
+        196.02392857142857,
+        208.28942857142857,
+        218.54739285714285
+      ]
+    },
+    {
+      "preset": "clear-day",
+      "meanAbsoluteChannelError": 0.2007142857142857,
+      "referenceRGB": [
+        195.76285714285714,
+        217.57789285714287,
+        226.945
+      ],
+      "webgpuRGB": [
+        195.76442857142857,
+        217.54010714285715,
+        226.68121428571428
+      ]
+    },
+    {
+      "preset": "overcast",
+      "meanAbsoluteChannelError": 0.1513809523809524,
+      "referenceRGB": [
+        205.28639285714286,
+        212.1005357142857,
+        215.54314285714287
+      ],
+      "webgpuRGB": [
+        205.29842857142856,
+        212.1085,
+        215.6482142857143
+      ]
+    },
+    {
+      "preset": "recording",
+      "meanAbsoluteChannelError": 0.13947619047619048,
+      "referenceRGB": [
+        196.02017857142857,
+        208.25589285714287,
+        218.64953571428572
+      ],
+      "webgpuRGB": [
+        196.02392857142857,
+        208.28942857142857,
+        218.54739285714285
+      ]
+    }
+  ]
+}

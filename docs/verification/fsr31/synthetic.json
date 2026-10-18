@@ -1,0 +1,247 @@
+{
+  "errors": [],
+  "ranges": [
+    {
+      "min": 0.25,
+      "max": 0.25,
+      "nonFinite": 0
+    },
+    {
+      "min": 0.5,
+      "max": 0.5,
+      "nonFinite": 0
+    },
+    {
+      "min": 0.75,
+      "max": 0.75,
+      "nonFinite": 0
+    },
+    {
+      "min": 1,
+      "max": 1,
+      "nonFinite": 0
+    }
+  ],
+  "motion": [
+    -0.125,
+    0.0625,
+    0.0625,
+    0.0625
+  ],
+  "dilatedDepth": [
+    0.8999999761581421
+  ],
+  "reconstructed": {
+    "reprojected": 0.8999999761581421,
+    "unreachedRightEdge": 1
+  },
+  "reactive": [
+    1,
+    0,
+    1,
+    0
+  ],
+  "reset": {
+    "frameIndex": 1,
+    "dimensions": [
+      128,
+      128
+    ]
+  },
+  "restored": {
+    "frameIndex": 1,
+    "dimensions": [
+      128,
+      128
+    ]
+  },
+  "report": {
+    "ready": true,
+    "frameIndex": 1,
+    "dispatches": 56,
+    "resources": [
+      {
+        "name": "shading-chain",
+        "width": 32,
+        "height": 32,
+        "format": "rgba16float",
+        "mipLevelCount": 6
+      },
+      {
+        "name": "depth-then-luma-instability",
+        "width": 64,
+        "height": 64,
+        "format": "rgba16float",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "luma-1",
+        "width": 64,
+        "height": 64,
+        "format": "rgba16float",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "luma-0",
+        "width": 64,
+        "height": 64,
+        "format": "rgba16float",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "unit-exposure",
+        "width": 1,
+        "height": 1,
+        "format": "rgba32float",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "zero-mask",
+        "width": 1,
+        "height": 1,
+        "format": "rgba8unorm",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "accumulation-1",
+        "width": 64,
+        "height": 64,
+        "format": "rgba8unorm",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "history-1",
+        "width": 128,
+        "height": 128,
+        "format": "rgba16float",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "history-0",
+        "width": 128,
+        "height": 128,
+        "format": "rgba16float",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "output",
+        "width": 128,
+        "height": 128,
+        "format": "rgba16float",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "accumulation-0",
+        "width": 64,
+        "height": 64,
+        "format": "rgba8unorm",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "dilated-motion",
+        "width": 64,
+        "height": 64,
+        "format": "rgba16float",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "dilated-depth",
+        "width": 64,
+        "height": 64,
+        "format": "r32float",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "farthest-depth-mip1",
+        "width": 32,
+        "height": 32,
+        "format": "rgba16float",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "shading-change",
+        "width": 32,
+        "height": 32,
+        "format": "rgba8unorm",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "new-locks",
+        "width": 128,
+        "height": 128,
+        "format": "r32float",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "dilated-reactive",
+        "width": 64,
+        "height": 64,
+        "format": "rgba8unorm",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "luma-history-1",
+        "width": 64,
+        "height": 64,
+        "format": "rgba16float",
+        "mipLevelCount": 1
+      },
+      {
+        "name": "luma-history-0",
+        "width": 64,
+        "height": 64,
+        "format": "rgba16float",
+        "mipLevelCount": 1
+      }
+    ],
+    "buffers": [
+      {
+        "name": "constants",
+        "bytes": 160
+      },
+      {
+        "name": "spd-constants",
+        "bytes": 32
+      },
+      {
+        "name": "secondary",
+        "bytes": 16
+      },
+      {
+        "name": "reconstructed-depth",
+        "bytes": 16384
+      },
+      {
+        "name": "frame-info",
+        "bytes": 16
+      }
+    ]
+  },
+  "released": {
+    "ready": true,
+    "frameIndex": 0,
+    "dispatches": 56,
+    "resources": [],
+    "buffers": [
+      {
+        "name": "constants",
+        "bytes": 160
+      },
+      {
+        "name": "spd-constants",
+        "bytes": 32
+      },
+      {
+        "name": "secondary",
+        "bytes": 16
+      }
+    ]
+  },
+  "cleanup": {
+    "ready": false,
+    "frameIndex": 0,
+    "dispatches": 64,
+    "resources": [],
+    "buffers": []
+  }
+}

@@ -245,7 +245,7 @@ export function mountPanel(document, callbacks, initialSettings) {
       } else {
         const upscaleLabels = {
           native: key === "upscaling" ? "Native" : "Native / 100%", auto: "Auto",
-          reduced: "Reduced resolution (bilinear benchmark)", "sgsr2-compute": "SGSR2 Compute (unsupported)",
+          reduced: "Reduced resolution (bilinear benchmark)", "sgsr2-compute": "SGSR2 Compute", fsr31: "FSR 3.1 SR (experimental)",
           "ultra-quality": "Ultra Quality / 77%", quality: "Quality / 67%",
           balanced: "Balanced / 59%", performance: "Performance / 50%", custom: "Custom",
         };

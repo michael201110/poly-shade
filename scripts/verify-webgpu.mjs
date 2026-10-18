@@ -277,6 +277,9 @@ try {
     "jitter-only motion cancels",
   );
   assert.ok(t.stationary[0][2] > 0.5, "car coverage");
+  assert.equal(t.zoom.valid,true,'smooth FOV motion retains temporal history');
+  assert.ok(Math.abs(t.zoom.expectedX)>.005,'zoom probe must have measurable reprojection');
+  assert.ok(Math.abs(t.zoom.motion[0]-t.zoom.expectedX)<.0002,'FOV motion reprojects using the previous rendered focal length');
   assert.equal(t.rejectionValid, true);
   assert.equal(t.revealed[0][0], 1, "newly revealed road rejects car history");
   assert.equal(t.revealed[1][0], 0, "static road keeps temporal history");
@@ -323,7 +326,9 @@ try {
   assert.equal(await page.evaluate(()=>window.__controller.cinematic), null);
   report.expectedDeviceLossDiagnostics = errors.filter(
     (e) =>
-      e.includes("WebGPU Device Lost:") && e.includes("Device was destroyed."),
+      (e.includes("WebGPU Device Lost:") && e.includes("Device was destroyed.")) ||
+      (e.includes("[PolyShade] WebGPU unavailable; enhanced rendering stopped.") &&
+        e.includes("WebGPU device lost: destroyed")),
   );
   for (let i = errors.length - 1; i >= 0; i--)
     if (report.expectedDeviceLossDiagnostics.includes(errors[i]))

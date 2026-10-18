@@ -3,7 +3,7 @@ import { chromium } from "@playwright/test";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { createHash } from "node:crypto";
 
-export async function openUpscalingHarness({ backend = "webgpu", reference = false } = {}) {
+export async function openUpscalingHarness({ backend = "webgpu", reference = false, freezeSupport = true, polyshade = true } = {}) {
   const browser = await chromium.launch({
     channel: "msedge",
     headless: process.env.POLYSHADE_HEADED !== "1",
@@ -53,9 +53,10 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
   });
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => {
+    if (process.env.POLYSHADE_DEBUG_SETUP === '1') console.log(m.type(), m.text().slice(0, 1000));
     if (
-      m.type() === "error" &&
-      /PolyShade|Shader Error|GL_INVALID|WebGPU|GPUValidation|WGSL/.test(
+      ['error','warning'].includes(m.type()) &&
+      /PolyShade.*(?:unavailable|validation|failure)|Shader Error|GL_INVALID|WebGPU.*(?:validation|error|lost)|GPUValidation|WGSL|Color target has no|Invalid RenderPipeline|Attachment state of/.test(
         m.text(),
       )
     ) {
@@ -68,7 +69,9 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
     try {
       let body = path === 'manifest.json' && reference
         ? JSON.stringify({name:'PolyShade',author:'PolyShade',id:'polyshade',latest:{'0.6.3':'0.4.0'}})
-        : await readFile(!reference && path.endsWith('/main.mod.js') && process.env.POLYSHADE_BUNDLE
+        : await readFile(!reference && process.env.POLYSHADE_BUNDLE?.includes('experimental') && path === 'manifest.json'
+          ? 'experimental/manifest.json' : !reference && process.env.POLYSHADE_BUNDLE?.includes('experimental') && path.endsWith('/version.json')
+          ? `experimental/${path}` : !reference && path.endsWith('/main.mod.js') && process.env.POLYSHADE_BUNDLE
           ? process.env.POLYSHADE_BUNDLE : path, "utf8");
       if (path.endsWith(".js"))
         body = body
@@ -151,11 +154,11 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
       },
     });
   });
-  await page.addInitScript(({ backend, polybotBase }) => {
+  await page.addInitScript(({ backend, polybotBase, freezeSupport, polyshade }) => {
     // Test-only freeze: stop simulation callbacks, then render the captured
     // scene through the real hooked renderer on the original browser RAF.
     window.__testRAF = window.requestAnimationFrame.bind(window);
-    window.requestAnimationFrame = (callback) => {
+    if (freezeSupport) window.requestAnimationFrame = (callback) => {
       // Keep the replacement renderer's own frame/uniform scheduler alive.
       // Only freeze game simulation; suppressing Three's RAF stalls GPU init.
       const rendererCallback = new Error().stack.includes("polyshade.test");
@@ -179,10 +182,10 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
         ...(polybotBase
           ? [{ base: polybotBase, version: "0.1.51", loaded: true }]
           : []),
-        { base: "https://polyshade.test", version: "latest", loaded: true },
+        ...(polyshade ? [{ base: "https://polyshade.test", version: "latest", loaded: true }] : []),
       ]),
     );
-  }, { backend, polybotBase: process.env.POLYBOT_ROOT ? "https://polybot.test" : null });
+  }, { backend, polybotBase: process.env.POLYBOT_ROOT ? "https://polybot.test" : null, freezeSupport, polyshade });
   const initTimeout = Number(process.env.POLYSHADE_INIT_TIMEOUT_MS ?? 60000);
   try {
     await page.goto(
@@ -190,8 +193,10 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
       { waitUntil: "domcontentloaded", timeout: 60000 },
     );
     await page.waitForFunction(
-      () => (window.__controller?.backends?.gpu?.frames ?? window.__controller?.cinematic?.post?.frames ?? 0) > 10,
-      undefined,
+      (installed) => installed
+        ? (window.__controller?.backends?.gpu?.frames ?? window.__controller?.cinematic?.post?.frames ?? 0) > 10
+        : document.body.innerText.includes("Welcome to PolyTrack!"),
+      polyshade,
       { timeout: initTimeout },
     );
     // Await the version-pinned game assets, not unrelated leaderboard polling.

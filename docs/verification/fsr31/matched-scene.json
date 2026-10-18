@@ -1,0 +1,119 @@
+{
+  "method": "Same frozen game scene/camera/materials, Golden Hour, clouds and motion blur disabled; 32 completed frames per mode.",
+  "cases": [
+    {
+      "mode": "native",
+      "output": [
+        1280,
+        720
+      ],
+      "history": {
+        "valid": true,
+        "resets": 4,
+        "lastReset": "frame gap",
+        "phase": 40,
+        "phaseCount": 8,
+        "jitter": [
+          0,
+          0
+        ],
+        "previousJitter": [
+          0,
+          0
+        ],
+        "deltaMs": 17.80000001192093
+      }
+    },
+    {
+      "mode": "sgsr2-compute",
+      "output": [
+        1280,
+        720
+      ],
+      "history": {
+        "valid": true,
+        "resets": 5,
+        "lastReset": "resolution or settings changed",
+        "phase": 42,
+        "phaseCount": 32,
+        "jitter": [
+          -0.1875,
+          -0.12962962962962965
+        ],
+        "previousJitter": [
+          0.0625,
+          -0.46296296296296297
+        ],
+        "deltaMs": 17
+      }
+    },
+    {
+      "mode": "fsr31",
+      "output": [
+        1280,
+        720
+      ],
+      "history": {
+        "valid": true,
+        "resets": 7,
+        "lastReset": "resolution or settings changed",
+        "phase": 41,
+        "phaseCount": 32,
+        "jitter": [
+          0.0625,
+          -0.46296296296296297
+        ],
+        "previousJitter": [
+          -0.4375,
+          0.38888888888888884
+        ],
+        "deltaMs": 17
+      }
+    }
+  ],
+  "pixels": [
+    {
+      "mode": "native",
+      "mean": [
+        163.82677300347223,
+        171.49031141493055,
+        170.53218315972222
+      ],
+      "referenceMean": [
+        163.82677300347223,
+        171.49031141493055,
+        170.53218315972222
+      ],
+      "mae": 0
+    },
+    {
+      "mode": "sgsr2-compute",
+      "mean": [
+        162.52400824652779,
+        170.03873480902777,
+        169.6760492621528
+      ],
+      "referenceMean": [
+        163.82677300347223,
+        171.49031141493055,
+        170.53218315972222
+      ],
+      "mae": 1.8004976851851853
+    },
+    {
+      "mode": "fsr31",
+      "mean": [
+        163.667978515625,
+        171.4273828125,
+        170.58863932291666
+      ],
+      "referenceMean": [
+        163.82677300347223,
+        171.49031141493055,
+        170.53218315972222
+      ],
+      "mae": 0.7611530671296296
+    }
+  ],
+  "errors": []
+}

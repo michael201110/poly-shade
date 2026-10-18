@@ -246,6 +246,7 @@ export class GPUScene {
           );
         }
       }
+      material.mrtNode = this.mrtNode ?? null;
       this.materials.set(source, material);
     }
     const m = this.materials.get(source);
@@ -325,6 +326,19 @@ export class GPUScene {
       m.userData.opacity.value = source.uniforms.opacity.value;
     if (this.syncing) this.materialEpochs.set(source, this.syncEpoch);
     return m;
+  }
+  setMRT(node) {
+    if (this.mrtNode === node) return;
+    this.mrtNode = node;
+    const update = material => {
+      if (material && material.mrtNode !== node) {
+        material.mrtNode = node; material.needsUpdate = true;
+      }
+    };
+    for (const material of this.materials.values()) update(material);
+    update(this.skyMesh?.material);
+    for (const source of this.swarms.sources.values())
+      for (const group of source.groups) update(group.mesh.material);
   }
   materialList(source) {
     if (!Array.isArray(source)) return this.material(source);
@@ -588,6 +602,7 @@ export class GPUScene {
         fog: false,
         toneMapped: false,
       });
+      m.mrtNode = this.mrtNode ?? null;
       m.colorNode = fn({
         direction: positionLocal,
         zenith: u.zenith,

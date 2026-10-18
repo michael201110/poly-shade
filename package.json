@@ -1,10 +1,10 @@
 {
   "name": "poly-shade",
-  "version": "0.5.6",
+  "version": "0.6.0-fsr31.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "esbuild src/mod.js --bundle --format=esm --platform=browser --target=es2022 --alias:three/webgpu=three/src/Three.WebGPU.js --alias:three/tsl=three/src/Three.TSL.js --external:https://* --outfile=0.5.6/main.mod.js",
+    "build": "node scripts/build.mjs",
     "test": "node --test",
     "check": "npm run build && npm test",
     "verify:temporal": "npm run verify:webgpu",
@@ -15,11 +15,16 @@
     "verify:reference:temporal": "node scripts/verify-temporal-inputs.mjs",
     "verify:visual": "npm run build && node scripts/verify-visual-match.mjs",
     "verify:4k": "npm run build && node scripts/verify-4k.mjs",
-    "profile:swarm": "node scripts/profile-swarm.mjs"
+    "profile:swarm": "node scripts/profile-swarm.mjs",
+    "verify:fsr": "node scripts/verify-fsr.mjs",
+    "verify:fsr:live": "node scripts/verify-fsr-live.mjs",
+    "verify:fsr:visual": "node scripts/fsr/compare-modes.mjs",
+    "compile:fsr": "node scripts/fsr/compile.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "esbuild": "^0.25.0",
+    "naga-wasm": "30.2.0",
     "pngjs": "^7.0.0"
   },
   "dependencies": {

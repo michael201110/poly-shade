@@ -53,6 +53,13 @@ export class GPUResources {
         this.targets.delete(key);
       }
   }
+  release(prefix) {
+    for (const [key, value] of this.targets)
+      if (key.startsWith(prefix)) {
+        value.texture.destroy();
+        this.targets.delete(key);
+      }
+  }
   dispose() {
     for (const value of this.targets.values()) value.texture.destroy();
     this.targets.clear();

@@ -20,8 +20,14 @@ for(const reference of [true,false]){
   cameraState??=await page.evaluate(()=>{const c=window.__controller.camera;return {position:c.position.toArray(),quaternion:c.quaternion.toArray(),projection:c.projectionMatrix.toArray(),near:c.near,far:c.far};});
   await page.locator('#polyshade-panel button').filter({hasText:/^Hide$/}).click();
   for(const preset of ['cinematic','clear-day','overcast','recording']){
-   await page.evaluate(({preset,backend})=>{const c=window.__controller,s=c.getSettings();s.preset=preset;s.overrides={renderBackend:backend,upscaling:'native',motionBlurEnabled:false,cloudsEnabled:false};c.notifySettingsChanged();},{preset,backend});
+   await page.evaluate(({preset,backend})=>{const c=window.__controller,s=c.getSettings();s.preset=preset;s.overrides={renderBackend:backend,upscaling:'native',motionBlurEnabled:false,cloudsEnabled:false};c.notifySettingsChanged();window.__visualBefore=c.backends?.gpu?.frames??c.cinematic.post.frames;},{preset,backend});
    await page.waitForTimeout(2000);
+   // Do not capture an initial shader/scene transition after only a wall-clock
+   // delay. The freeze shim suppresses game RAF, so use timer-based polling.
+   await page.waitForFunction(()=>{
+    const c=window.__controller;
+    return (c.backends?.gpu?.frames??c.cinematic.post.frames)>=window.__visualBefore+60;
+   },undefined,{polling:50,timeout:60000});
    const diagnostic=await page.evaluate(()=>({backend:window.__controller.backends.active,failure:window.__controller.backends.failure}));
    assert.equal(diagnostic.failure,undefined);
    await page.screenshot({path:`${output}/${preset}-${backend}.png`});report.cases.push({preset,...diagnostic});
@@ -36,8 +42,8 @@ for(const preset of ['cinematic','clear-day','overcast','recording']){
  // Below the native first-run tutorial, above mountains: compare 3D sky only.
  for(let y=280;y<320;y++)for(let x=100;x<800;x++){const i=(y*a.width+x)*4;for(let c=0;c<3;c++){total+=Math.abs(a.data[i+c]-b.data[i+c]);meansA[c]+=a.data[i+c];meansB[c]+=b.data[i+c];}count++;}
  report.skyComparison.push({preset,meanAbsoluteChannelError:total/(count*3),referenceRGB:meansA.map(x=>x/count),webgpuRGB:meansB.map(x=>x/count)});
- assert.ok(total/(count*3)<5, `${preset} sky matches the reference within five display-code values`);
 }
 await writeFile(`${output}/report.json`,JSON.stringify(report,null,2));
+for(const result of report.skyComparison)assert.ok(result.meanAbsoluteChannelError<5, `${result.preset} sky matches the reference within five display-code values`);
 console.log(JSON.stringify(report,null,2));
 console.log(`Matched-scene captures: ${output}`);

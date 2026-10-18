@@ -1,0 +1,57 @@
+{
+  "adapter": {
+    "description": ""
+  },
+  "features": [
+    "float32-filterable",
+    "shader-f16",
+    "timestamp-query"
+  ],
+  "passes": [
+    {
+      "name": "accumulate",
+      "messages": []
+    },
+    {
+      "name": "accumulate_sharpen",
+      "messages": []
+    },
+    {
+      "name": "autogen_reactive",
+      "messages": []
+    },
+    {
+      "name": "luma_instability",
+      "messages": []
+    },
+    {
+      "name": "luma_pyramid",
+      "messages": []
+    },
+    {
+      "name": "luma_pyramid_tail",
+      "messages": []
+    },
+    {
+      "name": "prepare_inputs",
+      "messages": []
+    },
+    {
+      "name": "prepare_reactivity",
+      "messages": []
+    },
+    {
+      "name": "rcas",
+      "messages": []
+    },
+    {
+      "name": "shading_change",
+      "messages": []
+    },
+    {
+      "name": "shading_change_pyramid",
+      "messages": []
+    }
+  ],
+  "errors": []
+}

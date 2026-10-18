@@ -10,6 +10,18 @@ export function gpuTexture(renderer, texture) {
 export function gpuContext(renderer) {
   return renderer.backend.getContext();
 }
+// Three r181's pipeline key includes only the first colour attachment. Equal
+// shaders used for a single target and MRT can otherwise reuse an incompatible
+// PSO. Keep this correction at the pinned-internals boundary.
+export function includeMrtPipelineKey(renderer) {
+  const backend = renderer.backend, original = backend.getRenderCacheKey;
+  backend.getRenderCacheKey = function (object) {
+    const key = original.call(this, object);
+    return object.context.textures?.length > 1
+      ? `${key}|mrt:${this.utils.getCurrentColorFormats(object.context).join(',')}` : key;
+  };
+  return () => { backend.getRenderCacheKey = original; };
+}
 export function sceneTimestamps(renderer, profiler, isShadowTarget) {
   const backend = renderer.backend,
     original = backend.initTimestampQuery;

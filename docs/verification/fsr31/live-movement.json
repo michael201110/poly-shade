@@ -1,0 +1,158 @@
+{
+  "cases": [
+    {
+      "mode": "sgsr2-compute",
+      "scale": 0.67,
+      "sharpness": 0,
+      "width": 1280,
+      "height": 720,
+      "frames": 177,
+      "resets": 3,
+      "queue": {
+        "limit": 2,
+        "pending": 1,
+        "peak": 2,
+        "submissions": 219,
+        "completed": 218,
+        "skipped": 13
+      }
+    },
+    {
+      "mode": "sgsr2-compute",
+      "scale": 0.5,
+      "sharpness": 0,
+      "width": 1920,
+      "height": 1080,
+      "frames": 167,
+      "resets": 4,
+      "queue": {
+        "limit": 2,
+        "pending": 1,
+        "peak": 2,
+        "submissions": 416,
+        "completed": 415,
+        "skipped": 28
+      }
+    },
+    {
+      "mode": "fsr31",
+      "scale": 0.67,
+      "sharpness": 0,
+      "width": 1280,
+      "height": 720,
+      "frames": 145,
+      "resets": 7,
+      "queue": {
+        "limit": 2,
+        "pending": 2,
+        "peak": 2,
+        "submissions": 776,
+        "completed": 774,
+        "skipped": 53
+      }
+    },
+    {
+      "mode": "fsr31",
+      "scale": 0.5,
+      "sharpness": 0,
+      "width": 1920,
+      "height": 1080,
+      "frames": 160,
+      "resets": 9,
+      "queue": {
+        "limit": 2,
+        "pending": 2,
+        "peak": 2,
+        "submissions": 965,
+        "completed": 963,
+        "skipped": 77
+      }
+    },
+    {
+      "mode": "fsr31",
+      "scale": 0.5,
+      "sharpness": 0.5,
+      "width": 1280,
+      "height": 720,
+      "frames": 173,
+      "resets": 11,
+      "queue": {
+        "limit": 2,
+        "pending": 1,
+        "peak": 2,
+        "submissions": 1170,
+        "completed": 1169,
+        "skipped": 92
+      }
+    },
+    {
+      "mode": "fsr31",
+      "scale": 0.67,
+      "sharpness": 0,
+      "width": 1920,
+      "height": 1080,
+      "frames": 111,
+      "resets": 13,
+      "queue": {
+        "limit": 2,
+        "pending": 2,
+        "peak": 2,
+        "submissions": 1303,
+        "completed": 1301,
+        "skipped": 162
+      }
+    },
+    {
+      "mode": "native",
+      "scale": 1,
+      "sharpness": 0,
+      "width": 1280,
+      "height": 720,
+      "frames": 170,
+      "resets": 14,
+      "queue": {
+        "limit": 2,
+        "pending": 0,
+        "peak": 2,
+        "submissions": 1505,
+        "completed": 1505,
+        "skipped": 172
+      }
+    },
+    {
+      "mode": "sgsr2-compute",
+      "scale": 0.5,
+      "sharpness": 0,
+      "width": 1920,
+      "height": 1080,
+      "frames": 154,
+      "resets": 15,
+      "queue": {
+        "limit": 2,
+        "pending": 2,
+        "peak": 2,
+        "submissions": 1689,
+        "completed": 1687,
+        "skipped": 197
+      }
+    },
+    {
+      "mode": "fsr31",
+      "scale": 0.5,
+      "sharpness": 0,
+      "width": 1280,
+      "height": 720,
+      "frames": 175,
+      "resets": 18,
+      "queue": {
+        "limit": 2,
+        "pending": 2,
+        "peak": 2,
+        "submissions": 1898,
+        "completed": 1896,
+        "skipped": 209
+      }
+    }
+  ],
+  "errors": []
+}

@@ -16,6 +16,16 @@ Select **0.5.6 / latest**, move the mod to Loaded, and reload the game. The pane
 
 PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.5.6/version.json` and `0.5.6/main.mod.js`; historical bundles are preserved.
 
+## Experimental FSR development
+
+FSR 3.1 SR development is on `experiment/fsr31-webgpu`, with a separate opt-in
+`experimental/` PML manifest. Stable latest and historical release bundles are
+preserved. See [port status, movement fixes and verification](docs/fsr31-webgpu.md).
+Frame generation is not implemented in that development snapshot.
+
+[Install the pinned SR preview](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.6.0-fsr31.0/experimental/).
+This preview includes the movement-triggered temporal-history and MRT fixes.
+
 ## What's changed in 0.5.6
 
 This is a stability rollback to the 0.5.4 renderer after reports of severe input lag and frame drops on 0.5.5, including below 1080p. It removes the 0.5.5 ray-target and SGSR2 changes while retaining the prior 0.5.4 renderer. Please report whether this restores normal gameplay before performance work resumes.

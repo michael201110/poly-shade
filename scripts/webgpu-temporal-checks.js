@@ -59,13 +59,18 @@ export async function verifyTemporalGPU(c) {
     marking.position.set(-3, 0, -11.9);
     scene.add(marking);
     const logical = { palette: c.cinematic.palette, sky: null };
-    const frame = () =>
-      new Promise((resolve) =>
-        window.__testRAF(() => {
-          gpu.render(scene, camera, s, logical);
-          resolve();
-        }),
-      );
+    const frame = async () => {
+      const before = gpu.frames;
+      for (let attempt = 0; attempt < 16 && gpu.frames === before; attempt++) {
+        await new Promise(resolve => window.__testRAF(() => {
+          gpu.render(scene, camera, s, logical); resolve();
+        }));
+        // Test-only: probe a completed enhanced frame, not a deliberately
+        // skipped simulation callback under bounded renderer backpressure.
+        await device.queue.onSubmittedWorkDone();
+      }
+      if (gpu.frames !== before + 1) throw Error('Temporal probe did not submit a real enhanced frame');
+    };
     const frames = async (n) => {
       for (let i = 0; i < n; i++) await frame();
     };
@@ -129,6 +134,17 @@ export async function verifyTemporalGPU(c) {
       [0.5, 0.5],
       [0.2, 0.6],
     ]);
+    const oldFocal = gpu.temporal.projection.elements[0];
+    camera.fov += .5; camera.updateProjectionMatrix();
+    await frame();
+    const zoomTexture = gpu.resources.targets.get('velocity'), zoomUV = [.8,.5];
+    const zoomMotion = (await sample(zoomTexture,[zoomUV]))[0];
+    const currentNDC = 2 * ((Math.floor(zoomUV[0]*zoomTexture.width)+.5)/zoomTexture.width -
+      gpu.temporal.jitter.x/zoomTexture.width) - 1;
+    const zoom = {valid:gpu.temporal.valid, motion:zoomMotion,
+      expectedX:currentNDC*(1-oldFocal/gpu.temporal.projection.elements[0])};
+    camera.fov -= .5; camera.updateProjectionMatrix();
+    await frame();
     const markingUV = [
       0.5 - (3 / 11.9) * camera.projectionMatrix.elements[0] * 0.5,
       0.5,
@@ -219,6 +235,7 @@ export async function verifyTemporalGPU(c) {
     return {
       clock: "controlled 60 Hz; diagnostic readback time excluded",
       stationary,
+      zoom,
       revealed,
       rejectionValid,
       cameraMotion,

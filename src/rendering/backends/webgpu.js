@@ -7,6 +7,7 @@ import { GPUResources } from "../webgpu/resources.js";
 import { GPUScene } from "../webgpu/scene.js";
 import { GPUPasses } from "../webgpu/passes.js";
 import { GPUProfiler } from "../webgpu/profiler.js";
+import { FrameQueue } from '../webgpu/frame-queue.js';
 import { SwarmMotion } from "../webgpu/swarm-motion.js";
 import { GPUMotion } from "../webgpu/motion.js";
 import { GPUShadowCache } from "../webgpu/shadows.js";
@@ -14,8 +15,11 @@ import {
   gpuTexture,
   gpuContext,
   sceneTimestamps,
+  includeMrtPipelineKey,
 } from "../webgpu/three-adapter.js";
 import { SGSR2Compute } from "../sgsr2-compute.js";
+import { FSR31SuperResolution } from '../fsr31/super-resolution.js';
+import { mrt, output, diffuseColor, emissive, dot, vec3, vec4, max } from 'three/src/Three.TSL.js';
 import * as SH from "../../shaders/webgpu-post.wgsl.js";
 const ignoreRetiredDeviceLoss = () => {};
 
@@ -25,6 +29,7 @@ export class WebGPUBackend {
     this.onFailure = onFailure;
     this.frames = 0;
     this.warmFrames = 0;
+    this.frameQueue = new FrameQueue(2);
     this.temporal = new TemporalState({Matrix4:T.Matrix4,Vector2:T.Vector2,Vector4:T.Vector4});
     this.params = new Float32Array(184);
     this.disposed = false;
@@ -49,6 +54,10 @@ export class WebGPUBackend {
       antialias: false,
       powerPreference: "high-performance",
     };
+    const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
+    // Raise only a supported limit. Devices below six still run Native/SGSR2.
+    if (adapter?.limits.maxStorageTexturesPerShaderStage >= 6)
+      parameters.requiredLimits = { maxStorageTexturesPerShaderStage: 6 };
     // The convenience WebGPURenderer installs a WebGL fallback. Use the
     // pinned common renderer and GPU backend directly to exclude that path.
     this.renderer = new Renderer(new ThreeGPUBackend(parameters), parameters);
@@ -73,10 +82,13 @@ export class WebGPUBackend {
     // Adjacent, interpolated taps avoid the sparse PCF grid at large softness.
     this.renderer.shadowMap.type = T.PCFSoftShadowMap;
     this.device = this.renderer.backend.device;
+    this.removeMrtPipelineKey = includeMrtPipelineKey(this.renderer);
     this.device.addEventListener(
       "uncapturederror",
-      (this.onError = (e) =>
-        this.onFailure(`WebGPU validation: ${e.error.message}`)),
+      (this.onError = (e) => {
+        if (this.selection?.backend === 'fsr31') this.failFsr(`WebGPU validation: ${e.error.message}`);
+        else this.onFailure(`WebGPU validation: ${e.error.message}`);
+      }),
     );
     void this.device.lost.then((info) => {
       if (!this.disposed)
@@ -137,18 +149,48 @@ export class WebGPUBackend {
       this.dispose();
       return;
     }
+    this.createSceneTarget(false);
+    this.ready = true;
+  }
+  createSceneTarget(fsr) {
+    this.target?.dispose();
     this.target = new T.RenderTarget(1, 1, {
       type: T.HalfFloatType,
       depthBuffer: true,
       samples: 0,
+      count: fsr ? 2 : 1,
     });
+    this.target.texture.name = 'output';
     this.target.texture.colorSpace = T.NoColorSpace;
     this.target.depthTexture = new T.DepthTexture(1, 1, T.FloatType);
     this.target.depthTexture.format = T.DepthFormat;
-    this.ready = true;
+    if (fsr) {
+      const mask = this.target.textures[1];
+      mask.name = 'fsrMasks'; mask.type = T.UnsignedByteType; mask.format = T.RGBAFormat;
+      mask.colorSpace = T.NoColorSpace;
+      // Application-authored reactive coverage. Final material alpha includes
+      // opacity nodes (including packed swarm opacity); emissive lights react
+      // independently of rigid motion. The extra attachment adds no scene draw.
+      const reactivity = max(diffuseColor.a.oneMinus(), dot(emissive, vec3(.2126, .7152, .0722))).clamp(0, 1);
+      this.fsrMRT ??= mrt({ output, fsrMasks: vec4(reactivity, reactivity, 0, 1) });
+    }
+    this.targetIsFsr = fsr;
+    this.precompiled = false; this.compiling = null;
+  }
+  initializeFsr() {
+    if (this.fsrInitializing || this.fsr || this.fsrFailure) return;
+    this.fsr = new FSR31SuperResolution(this.device);
+    this.fsrInitializing = this.fsr.init().then(() => {
+      if (!this.disposed) { this.capabilities.fsr31 = true; this.temporal.invalidate('FSR initialized'); }
+    }).catch(error => this.failFsr(error.message));
+  }
+  failFsr(reason) {
+    this.fsrFailure = reason; this.capabilities.fsr31 = false;
+    this.fsr?.dispose(); this.fsr = null; this.temporal.invalidate('FSR fallback');
   }
   render(source, sourceCamera, settings, logical) {
     if (!this.ready || this.disposed) return false;
+    if (!this.frameQueue.available()) return this.warmFrames >= 4;
     const requestedSettings = settings;
     if (settings.postEnabled === false) {
       if (this.noPostSource !== settings) {
@@ -185,6 +227,7 @@ export class WebGPUBackend {
     });
     if (this.canvas.width !== ow || this.canvas.height !== oh)
       this.renderer.setSize(ow, oh, false);
+    if (settings.upscaling === 'fsr31') this.initializeFsr();
     const choice = selectUpscaling(
       settings,
       this.capabilities,
@@ -195,11 +238,21 @@ export class WebGPUBackend {
       choice.reason = "Post processing disabled; using native rendering.";
     }
     this.selection = choice;
-    const compute = choice.backend === "sgsr2-compute";
+    const fsr = choice.backend === 'fsr31';
+    const compute = choice.compute;
     const nativeDebug = settings.upscaleDebugView === "native";
+    const historyDebug = settings.upscaleDebugView === 'history' || settings.upscaleDebugView === 'history-rejection';
+    if ((choice.backend !== 'sgsr2-compute' || nativeDebug) && !(historyDebug && !fsr) && this.compute?.bindingTextures) {
+      this.compute.releaseResources(); this.resources.release('sgsr-');
+    }
+    if (this.targetIsFsr !== (fsr && !nativeDebug)) this.createSceneTarget(fsr && !nativeDebug);
+    if ((!fsr || nativeDebug) && this.fsr?.key) this.fsr.releaseImages();
     const w = Math.max(1, Math.round(ow * (nativeDebug ? 1 : choice.scale))),
       h = Math.max(1, Math.round(oh * (nativeDebug ? 1 : choice.scale)));
     this.scene.sourceIndex.supported = logical.three?.discovery?.topologyEvents === true;
+    // Apply state before sync: acceleration/reset can replace a source material
+    // without adding/removing any scene object. New mirrors inherit this state.
+    this.scene.setMRT(fsr && !nativeDebug ? this.fsrMRT : null);
     const c = this.scene.sync(
       source,
       sourceCamera,
@@ -213,12 +266,17 @@ export class WebGPUBackend {
     // unjittered camera BEFORE recording the first rendered temporal state.
     if (!this.precompiled) {
       if (!this.compiling)
+        {
+        this.renderer.setRenderTarget(this.target);
+        this.renderer.setMRT(fsr && !nativeDebug ? this.fsrMRT : null);
         this.compiling = this.renderer
           .compileAsync(this.scene.scene, c)
           .then(() => {
             this.precompiled = true;
           })
-          .catch((e) => this.onFailure(e.message));
+          .catch((e) => this.onFailure(e.message))
+          .finally(() => { this.renderer.setMRT(null); this.renderer.setRenderTarget(null); });
+        }
       return false;
     }
     if (settings.shadowQuality !== "off") this.shadows.prepare(this.scene, c);
@@ -237,7 +295,9 @@ export class WebGPUBackend {
     this.target.setSize(w, h);
     try {
       this.renderer.setRenderTarget(this.target);
+      this.renderer.setMRT(fsr && !nativeDebug ? this.fsrMRT : null);
       this.renderer.render(this.scene.scene, c);
+      this.renderer.setMRT(null);
       this.lastSceneDraws = this.renderer.info.render.drawCalls;
       this.lastSceneTriangles = this.renderer.info.render.triangles;
       this.renderer.setRenderTarget(null);
@@ -362,7 +422,25 @@ export class WebGPUBackend {
       const grade = this.resources.get("graded", w, h);
       this.passes.draw(encoder, "grade", grade, inputs, this.profiler);
       let output = grade;
-      if (compute && !nativeDebug) {
+      let fsrScope = false;
+      if (fsr && !nativeDebug) {
+        this.device.pushErrorScope('validation'); fsrScope = true;
+        const mask = gpuTexture(this.renderer, this.target.textures[1]);
+        if (mask !== this.fsrMaskTexture) {
+          this.fsrMaskTexture = mask; this.fsrMaskInput = { view: mask.createView() };
+        }
+        const maskInput = this.fsrMaskInput;
+        try {
+          output = this.fsr.reconstruct(encoder, grade, depth, velocity, this.temporal, this.profiler,
+            { reactive: maskInput, transparency: maskInput, sharpness: settings.fsrSharpness });
+        } catch (error) {
+          void this.device.popErrorScope();
+          this.failFsr(error.message);
+          // Keep the most recent enhanced image until SGSR2/Native takes over
+          // next frame. Optional SR failures must not stop the whole renderer.
+          return this.warmFrames >= 4;
+        }
+      } else if (compute && !nativeDebug) {
         output = this.compute.reconstruct(
           encoder,
           grade,
@@ -382,9 +460,9 @@ export class WebGPUBackend {
       if (settings.upscaleDebugView === "low-resolution") output = grade;
       if (
         settings.upscaleDebugView === "history" &&
-        this.compute?.previousHistory
+        (fsr ? this.fsr?.previousHistory : this.compute?.previousHistory)
       )
-        output = this.compute.previousHistory;
+        output = fsr ? this.fsr.previousHistory : this.compute.previousHistory;
       const finalInputs = {
         ...inputs,
         color: output,
@@ -400,6 +478,10 @@ export class WebGPUBackend {
       );
       const slot = this.profiler.end(encoder);
       this.device.queue.submit([encoder.finish()]);
+      this.frameQueue.submitted(this.device.queue);
+      if (fsrScope) void this.device.popErrorScope().then(error => {
+        if (error && !this.disposed) this.failFsr(error.message);
+      });
       this.profiler.submitted(slot);
       this.temporal.commit();
       if (settings.shadowQuality !== "off") this.shadows.commit();
@@ -412,6 +494,7 @@ export class WebGPUBackend {
       this.nativeCanvas.style.opacity = "0";
       return true;
     } finally {
+      this.renderer.setMRT(null);
       this.temporal.restoreCamera();
     }
   }
@@ -520,7 +603,7 @@ export class WebGPUBackend {
           "history",
           "native",
         ].indexOf(s.upscaleDebugView),
-        s.sharpenEnabled ? s.sharpenStrength : 0,
+        s.sharpenEnabled && !(this.selection?.backend === 'fsr31' && s.fsrSharpness > 0) ? s.sharpenStrength : 0,
         !compute && s.fxaaEnabled ? 1 : 0,
       ],
       [
@@ -554,6 +637,9 @@ export class WebGPUBackend {
       temporal: this.temporal.report(),
       compute: this.compute?.report(),
       computeFailure: this.computeFailure,
+      fsr31: this.fsr?.report(),
+      fsr31Failure: this.fsrFailure,
+      frameQueue: this.frameQueue?.report(),
       output: [this.canvas?.width, this.canvas?.height],
       internal: [this.target?.width, this.target?.height],
       resources: this.resources?.report(),
@@ -582,7 +668,10 @@ export class WebGPUBackend {
     this.hide();
     this.device?.removeEventListener("uncapturederror", this.onError);
     this.removeTimestamps?.();
+    this.frameQueue?.dispose();
+    this.removeMrtPipelineKey?.();
     this.compute?.dispose();
+    this.fsr?.dispose();
     this.motion?.dispose();
     this.swarmMotion?.dispose();
     this.passes?.dispose();
