@@ -1,48 +1,72 @@
 import { OPTIONS, MATERIAL_KINDS } from "./options.js";
 import { PRESET_IDS, PRESET_LABELS } from "./presets.js";
+import { attachPolyCaptureUI } from "./capture-ui.js";
 
 const STYLE_ID = "polyshade-styles";
 const PANEL_ID = "polyshade-panel";
 
 const CSS = `
+/* PolyBot HUD glass tokens, scoped to this optional standalone panel. */
 #${PANEL_ID} {
-  position: fixed; z-index: 2147483000; right: 14px; top: 14px; width: 282px;
-  max-height: calc(100vh - 28px); overflow: auto; padding: 14px; box-sizing: border-box;
-  color: #eef2f6; background: rgba(20, 27, 35, .94); border: 1px solid rgba(211, 226, 238, .24);
-  border-radius: 9px; box-shadow: 0 8px 28px rgba(0, 0, 0, .38);
-  font: 12px/1.4 system-ui, sans-serif; backdrop-filter: blur(10px);
+ --poly-tools-top:12px;--poly-glass-fg:#f1f7fc;--poly-glass-muted:#c9d6e1;
+ position:fixed;z-index:2147483000;right:12px;top:var(--poly-tools-top);width:min(320px,calc(100vw - 24px));
+ max-height:calc(100dvh - var(--poly-tools-top) - 12px);overflow:auto;overscroll-behavior:contain;padding:14px 16px;box-sizing:border-box;
+ color:var(--poly-glass-fg);background:linear-gradient(135deg,rgba(230,247,255,.14),rgba(40,70,105,.08)),rgba(9,19,32,.26);
+ border:1px solid rgba(235,248,255,.3);border-radius:20px;font:12px/1.35 ui-monospace,Consolas,monospace;
+ backdrop-filter:blur(12px) saturate(150%);-webkit-backdrop-filter:blur(12px) saturate(150%);
+ text-shadow:0 1px 3px rgba(0,0,0,.8);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.34),inset 0 -1px 0 rgba(255,255,255,.07),0 12px 38px rgba(0,0,0,.18)
 }
-#${PANEL_ID} details { border-top:1px solid #465260;margin-top:8px;padding-top:7px; }
-#${PANEL_ID} summary { cursor:pointer; font-weight:600; padding:3px 0; }
-#${PANEL_ID} * { box-sizing: border-box; }
-#${PANEL_ID} header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-#${PANEL_ID} h2 { margin: 0; font-size: 15px; font-weight: 650; }
-#${PANEL_ID} button, #${PANEL_ID} select {
-  color: inherit; background: #2b3743; border: 1px solid #526171; border-radius: 5px; padding: 5px 7px;
-  font: inherit;
+#${PANEL_ID},#${PANEL_ID} *{box-sizing:border-box;font-family:ui-monospace,Consolas,monospace!important;font-style:normal!important;scrollbar-width:thin;scrollbar-color:rgba(223,244,255,.48) transparent}
+@supports selector(::-webkit-scrollbar){#${PANEL_ID},#${PANEL_ID} *{scrollbar-width:auto;scrollbar-color:auto}}
+#${PANEL_ID}::-webkit-scrollbar,#${PANEL_ID} *::-webkit-scrollbar{width:7px;height:7px;background:transparent}
+#${PANEL_ID}::-webkit-scrollbar-track,#${PANEL_ID} *::-webkit-scrollbar-track{background:transparent;margin:12px 0}
+#${PANEL_ID}::-webkit-scrollbar-thumb,#${PANEL_ID} *::-webkit-scrollbar-thumb{border-radius:999px;background:linear-gradient(180deg,rgba(240,252,255,.55),rgba(170,217,241,.28));border:1px solid rgba(255,255,255,.25)}
+#${PANEL_ID}::-webkit-scrollbar-button,#${PANEL_ID} *::-webkit-scrollbar-button{display:none;width:0;height:0}
+#${PANEL_ID}::-webkit-scrollbar-corner,#${PANEL_ID} *::-webkit-scrollbar-corner{background:transparent}
+#${PANEL_ID} details{border-top:1px solid rgba(156,190,216,.24);margin-top:8px;padding-top:7px}
+#${PANEL_ID} summary{cursor:pointer;font-weight:700;padding:3px 0;color:#8ed7ff;border-radius:6px}
+#${PANEL_ID} header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+#${PANEL_ID} h2{margin:0;font-size:14px;font-weight:700;white-space:nowrap}
+#${PANEL_ID} button,#${PANEL_ID} select,#${PANEL_ID} input{
+ color:inherit;background:rgba(15,28,44,.28);border:1px solid rgba(235,248,255,.38);border-radius:10px;padding:5px 7px;
+ font:inherit;min-width:0;max-width:100%;box-shadow:inset 0 1px 0 rgba(255,255,255,.18);transition:background-color 140ms ease,border-color 140ms ease
 }
-#${PANEL_ID} button { cursor: pointer; }
-#${PANEL_ID} button:hover { background: #394a59; }
-#${PANEL_ID} .polyshade-row { display: grid; grid-template-columns: 1fr 112px; gap: 8px; align-items: center; margin: 8px 0; }
-#${PANEL_ID} .polyshade-range {
-  appearance: none; width: 100%; height: 5px; padding: 0; margin: 5px 0;
-  background: #526171; border: 0; border-radius: 3px; box-shadow: none;
+#${PANEL_ID} button{cursor:pointer}
+#${PANEL_ID} button:hover{background:rgba(125,175,215,.28);border-color:rgba(235,248,255,.6)}
+#${PANEL_ID} :is(button,select,input,summary):focus-visible{outline:2px solid #8ed7ff;outline-offset:2px}
+#${PANEL_ID} option{background:#16273a;color:#edf4fa}
+#${PANEL_ID} input[type=checkbox]{appearance:none;flex-shrink:0;width:14px;height:14px;padding:0;border-radius:4px;accent-color:#8ed7ff;vertical-align:middle}
+#${PANEL_ID} input[type=checkbox]:checked{background:#8ed7ff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3.5 8 3 3 6-6' fill='none' stroke='%2316273a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px 12px no-repeat}
+#${PANEL_ID} input[type=color]{height:30px;width:100%;padding:3px}
+#${PANEL_ID} .polyshade-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,112px);gap:8px;align-items:center;margin:8px 0}
+#${PANEL_ID} .polyshade-row>span{overflow-wrap:anywhere}
+#${PANEL_ID} .polyshade-row>select{width:100%}
+#${PANEL_ID} .polyshade-range{appearance:none;width:100%;height:5px;padding:0;margin:5px 0;background:rgba(211,232,250,.22);border:0;border-radius:999px;box-shadow:none}
+#${PANEL_ID} .polyshade-range::-webkit-slider-thumb{appearance:none;width:13px;height:13px;border:1px solid rgba(235,248,255,.65);border-radius:50%;background:#8ed7ff;box-shadow:0 1px 5px rgba(0,0,0,.2)}
+#${PANEL_ID} .polyshade-range::-moz-range-thumb{width:13px;height:13px;border:1px solid rgba(235,248,255,.65);border-radius:50%;background:#8ed7ff}
+#${PANEL_ID} .polyshade-range::-webkit-slider-runnable-track{height:5px;border:0;border-radius:999px;background:rgba(211,232,250,.22);box-shadow:none}
+#${PANEL_ID} .polyshade-range::-webkit-slider-thumb{box-sizing:border-box;margin-top:-4px}
+#${PANEL_ID} .polyshade-range::-moz-range-track{height:5px;border:0;border-radius:999px;background:rgba(211,232,250,.22)}
+#${PANEL_ID} output{display:block;color:var(--poly-glass-muted);text-align:right;font-variant-numeric:tabular-nums}
+#${PANEL_ID} .polyshade-check{display:flex;align-items:center;gap:7px}
+#${PANEL_ID} .polyshade-actions{display:flex;gap:7px;margin-top:11px}
+#${PANEL_ID} .polyshade-actions button{flex:1}
+#${PANEL_ID} .polyshade-status,#${PANEL_ID} .polyshade-metrics{color:var(--poly-glass-muted);margin-top:9px;overflow-wrap:anywhere}
+#${PANEL_ID} .polyshade-metrics{white-space:pre-wrap;font:11px/1.5 ui-monospace,Consolas,monospace}
+#${PANEL_ID} .polyshade-muted{color:var(--poly-glass-muted);font-size:11px}
+#${PANEL_ID}[data-collapsed="true"] .polyshade-content{display:none}
+#${PANEL_ID}[data-collapsed="true"] header{margin-bottom:0}
+#${PANEL_ID}[hidden]{display:none!important}
+:root[data-poly-capture-ui="hidden"] #${PANEL_ID}{display:none!important}
+body:has(.polybot-ai-hud-toggle:not([hidden])) #${PANEL_ID}{--poly-tools-top:92px}
+@media(max-width:679px){
+ body:has(#poly-cam-panel:not(.panel-hidden)):not(.poly-cam-clean) #${PANEL_ID}{
+  top:calc(var(--poly-tools-top) + (100dvh - var(--poly-tools-top) - 36px)/2 + 12px);
+  max-height:calc((100dvh - var(--poly-tools-top) - 36px)/2)
+ }
 }
-#${PANEL_ID} .polyshade-range::-webkit-slider-thumb {
-  appearance: none; width: 12px; height: 12px; border: 0; border-radius: 50%;
-  background: #d8b985; box-shadow: none;
-}
-#${PANEL_ID} .polyshade-range::-moz-range-thumb {
-  width: 12px; height: 12px; border: 0; border-radius: 50%; background: #d8b985;
-}
-#${PANEL_ID} output { display: block; color: #bac7d2; text-align: right; }
-#${PANEL_ID} .polyshade-check { display: flex; align-items: center; gap: 7px; }
-#${PANEL_ID} .polyshade-actions { display: flex; gap: 7px; margin-top: 11px; }
-#${PANEL_ID} .polyshade-actions button { flex: 1; }
-#${PANEL_ID} .polyshade-status, #${PANEL_ID} .polyshade-metrics { color: #bac7d2; margin-top: 9px; }
-#${PANEL_ID} .polyshade-metrics { white-space: pre-line; font: 11px/1.5 ui-monospace, monospace; }
-#${PANEL_ID} .polyshade-muted { color: #9caab6; font-size: 11px; }
-#${PANEL_ID}[data-collapsed="true"] .polyshade-content { display: none; }
+@media(prefers-reduced-motion:reduce){#${PANEL_ID} *{transition:none!important}}
 `;
 
 function createElement(document, tag, className, text) {
@@ -174,6 +198,13 @@ export function mountPanel(document, callbacks, initialSettings) {
     callbacks.onEnabled,
   );
   content.appendChild(enabled);
+
+  let captureUI;
+  const captureCheck = makeCheck(document, "Hide windows for recording (F2)", false,
+    hidden => captureUI.setHidden(hidden));
+  content.appendChild(captureCheck);
+  captureUI = attachPolyCaptureUI(document.defaultView || globalThis,
+    hidden => { captureCheck.querySelector("input").checked = hidden; });
 
   const controls = {};
   for (const [group, definitions] of Object.entries(OPTIONS)) {
@@ -381,6 +412,7 @@ export function mountPanel(document, callbacks, initialSettings) {
       if (!metrics.hidden) metrics.textContent = upscaleStatus.textContent;
     },
     dispose() {
+      captureUI.dispose();
       document.removeEventListener("pointerdown", pickHandler);
       panel.remove();
       style.remove();
