@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Preserve the exact pinned upstream bytes and their SHA-256 inventory.
+vendor/fidelityfx/** -text

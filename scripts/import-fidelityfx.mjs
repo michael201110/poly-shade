@@ -1,5 +1,5 @@
 // Development-only import of the pinned official AMD reference. Never fetches latest.
-import { cp, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { resolve, relative, join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -14,9 +14,13 @@ const paths = ['Kits/FidelityFX/api/internal/gpu',
     ... (kind === 'upscalers' ? ['ffx_fsr3upscaler.cpp'] : ['ffx_frameinterpolation.cpp', 'ffx_opticalflow.cpp'])
       .map(file => `Kits/FidelityFX/${kind}/fsr3/internal/${file}`),
   ])];
-for (const path of paths) {
-  await mkdir(resolve(target, path, '..'), { recursive: true });
-  await cp(resolve(source, path), resolve(target, path), { recursive: true });
+// Read Git blobs, not checkout files that core.autocrlf may have transformed.
+const upstreamFiles=execFileSync('git',['ls-tree','-r','--name-only',revision,'--',...paths],
+  {cwd:source,encoding:'utf8'}).trim().split('\n').filter(Boolean);
+for (const path of upstreamFiles) {
+  await mkdir(resolve(target,path,'..'),{recursive:true});
+  const bytes=execFileSync('git',['show',`${revision}:${path}`],{cwd:source,maxBuffer:16*1024*1024});
+  await writeFile(resolve(target,path),bytes);
 }
 const files = {};
 const licenseSource = await readFile(resolve(target, 'Kits/FidelityFX/upscalers/fsr3/internal/shaders/ffx_fsr3upscaler_prepare_inputs_pass.hlsl'), 'utf8');

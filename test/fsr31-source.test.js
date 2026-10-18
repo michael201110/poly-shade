@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { SR_SHADERS, shaderBindings } from '../src/rendering/fsr31/super-resolution.js';
 import { selectUpscaling } from '../src/rendering/temporal-state.js';
 import { includeMrtPipelineKey } from '../src/rendering/webgpu/three-adapter.js';
@@ -25,6 +26,14 @@ test('SR uses actual compiled AMD passes and unique reflected bindings', () => {
     assert.ok(bindings.length >= 3, name);
     assert.equal(new Set(bindings.map(b => b.binding)).size, bindings.length);
   }
+});
+
+test('vendored AMD bytes bypass checkout line-ending conversion on every platform', async () => {
+  const reference=JSON.parse(await readFile('vendor/fidelityfx/reference.json','utf8'));
+  const paths=Object.keys(reference.files).map(path=>`vendor/fidelityfx/${path}`);
+  const attributes=execFileSync('git',['check-attr','text','--stdin'],{input:paths.join('\n')+'\n',encoding:'utf8'}).trim().split('\n');
+  assert.equal(attributes.length,paths.length);
+  for(const line of attributes)assert.ok(line.endsWith(': text: unset'),line);
 });
 test('explicit FSR selection retains SGSR2 and Native fallbacks without changing Auto', () => {
   const capabilities = { webgpu: true, compute: true, fsr31: true };

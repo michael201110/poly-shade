@@ -12,6 +12,8 @@ Official AMD FidelityFX SDK tag `v2.3.0`, revision
 interpolation **3.1.6**. Those component versions differ intentionally. FSR 4 ML
 is outside this work. Unmodified reference files, MIT notice and hashes are in
 `vendor/fidelityfx/`. `scripts/import-fidelityfx.mjs` refuses another revision.
+Imports read the exact upstream Git blobs, and `.gitattributes` prevents line-
+ending conversion from breaking that byte/hash identity on Windows or Linux.
 
 `npm run compile:fsr` uses Microsoft DXC `v1.9.2609` (2026-09-29 Windows build),
 then Naga 30.0.1 via pinned `naga-wasm@30.2.0`, to produce WGSL offline.
@@ -112,7 +114,7 @@ owned textures/buffers are released. Motion conversion, reconstructed depth,
 reactive-mask coverage and release/reactivation also pass synthetic checks.
 Reports: `docs/verification/fsr31/`.
 
-`npm test`: 106/106 pass. `npm run verify:webgpu`: passes five scales,
+`npm test`: 107/107 pass. `npm run verify:webgpu`: passes five scales,
 debug views, resize, temporal reprojection, camera cuts and deliberate device
 loss. The independent-motion probe sees 147 of 159 moving test cars (at least
 120 required). The probe now waits for an actual completed enhanced frame;
