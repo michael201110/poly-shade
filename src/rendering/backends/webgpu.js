@@ -17,6 +17,7 @@ import {
 } from "../webgpu/three-adapter.js";
 import { SGSR2Compute } from "../sgsr2-compute.js";
 import * as SH from "../../shaders/webgpu-post.wgsl.js";
+const ignoreRetiredDeviceLoss = () => {};
 
 export class WebGPUBackend {
   constructor(nativeCanvas, onFailure) {
@@ -55,7 +56,10 @@ export class WebGPUBackend {
     this.renderer.isWebGPURenderer = true;
     await this.renderer.init();
     if (this.disposed) {
+      const device = this.renderer.backend.device;
+      this.renderer.onDeviceLost = ignoreRetiredDeviceLoss;
       this.renderer.dispose();
+      device?.destroy();
       this.canvas.remove();
       return;
     }
@@ -587,7 +591,11 @@ export class WebGPUBackend {
     this.shadows?.dispose();
     this.scene?.dispose();
     this.target?.dispose();
+    if (this.renderer) this.renderer.onDeviceLost = ignoreRetiredDeviceLoss;
     this.renderer?.dispose();
+    // Three r181 disposes its caches but does not destroy this owned device.
+    // Retiring it releases driver allocations across repeated Home toggles.
+    this.device?.destroy();
     this.canvas?.remove();
   }
 }

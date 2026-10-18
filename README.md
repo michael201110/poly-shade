@@ -1,20 +1,24 @@
-# PolyShade 0.5.1
+# PolyShade 0.5.2
 
 A graphics mod for **PolyTrack 0.6.3**, loaded through PolyModLoader. Warm directional sunlight, cool shaded faces, glossy car paint and broad soft clouds give the low-poly world a cinematic racing-game look.
 
 ## Install
 
-Install [PolyModLoader](https://polymodloader.com/), then paste this **0.5.1 install link** into its mod manager:
+Install [PolyModLoader](https://polymodloader.com/), then paste this **0.5.2 install link** into its mod manager:
 
 ```text
 https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/
 ```
 
-[Install PolyShade 0.5.1](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/) · [Pinned 0.5.1](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.5.1/)
+[Install PolyShade 0.5.2](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/) · [Pinned 0.5.2](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.5.2/)
 
-Select **0.5.1 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.5.1**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
+Select **0.5.2 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.5.2**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
 
-PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.5.1/version.json` and `0.5.1/main.mod.js`; historical bundles are preserved.
+PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.5.2/version.json` and `0.5.2/main.mod.js`; historical bundles are preserved.
+
+## What's changed in 0.5.2
+
+Fixes high-count swarm renderer switching with **PolyBot bridge 0.1.49**: packed replay data stays in worker renderers instead of reconstructing hundreds of native ghost objects. PolyShade now explicitly retires its owned GPU device on disable. Install both updates for the complete fix; shaders, presets and replay interpolation are unchanged. See [handoff ownership, compatibility and verification](docs/0.5.2-renderer-handoff.md).
 
 ## What's changed in 0.5.1
 

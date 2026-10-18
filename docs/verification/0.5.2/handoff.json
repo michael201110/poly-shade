@@ -1,0 +1,424 @@
+{
+  "bridge": "0.1.49",
+  "date": "2026-10-18T07:34:26.572Z",
+  "nativeCarsCreated": 1,
+  "phases": [
+    {
+      "backend": "Worker + PolyShade WebGPU",
+      "clock": 3,
+      "created": 1,
+      "heap": 748375353,
+      "leader": "ee7a1c2b696e4f06af54d07d1e85b68f:episode-000039",
+      "loaded": 500,
+      "performance": {
+        "frame_ms": 45.35666666676601,
+        "renderer": {
+          "calls": 2,
+          "height": 948,
+          "render_cpu_ms": 6.171666667362055,
+          "triangles": 210,
+          "width": 1327
+        },
+        "replay_update_ms": 2.050000000496705,
+        "samples": 60
+      },
+      "playing": false,
+      "worker": {
+        "backend": "Worker + PolyShade WebGPU",
+        "canonicalBytes": 34077304,
+        "cars": 500,
+        "clock": 3,
+        "failure": null,
+        "frames": 1188,
+        "geometryBytes": 82512,
+        "inFlight": 1,
+        "interop": {
+          "bytes": 104834544,
+          "colourDraws": 11,
+          "gpu": {},
+          "sceneDrawCalls": 99,
+          "sceneTriangles": 6453534,
+          "skidSegments": 0,
+          "sources": 1,
+          "triangles": 1551000,
+          "uploadMs": 3.0999999940395355
+        },
+        "interpolationMs": 2.5999999940395355,
+        "lod": {
+          "far": 0,
+          "full": 86,
+          "medium": 0
+        },
+        "mainThreadMs": 0.0558080810188043,
+        "packingMs": 4,
+        "ready": true,
+        "renderClock": 3,
+        "sharedMemory": false,
+        "visible": 86,
+        "workerMedianMs": 2.4000000059604645,
+        "workerP95Ms": 3.800000011920929,
+        "workerP99Ms": 4.5
+      }
+    },
+    {
+      "backend": "Worker WebGL2",
+      "clock": 3,
+      "created": 1,
+      "heap": 754793300,
+      "leader": "ee7a1c2b696e4f06af54d07d1e85b68f:episode-000039",
+      "loaded": 500,
+      "performance": {
+        "frame_ms": 60.90333333363136,
+        "renderer": {
+          "calls": 36.53333333333333,
+          "height": 948,
+          "render_cpu_ms": 43.39500000178814,
+          "triangles": 78107.86666666667,
+          "width": 1327
+        },
+        "replay_update_ms": 0.4383333310484886,
+        "samples": 60
+      },
+      "playing": false,
+      "worker": {
+        "backend": "Worker WebGL2",
+        "canonicalBytes": 34077304,
+        "cars": 500,
+        "clock": 3,
+        "draws": 8,
+        "failure": null,
+        "frames": 43,
+        "geometryBytes": 1880280,
+        "gpuMs": 4.769888,
+        "inFlight": 1,
+        "interop": null,
+        "interpolationMs": 2.7000000178813934,
+        "lod": {
+          "far": 0,
+          "full": 86,
+          "medium": 0
+        },
+        "mainThreadMs": 0.17272727259180762,
+        "proxyDraws": 1,
+        "proxyTriangles": 49938,
+        "ready": true,
+        "renderClock": 3,
+        "sharedMemory": false,
+        "submissionMs": 0.9000000059604645,
+        "triangles": 266772,
+        "visible": 86,
+        "workerMedianMs": 4.4000000059604645,
+        "workerP95Ms": 9.5,
+        "workerP99Ms": 40.400000005960464
+      }
+    },
+    {
+      "backend": "Worker + PolyShade WebGPU",
+      "clock": 3,
+      "created": 1,
+      "heap": 797895593,
+      "leader": "ee7a1c2b696e4f06af54d07d1e85b68f:episode-000039",
+      "loaded": 500,
+      "performance": {
+        "frame_ms": 86.68499999990065,
+        "renderer": {
+          "calls": 39,
+          "height": 948,
+          "render_cpu_ms": 51.56499999910593,
+          "triangles": 83672,
+          "width": 1327
+        },
+        "replay_update_ms": 1.9033333341280616,
+        "samples": 60
+      },
+      "playing": false,
+      "worker": {
+        "backend": "Worker + PolyShade WebGPU",
+        "canonicalBytes": 34077304,
+        "cars": 500,
+        "clock": 3,
+        "failure": null,
+        "frames": 20,
+        "geometryBytes": 82512,
+        "inFlight": 1,
+        "interop": {
+          "bytes": 938544,
+          "colourDraws": 11,
+          "gpu": {},
+          "sceneDrawCalls": 99,
+          "sceneTriangles": 6453534,
+          "skidSegments": 0,
+          "sources": 1,
+          "triangles": 1551000,
+          "uploadMs": 1.600000023841858
+        },
+        "interpolationMs": 1.5,
+        "lod": {
+          "far": 0,
+          "full": 86,
+          "medium": 0
+        },
+        "mainThreadMs": 0.03636363555084576,
+        "packingMs": 1.0999999940395355,
+        "ready": true,
+        "renderClock": 3,
+        "sharedMemory": false,
+        "visible": 86,
+        "workerMedianMs": 2.600000023841858,
+        "workerP95Ms": 21.799999982118607,
+        "workerP99Ms": 21.799999982118607
+      }
+    },
+    {
+      "backend": "Worker WebGL2",
+      "clock": 4.250499999999997,
+      "created": 1,
+      "heap": 365418886,
+      "leader": "ee7a1c2b696e4f06af54d07d1e85b68f:episode-000039",
+      "loaded": 500,
+      "performance": {
+        "frame_ms": 38.56666666666667,
+        "renderer": {
+          "calls": 39,
+          "height": 948,
+          "render_cpu_ms": 8.070000001291435,
+          "triangles": 83672,
+          "width": 1327
+        },
+        "replay_update_ms": 2.174999997516473,
+        "samples": 60
+      },
+      "playing": true,
+      "worker": {
+        "backend": "Worker WebGL2",
+        "canonicalBytes": 34077304,
+        "cars": 500,
+        "clock": 4.133400000000021,
+        "draws": 8,
+        "failure": null,
+        "frames": 19,
+        "geometryBytes": 1880280,
+        "gpuMs": 3.452928,
+        "inFlight": 1,
+        "interop": null,
+        "interpolationMs": 4.299999982118607,
+        "lod": {
+          "far": 0,
+          "full": 49,
+          "medium": 0
+        },
+        "mainThreadMs": 0.14782608721567236,
+        "proxyDraws": 1,
+        "proxyTriangles": 49938,
+        "ready": true,
+        "renderClock": 3,
+        "sharedMemory": false,
+        "submissionMs": 0.699999988079071,
+        "triangles": 151998,
+        "visible": 49,
+        "workerMedianMs": 5.9000000059604645,
+        "workerP95Ms": 77.19999998807907,
+        "workerP99Ms": 77.19999998807907
+      }
+    },
+    {
+      "backend": "Worker + PolyShade WebGPU",
+      "clock": 5.892999999999891,
+      "created": 1,
+      "heap": 489977970,
+      "leader": "ee7a1c2b696e4f06af54d07d1e85b68f:episode-000039",
+      "loaded": 500,
+      "performance": {
+        "frame_ms": 98.631666666766,
+        "renderer": {
+          "calls": 40,
+          "height": 948,
+          "render_cpu_ms": 54.97333333343268,
+          "triangles": 83888,
+          "width": 1327
+        },
+        "replay_update_ms": 4.181666667759418,
+        "samples": 60
+      },
+      "playing": true,
+      "worker": {
+        "backend": "Worker + PolyShade WebGPU",
+        "canonicalBytes": 34077304,
+        "cars": 500,
+        "clock": 5.826299999999909,
+        "failure": null,
+        "frames": 18,
+        "geometryBytes": 82512,
+        "inFlight": 1,
+        "interop": {
+          "bytes": 104834544,
+          "colourDraws": 12,
+          "gpu": {},
+          "sceneDrawCalls": 100,
+          "sceneTriangles": 6453570,
+          "skidSegments": 18,
+          "sources": 1,
+          "triangles": 1551036,
+          "uploadMs": 1.2999999821186066
+        },
+        "interpolationMs": 1.5,
+        "lod": {
+          "far": 0,
+          "full": 31,
+          "medium": 0
+        },
+        "mainThreadMs": 0.057894736528396606,
+        "packingMs": 1.2000000178813934,
+        "ready": true,
+        "renderClock": 5.826299999999909,
+        "sharedMemory": false,
+        "visible": 31,
+        "workerMedianMs": 4.799999982118607,
+        "workerP95Ms": 42.900000005960464,
+        "workerP99Ms": 42.900000005960464
+      }
+    },
+    {
+      "backend": "Worker WebGL2",
+      "clock": 5.185999999999941,
+      "created": 1,
+      "heap": 514578805,
+      "leader": "ee7a1c2b696e4f06af54d07d1e85b68f:episode-000039",
+      "loaded": 500,
+      "performance": {
+        "frame_ms": 27.35,
+        "renderer": {
+          "calls": 39.63333333333333,
+          "height": 948,
+          "render_cpu_ms": 2.778333330651124,
+          "triangles": 83751.83333333333,
+          "width": 1327
+        },
+        "replay_update_ms": 1.5333333338300388,
+        "samples": 60
+      },
+      "playing": true,
+      "worker": {
+        "backend": "Worker WebGL2",
+        "canonicalBytes": 34077304,
+        "cars": 500,
+        "clock": 5.085999999999942,
+        "draws": 8,
+        "failure": null,
+        "frames": 39,
+        "geometryBytes": 1880280,
+        "gpuMs": 2.21008,
+        "inFlight": 1,
+        "interop": null,
+        "interpolationMs": 2.5,
+        "lod": {
+          "far": 0,
+          "full": 31,
+          "medium": 0
+        },
+        "mainThreadMs": 0.09999999867545234,
+        "proxyDraws": 1,
+        "proxyTriangles": 49938,
+        "ready": true,
+        "renderClock": 3.902699999999955,
+        "sharedMemory": false,
+        "submissionMs": 0.5999999940395355,
+        "triangles": 96162,
+        "visible": 31,
+        "workerMedianMs": 3.399999976158142,
+        "workerP95Ms": 15.599999994039536,
+        "workerP99Ms": 28.400000005960464
+      }
+    },
+    {
+      "backend": "Worker + PolyShade WebGPU",
+      "clock": 10.102499999999942,
+      "created": 1,
+      "heap": 286971995,
+      "leader": "ee7a1c2b696e4f06af54d07d1e85b68f:episode-000039",
+      "loaded": 500,
+      "performance": {
+        "frame_ms": 87.11999999980132,
+        "renderer": {
+          "calls": 40,
+          "height": 948,
+          "render_cpu_ms": 53.0999999995033,
+          "triangles": 83864,
+          "width": 1327
+        },
+        "replay_update_ms": 3.1616666659712793,
+        "samples": 60
+      },
+      "playing": true,
+      "worker": {
+        "backend": "Worker + PolyShade WebGPU",
+        "canonicalBytes": 34077304,
+        "cars": 500,
+        "clock": 10.052699999999954,
+        "failure": null,
+        "frames": 22,
+        "geometryBytes": 82512,
+        "inFlight": 1,
+        "interop": {
+          "bytes": 104834544,
+          "colourDraws": 12,
+          "gpu": {},
+          "sceneDrawCalls": 101,
+          "sceneTriangles": 6454328,
+          "skidSegments": 349,
+          "sources": 1,
+          "triangles": 1551698,
+          "uploadMs": 1.800000011920929
+        },
+        "interpolationMs": 2.0999999940395355,
+        "lod": {
+          "far": 0,
+          "full": 9,
+          "medium": 0
+        },
+        "mainThreadMs": 0.06399999856948853,
+        "packingMs": 1.5999999940395355,
+        "ready": true,
+        "renderClock": 10.085899999999963,
+        "sharedMemory": false,
+        "visible": 9,
+        "workerMedianMs": 3.5,
+        "workerP95Ms": 15,
+        "workerP99Ms": 28.80000001192093
+      }
+    }
+  ],
+  "polyShade": "0.5.2",
+  "poseChecks": [
+    {
+      "backend": "Worker + PolyShade WebGPU",
+      "clock": 3,
+      "leaderUnchanged": true,
+      "maximumPositionDifference": 0
+    },
+    {
+      "backend": "Worker WebGL2",
+      "clock": 3,
+      "leaderUnchanged": true,
+      "maximumPositionDifference": 0
+    },
+    {
+      "backend": "Worker + PolyShade WebGPU",
+      "clock": 3,
+      "leaderUnchanged": true,
+      "maximumPositionDifference": 0
+    }
+  ],
+  "settings": {
+    "enabled": true,
+    "overrides": {
+      "debugEnabled": false,
+      "debugProfile": false,
+      "upscaleQuality": "performance",
+      "upscaling": "sgsr2-compute"
+    },
+    "preset": "cinematic",
+    "schemaVersion": 2
+  },
+  "timeOrigin": 1792308606069.6
+}

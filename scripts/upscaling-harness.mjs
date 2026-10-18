@@ -155,7 +155,11 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
       undefined,
       { timeout: 60000 },
     );
-    await page.waitForLoadState('networkidle', {timeout:60000});
+    // Await the version-pinned game assets, not unrelated leaderboard polling.
+    // All static asset failures still reject the check; an external replay
+    // service that keeps a connection open must not prevent offline GPU tests.
+    let settled=-1;
+    while(settled!==pending.size){settled=pending.size;await Promise.all(pending.values());}
   } catch (error) {
     await browser.close();
     throw error;
