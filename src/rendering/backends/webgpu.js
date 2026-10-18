@@ -346,7 +346,15 @@ export class WebGPUBackend {
           inputs,
           this.profiler,
         );
-        inputs.rays = this.resources.get("rays", w, h);
+        // The ray integration has 64 taps per output pixel and grade already
+        // applies a screen-space 9-tap softening filter. A quarter-size target
+        // removes redundant integration samples while retaining that filter's
+        // screen-space footprint.
+        inputs.rays = this.resources.get(
+          "rays",
+          Math.ceil(w / 4),
+          Math.ceil(h / 4),
+        );
         this.passes.draw(encoder, "rays", inputs.rays, inputs, this.profiler);
       }
       if (settings.volumetricEnabled && this.params[107] > 0) {

@@ -8,7 +8,7 @@ struct Params {
  renderSize:vec2<u32>, displaySize:vec2<u32>,
  renderRcp:vec2f,displayRcp:vec2f,jitter:vec2f,
  preExposure:f32,cameraFov:f32,minLerp:f32,still:u32,reset:u32,valid:u32,
- jitterUV:vec4f,
+ jitterUV:vec4f,scale:f32,
 };
 @group(0) @binding(0) var<uniform> p:Params;
 `;
@@ -127,7 +127,7 @@ fn main(@builtin(global_invocation_id) id:vec3u,@builtin(local_invocation_id) lo
  var old=h.rgb;
  let wf=clamp(abs(h.a),0.0,1.0);
  let biasMax=min(f32(p.displaySize.x)/f32(p.renderSize.x),1.99);
- let scale=min(20.0,pow((f32(p.displaySize.x)/f32(p.renderSize.x))*(f32(p.displaySize.y)/f32(p.renderSize.y)),3.0));
+ let scale=p.scale;
  let kernelFactor=clamp(wf+f32(p.reset),0.0,1.0);
  let maxBias=biasMax-biasMax*kernelFactor;
  let minBias=max(1.0,0.3+0.3*maxBias);

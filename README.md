@@ -1,20 +1,24 @@
-# PolyShade 0.5.4
+# PolyShade 0.5.5
 
 A graphics mod for **PolyTrack 0.6.3**, loaded through PolyModLoader. Warm directional sunlight, cool shaded faces, glossy car paint and broad soft clouds give the low-poly world a cinematic racing-game look.
 
 ## Install
 
-Install [PolyModLoader](https://polymodloader.com/), then paste this **0.5.4 install link** into its mod manager:
+Install [PolyModLoader](https://polymodloader.com/), then paste this **0.5.5 install link** into its mod manager:
 
 ```text
 https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/
 ```
 
-[Install PolyShade 0.5.4](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/) · [Pinned 0.5.4](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.5.4/)
+[Install PolyShade 0.5.5](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/) · [Pinned 0.5.5](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.5.5/)
 
-Select **0.5.4 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.5.4**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
+Select **0.5.5 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.5.5**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
 
-PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.5.4/version.json` and `0.5.4/main.mod.js`; historical bundles are preserved.
+PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.5.5/version.json` and `0.5.5/main.mod.js`; historical bundles are preserved.
+
+## What's changed in 0.5.5
+
+The 64-tap sun-ray integration renders into a quarter-resolution target; the existing screen-space softening keeps the rays smooth while removing redundant integration work. In the moving 4K Golden Hour profile this reduced the rays pass from 19.46 ms to 1.84 ms and total measured GPU work from 105.58 ms to 89.72 ms. SGSR2 also hoists its scale term out of the per-pixel kernel, reducing the 50% upscale median by about 1 ms. This is a material improvement, but native 4K still does not meet 60 FPS on the tested T500. See [the 4K GPU investigation](docs/0.5.5-4k-gpu-investigation.md).
 
 ## What's changed in 0.5.4
 

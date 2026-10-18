@@ -183,6 +183,7 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
       ]),
     );
   }, { backend, polybotBase: process.env.POLYBOT_ROOT ? "https://polybot.test" : null });
+  const initTimeout = Number(process.env.POLYSHADE_INIT_TIMEOUT_MS ?? 60000);
   try {
     await page.goto(
       "https://cdn.polymodloader.com/cb/PolyTrackMods/PolyModLoader/0.6.3/index.html",
@@ -191,7 +192,7 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
     await page.waitForFunction(
       () => (window.__controller?.backends?.gpu?.frames ?? window.__controller?.cinematic?.post?.frames ?? 0) > 10,
       undefined,
-      { timeout: 60000 },
+      { timeout: initTimeout },
     );
     // Await the version-pinned game assets, not unrelated leaderboard polling.
     // All static asset failures still reject the check; an external replay
@@ -199,6 +200,16 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
     let settled=-1;
     while(settled!==pending.size){settled=pending.size;await Promise.all(pending.values());}
   } catch (error) {
+    if (errors.length) console.error("Harness browser errors:", errors);
+    try {
+      console.error("Harness state:", await page.evaluate(() => ({
+        href: location.href,
+        title: document.title,
+        controller: !!window.__controller,
+        backend: window.__controller?.backends?.gpu?.report?.(),
+        visibleErrors: [...document.querySelectorAll("[role=alert],.error,.polyshade-error")].map((el) => el.textContent).slice(0, 4),
+      })));
+    } catch {}
     await browser.close();
     throw error;
   }

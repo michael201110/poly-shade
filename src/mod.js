@@ -206,7 +206,7 @@ class PolyShadeMod extends PolyMod {}
 export const polyMod = Object.assign(new PolyShadeMod(), {
   modName: "PolyShade",
   modID: "polyshade",
-  modVersion: "0.5.4",
+  modVersion: "0.5.5",
   modAuthor: "PolyShade",
   modDescription:
     "<p>Lighting, shadows, material response, and atmosphere for PolyTrack's live Three.js scene. Rendering only; no physics or simulation changes.</p>",
