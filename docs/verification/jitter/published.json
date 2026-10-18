@@ -1,0 +1,31 @@
+{
+  "dateUTC": "2026-10-18T23:45:53.539987+00:00",
+  "tag": "v0.6.0-fsr31.1",
+  "sourceCommit": "926579da7d2155dbce7912600d456b1b51c6ca73",
+  "installBase": "https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.6.0-fsr31.1/experimental/",
+  "cdnBundleSHA256": "61803a37cc46f10e3ee353095123a48a4cfe25c4be5ca5c8d9c6f5e908ffee1e",
+  "installedHeading": "PolyShade 0.6.0-fsr31.1",
+  "browser": "Existing user Edge profile, new PML tab; other tabs retained",
+  "modeChecks": [
+    "Native",
+    "SGSR2 Compute 50%",
+    "FSR 3.1 SR 50%"
+  ],
+  "polyShadeRendererErrors": [],
+  "retainedSettings": {
+    "preset": "Golden Hour Capture",
+    "upscaling": "Native",
+    "renderScalePreset": "Performance / 50%",
+    "projectionJitter": true,
+    "debugView": "final",
+    "frameGeneration": false
+  },
+  "remainingLoadedMods": [
+    "PML Core 1.3.8",
+    "PolyBot Bridge 0.1.51",
+    "PolyCam 0.1.13"
+  ],
+  "finalState": "Main menu, panels collapsed, no active run/swarm",
+  "screenshot": "installed.jpg",
+  "screenshotSHA256": "d4172f3b96729cb5cec58b578cd1f5a1d5eb1d39529113a95571e8175ba7ecf8"
+}

@@ -456,3 +456,23 @@ optional and unchanged. Neither source edits nor the FG presenter introduce
 physics/training imports, simulation ticks, input polling or replay-clock writes.
 The test harness has no trainer or live bridge connection. Native gameplay
 continues to own simulation; presentation consumes its rendered state only.
+
+## Publication and installation
+
+Published tag **`v0.6.0-fsr31.1`** on `experiment/fsr31-webgpu`:
+[versioned PML install URL](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.6.0-fsr31.1/experimental/).
+The CDN bundle's SHA-256 matches the qualified artifact exactly.
+
+Updated the existing preview through the normal PML manager in the user's Edge
+profile. The heading reads **PolyShade 0.6.0-fsr31.1**; PolyBot Bridge 0.1.51,
+PolyCam 0.1.13 and PML Core 1.3.8 remain loaded. Both SGSR2 and FSR activated on
+Simple Track, including a short manual acceleration/reset check, with no
+PolyShade renderer errors. This UI check supplements the isolated headed
+qualification; it is not another FPS benchmark or an assertion that residual
+thin-feature shimmer is universally absent.
+
+Restored Native, Golden Hour Capture, projection jitter enabled, Final views
+and FG off. PML is left on its main menu with panels collapsed; no run or swarm
+is active. Test browser profiles were closed. Other user tabs were preserved.
+
+![Installed preview and retained settings](verification/jitter/installed.jpg)
