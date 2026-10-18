@@ -1,20 +1,24 @@
-# PolyShade 0.5.5
+# PolyShade 0.5.6
 
 A graphics mod for **PolyTrack 0.6.3**, loaded through PolyModLoader. Warm directional sunlight, cool shaded faces, glossy car paint and broad soft clouds give the low-poly world a cinematic racing-game look.
 
 ## Install
 
-Install [PolyModLoader](https://polymodloader.com/), then paste this **0.5.5 install link** into its mod manager:
+Install [PolyModLoader](https://polymodloader.com/), then paste this **0.5.6 install link** into its mod manager:
 
 ```text
 https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/
 ```
 
-[Install PolyShade 0.5.5](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/) · [Pinned 0.5.5](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.5.5/)
+[Install PolyShade 0.5.6](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/) · [Pinned 0.5.6](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.5.6/)
 
-Select **0.5.5 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.5.5**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
+Select **0.5.6 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.5.6**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
 
-PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.5.5/version.json` and `0.5.5/main.mod.js`; historical bundles are preserved.
+PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.5.6/version.json` and `0.5.6/main.mod.js`; historical bundles are preserved.
+
+## What's changed in 0.5.6
+
+This is a stability rollback to the 0.5.4 renderer after reports of severe input lag and frame drops on 0.5.5, including below 1080p. It removes the 0.5.5 ray-target and SGSR2 changes while retaining the prior 0.5.4 renderer. Please report whether this restores normal gameplay before performance work resumes.
 
 ## What's changed in 0.5.5
 

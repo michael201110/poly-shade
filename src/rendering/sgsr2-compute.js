@@ -10,12 +10,12 @@ export class SGSR2Compute {
     this.resources = resources;
     this.ping = 0;
     this.dispatches = 0;
-    this.params = new ArrayBuffer(96);
+    this.params = new ArrayBuffer(80);
     this.floats = new Float32Array(this.params);
     this.uints = new Uint32Array(this.params);
     this.uniform = device.createBuffer({
       label: "SGSR2 parameters",
-      size: 96,
+      size: 80,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
     this.sampler = device.createSampler({
@@ -107,8 +107,6 @@ export class SGSR2Compute {
       13,
     );
     this.floats.set(temporal.jitterUV.toArray(), 16);
-    const upscaleRatio = (ow / w) * (oh / h);
-    this.floats[20] = Math.min(20, upscaleRatio * upscaleRatio * upscaleRatio);
     this.device.queue.writeBuffer(this.uniform, 0, this.params);
     const textures = [color,depth,velocity,geometry,converted,packed,rejection,
       histories[0],histories[1],output];
