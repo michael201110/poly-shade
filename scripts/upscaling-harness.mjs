@@ -9,8 +9,15 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
     headless: process.env.POLYSHADE_HEADED !== "1",
     args: ["--force_high_performance_gpu"],
   });
+  const viewport = process.env.POLYSHADE_VIEWPORT?.match(/^(\d+)x(\d+)$/);
   const page = await browser.newPage({
-    viewport: { width: 1280, height: 720 },
+    // Keep CSS pixels, canvas backing pixels and reported output dimensions
+    // identical. In particular this lets the offline GPU harness exercise a
+    // real 3840x2160 render target without changing output resolution later.
+    viewport: viewport
+      ? { width: Number(viewport[1]), height: Number(viewport[2]) }
+      : { width: 1280, height: 720 },
+    deviceScaleFactor: 1,
   });
   const errors = [];
   // Keep public, version-pinned game assets identical across fresh profiles.
@@ -84,6 +91,34 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
       await route.fulfill({ status: 404, body: "" });
     }
   });
+  // Optional local PolyBot injection for renderer-only swarm benchmarks. The
+  // normal PolyShade harness and standalone use remain unchanged.
+  if (process.env.POLYBOT_ROOT) {
+    const { resolve, sep } = await import("node:path");
+    const root = resolve(process.env.POLYBOT_ROOT, "pml-mod");
+    await page.route("https://polybot.test/**", async (route) => {
+      const relative = new URL(route.request().url()).pathname
+        .replace(/^\/+/, "")
+        .replaceAll("/", sep);
+      const file = resolve(root, relative);
+      if (file !== root && !file.startsWith(root + sep))
+        return route.fulfill({ status: 404, body: "" });
+      try {
+        const body = await readFile(file);
+        await route.fulfill({
+          body,
+          contentType: file.endsWith(".json")
+            ? "application/json"
+            : file.endsWith(".html")
+              ? "text/html"
+              : "application/javascript",
+          headers: { "access-control-allow-origin": "*" },
+        });
+      } catch {
+        await route.fulfill({ status: 404, body: "" });
+      }
+    });
+  }
   await page.route("https://vps.kodub.com/**", async (route) => {
     const request = route.request();
     let response;
@@ -116,7 +151,7 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
       },
     });
   });
-  await page.addInitScript((backend) => {
+  await page.addInitScript(({ backend, polybotBase }) => {
     // Test-only freeze: stop simulation callbacks, then render the captured
     // scene through the real hooked renderer on the original browser RAF.
     window.__testRAF = window.requestAnimationFrame.bind(window);
@@ -141,10 +176,13 @@ export async function openUpscalingHarness({ backend = "webgpu", reference = fal
     localStorage.setItem(
       "polyMods",
       JSON.stringify([
+        ...(polybotBase
+          ? [{ base: polybotBase, version: "0.1.51", loaded: true }]
+          : []),
         { base: "https://polyshade.test", version: "latest", loaded: true },
       ]),
     );
-  }, backend);
+  }, { backend, polybotBase: process.env.POLYBOT_ROOT ? "https://polybot.test" : null });
   try {
     await page.goto(
       "https://cdn.polymodloader.com/cb/PolyTrackMods/PolyModLoader/0.6.3/index.html",

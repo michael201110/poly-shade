@@ -6,6 +6,9 @@ export class GPUProfiler {
     this.supported = device.features.has("timestamp-query");
     this.samples = new Map();
     this.frame = 0;
+    // Keep normal diagnostics sparse. Dedicated benchmarks can set this to 1
+    // for a full per-frame distribution; query consumption remains async.
+    this.sampleInterval = 12;
     this.slots = [];
     if (this.supported)
       for (let i = 0; i < 3; i++)
@@ -24,7 +27,7 @@ export class GPUProfiler {
   }
   begin(enabled) {
     this.current = null;
-    if (!enabled || !this.supported || ++this.frame % 12 !== 0) return;
+    if (!enabled || !this.supported || ++this.frame % this.sampleInterval !== 0) return;
     const slot = this.slots.find((s) => !s.busy);
     if (slot) {
       slot.names = [];

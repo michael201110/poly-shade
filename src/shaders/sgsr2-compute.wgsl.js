@@ -81,13 +81,41 @@ export const SGSR2_UPSCALE_WGSL =
 @group(0) @binding(5) var output:texture_storage_2d<rgba16float,write>;
 @group(0) @binding(6) var historyOut:texture_storage_2d<rgba16float,write>;
 @group(0) @binding(7) var linearSampler:sampler;
+// Neighboring output pixels repeatedly decode the same 3x3 source footprint.
+// At every supported upscale ratio, an 8x8 output tile plus that footprint is
+// at most 10x10 source texels. Decode each packed texel once per workgroup and
+// reuse it. The source coordinates, filtering weights and accumulation order
+// below remain unchanged.
+var<workgroup> sourceTile:array<vec3f,100>;
+var<workgroup> sourceOrigin:vec2i;
+var<workgroup> sourceExtent:vec2u;
 fn decode(c:vec2i)->vec3f{
  let v=textureLoad(ycocg,clamp(c,vec2i(0),vec2i(p.renderSize)-1),0).x;
  return vec3f(f32(v>>21u)/2047.5,f32(v&(2047u<<10u))*4.76953602e-7-0.5,f32(v&1023u)/1023.5-0.5);
 }
+fn decodeCached(c:vec2i)->vec3f{
+ let at=clamp(c,vec2i(0),vec2i(p.renderSize)-1)-sourceOrigin;
+ return sourceTile[u32(at.y)*sourceExtent.x+u32(at.x)];
+}
 fn lanczos(base:f32)->f32{let y=base-1.0;let y2=y*y;return (0.75*y+y2)*y2;}
 @compute @workgroup_size(8,8,1)
-fn main(@builtin(global_invocation_id) id:vec3u){
+fn main(@builtin(global_invocation_id) id:vec3u,@builtin(local_invocation_id) local:vec3u,@builtin(workgroup_id) group:vec3u){
+ let first=group.xy*8u;let last=min(first+vec2u(7),p.displaySize-1u);
+ let firstHR=(vec2f(first)+0.5)*p.displayRcp;let lastHR=(vec2f(last)+0.5)*p.displayRcp;
+ let firstJUV=clamp(firstHR+p.jitter*p.renderRcp,vec2f(0),vec2f(1));
+ let lastJUV=clamp(lastHR+p.jitter*p.renderRcp,vec2f(0),vec2f(1));
+ if(local.x==0u&&local.y==0u){
+   let firstAt=vec2i(firstJUV*vec2f(p.renderSize));let lastAt=vec2i(lastJUV*vec2f(p.renderSize));
+   sourceOrigin=firstAt-vec2i(1);sourceExtent=vec2u(lastAt-firstAt+vec2i(3));
+ }
+ workgroupBarrier();
+ let linear=local.y*8u+local.x;let tileCount=sourceExtent.x*sourceExtent.y;
+ for(var i=linear;i<tileCount;i+=64u){
+   let x=i%sourceExtent.x;let y=i/sourceExtent.x;
+   let at=clamp(sourceOrigin+vec2i(i32(x),i32(y)),vec2i(0),vec2i(p.renderSize)-1);
+   sourceTile[i]=decode(at);
+ }
+ workgroupBarrier();
  if(any(id.xy>=p.displaySize)){return;}
  let hr=(vec2f(id.xy)+0.5)*p.displayRcp;
  let juv=clamp(hr+p.jitter*p.renderRcp,vec2f(0),vec2f(1));
@@ -112,7 +140,7 @@ fn main(@builtin(global_invocation_id) id:vec3u){
  var lo=vec3f(1.0e10);var hi=vec3f(-1.0e10);
  let count=select(5u,9u,p.still!=0u);
  for(var i=0u;i<count;i++){
-   let sample=decode(at+offsets[i]);let offset=src+vec2f(offsets[i]);let radius=dot(offset,offset);
+   let sample=decodeCached(at+offsets[i]);let offset=src+vec2f(offsets[i]);let radius=dot(offset,offset);
    let weight=lanczos(clamp(radius*kernel*kernel,0.0,1.0));
    sum+=vec4f(sample*weight,weight);
    let bw=exp(radius*curve);center+=sample*bw;variance+=sample*sample*bw;boxWeight+=bw;

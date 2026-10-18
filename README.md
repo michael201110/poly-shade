@@ -1,20 +1,24 @@
-# PolyShade 0.5.3
+# PolyShade 0.5.4
 
 A graphics mod for **PolyTrack 0.6.3**, loaded through PolyModLoader. Warm directional sunlight, cool shaded faces, glossy car paint and broad soft clouds give the low-poly world a cinematic racing-game look.
 
 ## Install
 
-Install [PolyModLoader](https://polymodloader.com/), then paste this **0.5.3 install link** into its mod manager:
+Install [PolyModLoader](https://polymodloader.com/), then paste this **0.5.4 install link** into its mod manager:
 
 ```text
 https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/
 ```
 
-[Install PolyShade 0.5.3](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/) · [Pinned 0.5.3](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.5.3/)
+[Install PolyShade 0.5.4](https://cdn.polymodloader.com/gh/michael201110/poly-shade/main/) · [Pinned 0.5.4](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.5.4/)
 
-Select **0.5.3 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.5.3**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
+Select **0.5.4 / latest**, move the mod to Loaded, and reload the game. The panel heading should say **PolyShade 0.5.4**. Remove duplicate old PolyShade entries. Saved settings stay in effect; choosing a preset resets its explicit overrides.
 
-PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.5.3/version.json` and `0.5.3/main.mod.js`; historical bundles are preserved.
+PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.5.4/version.json` and `0.5.4/main.mod.js`; historical bundles are preserved.
+
+## What's changed in 0.5.4
+
+SGSR2 Compute now reuses decoded source texels within each 8×8 workgroup while preserving its filter taps and temporal behavior. On the NVIDIA T500 this reduces the 4K upscale pass by about 7–8% at 50–67% scales. Golden Hour effects, output resolution, swarm batching, and the 0.5.3 release bundle remain unchanged. See the [4K measurements and visual checks](docs/0.5.4-4k-performance.md).
 
 ## What's changed in 0.5.3
 
