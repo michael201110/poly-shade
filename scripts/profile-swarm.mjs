@@ -6,6 +6,8 @@ import { openUpscalingHarness } from "./upscaling-harness.mjs";
 
 const count = Number(process.env.POLYBOT_COUNT ?? 1);
 const scale = Number(process.env.POLYSHADE_SCALE ?? 0.5);
+const frameGeneration=process.env.POLYSHADE_FRAME_GENERATION==='1';
+const mode=process.env.POLYSHADE_TEMPORAL_MODE??'sgsr2-compute';
 const sampleMs = Number(process.env.POLYSHADE_PROFILE_MS ?? 12000);
 const captureSeconds = Number(process.env.POLYSHADE_CAPTURE_REPLAY_SECONDS ?? 2);
 const file = process.env.POLYBOT_SWARM_FILE ?? `${process.env.TEMP}/polyshade-perf/swarm-${count}.jsonl`;
@@ -17,7 +19,7 @@ assert.ok(process.env.POLYBOT_ROOT, "POLYBOT_ROOT must point to the local PolyBo
 await mkdir(output, { recursive: true });
 const lines = (await readFile(file, "utf8")).trim().split(/\r?\n/);
 const commands = lines.map((line) => JSON.parse(line));
-const report = { label, date: new Date().toISOString(), count, scale, file, commands: commands.length };
+const report = { label, date: new Date().toISOString(), count, scale, mode, frameGeneration, file, commands: commands.length };
 const hardware = () => {
   try {
     return execFileSync("nvidia-smi", ["--query-gpu=name,driver_version,temperature.gpu,utilization.gpu,memory.used,clocks.gr", "--format=csv"], { encoding: "utf8" }).trim();
@@ -63,13 +65,14 @@ try {
     const failed = replies.find((reply) => !reply.ok);
     if (failed) throw new Error(failed.error);
   }
-  await page.evaluate((renderScale) => {
+  await page.evaluate(({renderScale,frameGeneration,mode}) => {
     const c = window.__controller;
     const s = c.getSettings();
     s.preset = "cinematic";
-    s.overrides = { ...(s.overrides ?? {}), upscaling: renderScale === 1 ? "native" : "sgsr2-compute", upscaleQuality: "custom", upscaleCustomScale: renderScale, debugProfile: true };
+    s.overrides = { ...(s.overrides ?? {}), upscaling: renderScale === 1 ? "native" : mode, upscaleQuality: "custom", upscaleCustomScale: renderScale, debugProfile: true,frameGeneration };
     c.notifySettingsChanged();
-  }, scale);
+  }, {renderScale:scale,frameGeneration,mode});
+  if(frameGeneration)await page.waitForFunction(()=>{const g=window.__controller.backends.gpu;if(g.fgFailure)throw Error(g.fgFailure);return g.fg?.ready;},null,{timeout:90000});
   await page.waitForTimeout(2500);
   const loaded = await page.evaluate(() => new Promise((resolve) =>
     window.__polybotVisualReplayDispatch({ op: "status", params: {} }, resolve)));
@@ -200,12 +203,17 @@ try {
   report.final = final;
   report.shadowCascades = final.shadows;
   report.hardwareAfter = hardware();
+  errors.push(...harness.errors.filter(e=>!errors.includes(e)));
   report.errors = errors;
-  assert.equal(final.gpu.selection.backend, scale === 1 ? "native" : "sgsr2-compute", "requested reconstruction mode must be active");
+  await writeFile(`${output}/report.json`, JSON.stringify(report, null, 2));
+  assert.equal(final.gpu.selection.backend, scale === 1 ? "native" : mode, "requested reconstruction mode must be active");
+  assert.equal(final.gpu.frameGenerationFailure,undefined);
+  assert.equal(final.gpu.temporal.frameIndex,final.gpu.frames,'swarm/FG presentation must not consume extra temporal samples');
+  assert.ok(final.gpu.presentation.pending<=1);
   assert.equal(final.cars.sources, 1, "swarm must use one shared renderer source");
+  assert.ok(final.cars.colourDraws>0&&final.cars.triangles>0,'swarm geometry must actually be submitted');
   assert.ok(final.cars.colourDraws <= 32, "swarm material groups must remain within the interop limit");
   assert.equal(errors.length, 0, "no browser or shader errors");
-  await writeFile(`${output}/report.json`, JSON.stringify(report, null, 2));
   console.log(JSON.stringify({ output, count, scale, frames, swarm: final.cars, gpu: final.gpu.profile, errors }, null, 2));
 } finally {
   if (browser) await browser.close();

@@ -1,0 +1,143 @@
+{
+  "date": "2026-10-18T23:28:31.052Z",
+  "bundle": "experimental/0.6.0-fsr31.1/main.mod.js",
+  "sha256": "61803a37cc46f10e3ee353095123a48a4cfe25c4be5ca5c8d9c6f5e908ffee1e",
+  "note": "Reference checks deliberately exercise their archived renderer versions; other checks use the candidate bundle. Fresh test browsers run serially.",
+  "results": [
+    {
+      "name": "unit",
+      "args": [
+        "--test"
+      ],
+      "exitCode": 0,
+      "durationMs": 4335,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fsr-stack-verification/unit.log"
+    },
+    {
+      "name": "fg-synthetic",
+      "args": [
+        "scripts/verify-framegen.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 6068,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fsr-stack-verification/fg-synthetic.log"
+    },
+    {
+      "name": "fg-live",
+      "args": [
+        "scripts/verify-framegen-live.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 34772,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fsr-stack-verification/fg-live.log"
+    },
+    {
+      "name": "fsr-synthetic",
+      "args": [
+        "scripts/verify-fsr.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 6034,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fsr-stack-verification/fsr-synthetic.log"
+    },
+    {
+      "name": "fsr-mask",
+      "args": [
+        "scripts/verify-fsr-mask.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 11016,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fsr-stack-verification/fsr-mask.log"
+    },
+    {
+      "name": "fsr-live",
+      "args": [
+        "scripts/verify-fsr-live.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 48623,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fsr-stack-verification/fsr-live.log"
+    },
+    {
+      "name": "fsr-visual",
+      "args": [
+        "scripts/fsr/compare-modes.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 16854,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fsr-stack-verification/fsr-visual.log"
+    },
+    {
+      "name": "compute",
+      "args": [
+        "scripts/verify-compute-kernel.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 2167,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fsr-stack-verification/compute.log"
+    },
+    {
+      "name": "webgpu",
+      "args": [
+        "scripts/verify-webgpu.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 57903,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fsr-stack-verification/webgpu.log"
+    },
+    {
+      "name": "visual",
+      "args": [
+        "scripts/verify-visual-match.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 34656,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fsr-stack-verification/visual.log"
+    },
+    {
+      "name": "upscaling",
+      "args": [
+        "scripts/benchmark-upscaling.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 87522,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fsr-stack-verification/upscaling.log"
+    },
+    {
+      "name": "4k",
+      "args": [
+        "scripts/verify-4k.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 89940,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fsr-stack-verification/4k.log"
+    },
+    {
+      "name": "reference-temporal",
+      "args": [
+        "scripts/verify-temporal-inputs.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 7699,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fsr-stack-verification/reference-temporal.log"
+    },
+    {
+      "name": "reference-live",
+      "args": [
+        "scripts/verify-live.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 78115,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fsr-stack-verification/reference-live.log"
+    },
+    {
+      "name": "reference-replay",
+      "args": [
+        "scripts/verify-replay.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 27511,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fsr-stack-verification/reference-replay.log"
+    }
+  ]
+}

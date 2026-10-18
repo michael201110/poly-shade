@@ -98,9 +98,9 @@ try {
     const path = new URL(route.request().url()).pathname.slice(1);
     try {
       let body = (await readFile(path, "utf8")).replace(/wantsGPU\(\w+\) \{/, match => match + " return false;");
-      if (path === "manifest.json" && process.env.POLYSHADE_RELEASE) {
+      if (path === "manifest.json") {
         const manifest = JSON.parse(body);
-        manifest.latest["0.6.3"] = process.env.POLYSHADE_RELEASE;
+        manifest.latest["0.6.3"] = report.environment.release;
         body = JSON.stringify(manifest);
       }
       if (path.endsWith(".js"))

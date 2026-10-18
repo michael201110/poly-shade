@@ -1,6 +1,6 @@
 {
   "name": "poly-shade",
-  "version": "0.6.0-fsr31.0",
+  "version": "0.6.0-fsr31.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,6 +8,7 @@
     "test": "node --test",
     "check": "npm run build && npm test",
     "verify:temporal": "npm run verify:webgpu",
+    "verify:jitter": "npm run build && node scripts/verify-jitter.mjs",
     "verify:upscaling": "npm run build && node scripts/benchmark-upscaling.mjs",
     "verify:webgpu": "npm run build && node scripts/verify-compute-kernel.mjs && node scripts/verify-webgpu.mjs",
     "verify:reference:live": "npm run build && node scripts/verify-live.mjs",
@@ -19,7 +20,9 @@
     "verify:fsr": "node scripts/verify-fsr.mjs",
     "verify:fsr:live": "node scripts/verify-fsr-live.mjs",
     "verify:fsr:visual": "node scripts/fsr/compare-modes.mjs",
-    "compile:fsr": "node scripts/fsr/compile.mjs"
+    "compile:fsr": "node scripts/fsr/compile.mjs",
+    "compile:framegen": "node scripts/fg/compile.mjs",
+    "verify:framegen": "node scripts/verify-framegen.mjs && node scripts/verify-framegen-live.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",

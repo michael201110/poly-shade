@@ -64,6 +64,7 @@ export class TemporalState {
     this.valid = false;
     this.ready = false;
     this.sequence = 0;
+    this.frameIndex = 0;
     this.resets = 0;
     this.pending = "first frame";
     this.lastReset = "first frame";
@@ -107,9 +108,12 @@ export class TemporalState {
     this.at = now;
     this.width = width; this.height = height;
     this.outputWidth = outputWidth; this.outputHeight = outputHeight;
-    // FSR/SGSR-style phase count grows with the area reconstruction ratio.
-    this.phaseCount = Math.ceil(8 * (outputWidth / width) ** 2);
+    // AMD ffxFsr3UpscalerGetJitterPhaseCount truncates the positive result.
+    // Keep SGSR's existing schedule independent of AMD's host contract.
+    const phases = 8 * (outputWidth / width) ** 2;
+    this.phaseCount = Math.max(1, settings.backend === 'fsr31' ? Math.floor(phases) : Math.ceil(phases));
     const index = this.sequence % this.phaseCount + 1;
+    this.jitterIndex = index;
     this.jitter.set(settings.upscaleJitter === false ? 0 : halton(index, 2) - 0.5,
       settings.upscaleJitter === false ? 0 : halton(index, 3) - 0.5);
     // Geometry moves +jitter pixels. The reference samples colour at UV+jitter/size.
@@ -151,10 +155,18 @@ export class TemporalState {
     this.previousProjection.copy(this.projection);
     this.ready = true;
     this.sequence++;
+    this.frameIndex++;
   }
   report() {
+    const current=this.jitter.toArray(), previous=this.renderedPreviousJitter.toArray();
+    const uv=v=>[v[0]/this.width,v[1]/this.height];
+    const ndc=v=>[2*v[0]/this.width,-2*v[1]/this.height];
     return { valid: this.valid, resets: this.resets, lastReset: this.lastReset,
+      frameIndex:this.frameIndex,jitterIndex:this.jitterIndex,
+      renderSize:[this.width,this.height],outputSize:[this.outputWidth,this.outputHeight],
       phase: this.sequence, phaseCount: this.phaseCount,
-      jitter: this.jitter.toArray(), previousJitter: this.renderedPreviousJitter.toArray(), deltaMs: this.deltaMs };
+      jitter:current,previousJitter:previous,jitterUV:uv(current),previousJitterUV:uv(previous),
+      jitterNDC:ndc(current),previousJitterNDC:ndc(previous),
+      jitterDelta:current.map((v,i)=>v-previous[i]),deltaMs:this.deltaMs };
   }
 }

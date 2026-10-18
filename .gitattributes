@@ -3,3 +3,7 @@
 
 # Preserve the exact pinned upstream bytes and their SHA-256 inventory.
 vendor/fidelityfx/** -text
+
+# Retain compiler-generated shader strings and the qualified bundle byte-for-byte.
+src/rendering/framegen/generated/** whitespace=-blank-at-eol
+experimental/0.6.0-fsr31.1/main.mod.js -whitespace

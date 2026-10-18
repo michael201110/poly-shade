@@ -399,7 +399,14 @@ export function mountPanel(document, callbacks, initialSettings) {
       if(backend?.renderer==='WebGPU') {
         const g=backend.webgpu;
         upscaleStatus.textContent=`WebGPU | requested ${g.selection?.requested} | active ${g.selection?.backend} | internal ${g.internal?.join(' × ')} → output ${g.output?.join(' × ')} | history ${g.temporal?.valid?'valid':'reset'}`;
+        if(g.presentation?.enabled||g.frameGenerationFailure)upscaleStatus.textContent+=g.frameGenerationFailure?
+          ` | FG unavailable: ${g.frameGenerationFailure}`:
+          ` | FG ${g.presentation.active?'active':'paused: real FPS too low'} | real ${g.presentation.realFPS?.toFixed(1)??'—'} FPS | canvas ${g.presentation.submittedPresentationFPS?.toFixed(1)??'—'} FPS`;
         if(!metrics.hidden)metrics.textContent=[upscaleStatus.textContent,
+          `Jitter: ${g.temporal?.jitterIndex}/${g.temporal?.phaseCount}; real frame ${g.temporal?.frameIndex}`,
+          `Render pixels current / previous / delta: ${JSON.stringify([g.temporal?.jitter,g.temporal?.previousJitter,g.temporal?.jitterDelta])}`,
+          `UV current / previous: ${JSON.stringify([g.temporal?.jitterUV,g.temporal?.previousJitterUV])}`,
+          `NDC current / previous: ${JSON.stringify([g.temporal?.jitterNDC,g.temporal?.previousJitterNDC])}`,
           `CPU render submission avg / p95: ${data.averageFrameTime.toFixed(2)} / ${data.p95FrameTime.toFixed(2)} ms`,
           `History: ${JSON.stringify(g.temporal)}`,`Compute: ${JSON.stringify(g.compute)}`,
           `GPU timings (ms, median/p95): ${JSON.stringify(g.profile)}`,

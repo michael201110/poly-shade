@@ -1,7 +1,7 @@
 // Real headed Edge, trusted keyboard input, and ordinary game simulation.
 // No replaced RAF, fixed camera, PolyBot replay, or renderer settings in this
 // diagnostic are installed into the shipped mod.
-import { openUpscalingHarness } from './upscaling-harness.mjs';
+import { openUpscalingHarness, currentBundlePath } from './upscaling-harness.mjs';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -20,14 +20,19 @@ const profiling = process.env.POLYSHADE_TIMESTAMPS !== '0';
 const queueProbe = process.env.POLYSHADE_QUEUE_PROBE !== '0';
 const frameLimit = Number(process.env.POLYSHADE_FRAME_LIMIT ?? 0);
 const temporalMode = process.env.POLYSHADE_TEMPORAL_MODE ?? 'sgsr2-compute';
-const bundle = process.env.POLYSHADE_BUNDLE ?? `${JSON.parse(await readFile('package.json')).version}/main.mod.js`;
+const temporalAt100=process.env.POLYSHADE_TEMPORAL_AT_100==='1';
+const motionBlurOverride=process.env.POLYSHADE_PROFILE_MOTION_BLUR==='0'?false:null;
+const frameGeneration=process.env.POLYSHADE_FRAME_GENERATION==='1';
+const frameGenerationPacing=process.env.POLYSHADE_FG_PACING??'smooth';
+const forceFG=frameGeneration&&process.env.POLYSHADE_FG_FORCE==='1';
+const bundle = process.env.POLYSHADE_BUNDLE ?? await currentBundlePath();
 await mkdir(output, { recursive: true });
 const hardware = () => {
   try { return execFileSync('nvidia-smi', ['--query-gpu=name,temperature.gpu,utilization.gpu,memory.used,clocks.gr,clocks.mem,pstate,clocks_event_reasons.sw_power_cap', '--format=csv,noheader'], { encoding:'utf8' }).trim(); }
   catch { return null; }
 };
 const report = { label, date:new Date().toISOString(), bundle, noMod, hotDisable, headed:process.env.POLYSHADE_HEADED === '1',
-  sha256:createHash('sha256').update(await readFile(bundle)).digest('hex'), profiling, queueProbe, frameLimit,
+  sha256:createHash('sha256').update(await readFile(bundle)).digest('hex'), profiling, queueProbe, frameLimit,frameGeneration,forceFG,
   method:'Ordinary Summer 1 simulation; trusted keyboard acceleration and alternating left/right steering; no fixed-camera RAF loop. Input-to-render is an event delivery/next render proxy, NOT input-to-photon or a subjective feel measurement. Queue completion is asynchronous diagnostic-only and never awaited by rendering.',
   ram:{total:totalmem(),free:freemem()}, hardwareBefore:hardware(), cases:[] };
 const { browser, page, errors } = await openUpscalingHarness({ freezeSupport:false, polyshade:!noMod });
@@ -36,8 +41,8 @@ const cdp = await page.context().newCDPSession(page);
 await cdp.send('Performance.enable');
 try {
   if(hotDisable)await page.keyboard.press('Home');
-  await page.evaluate(({queueProbe,frameLimit}) => {
-    const d = window.__gameplay = { active:false, times:{}, frames:[], rendered:[], input:[], longTasks:[], queue:[], queuePending:0, queuePeak:0, allocations:{}, originals:[] };
+  await page.evaluate(({queueProbe,frameLimit,profiling}) => {
+    const d = window.__gameplay = { active:false, times:{}, frames:[], rendered:[], presented:[],input:[], longTasks:[], queue:[], queuePending:0, queuePeak:0, allocations:{}, originals:[] };
     const tick = t => { if(d.active && d.lastRAF) d.frames.push(t-d.lastRAF); d.lastRAF=t; requestAnimationFrame(tick); };
     requestAnimationFrame(tick);
     try { new PerformanceObserver(list => { if(d.active) for(const e of list.getEntries()) d.longTasks.push(e.duration); }).observe({type:'longtask',buffered:false}); } catch {}
@@ -50,6 +55,7 @@ try {
       const original=o[key]; d.originals.push([o,key,original]);let nesting=0;
       o[key]=function(...args){
         const start=performance.now(),outer=nesting++===0,beforeFrame=frame?this.frames:0;
+        if(frame)d.currentFGJob=null;
         try{return original.apply(this,args);}finally{
           nesting--;const end=performance.now(),rendered=frame&&this.frames>beforeFrame;
           if(d.active && outer){const values=d.times[name]??=[];values.push(end-start);
@@ -58,12 +64,15 @@ try {
             if(rendered){
               (d.times.submittedRendererCPU??=[]).push(end-start);
               const pendingInputs=d.input.filter(e=>e.submitted===undefined);
-              for(const e of pendingInputs){e.renderStart=start;e.submitted=end;}
+              for(const e of pendingInputs){e.renderStart=start;e.submitted=end;
+                const deferred=d.currentFGJob&&this.presenter.pending?.frameIndex===d.currentFGJob.frameIndex;
+                if(!deferred)e.endpointSubmit=end;
+              }
               d.rendered.push(end);
               if(queueProbe && d.queuePending<32){d.queuePending++;d.queuePeak=Math.max(d.queuePeak,d.queuePending);
                 // Diagnostic completion proxy, including queue backlog and JS
                 // callback delivery. It is not a presentation timestamp.
-                void this.device.queue.onSubmittedWorkDone().then(()=>{d.queuePending--;const complete=performance.now();for(const e of pendingInputs)e.queueComplete=complete;if(d.active)d.queue.push(complete-end);});
+                void this.device.queue.onSubmittedWorkDone().then(()=>{d.queuePending--;const complete=performance.now();for(const e of pendingInputs){e.queueComplete=complete;if(e.endpointSubmit===end)e.endpointComplete=complete;}if(d.active)d.queue.push(complete-end);});
               }
             }
           }
@@ -83,32 +92,69 @@ try {
       return result;
     };}
     wrap(g,'render','rendererCPU',{frame:true});
+    if(g.presenter){const present=g.presenter.presented;g.presenter.presented=function(kind,now){
+      if(d.active)d.presented.push({kind,at:performance.now()});return present.call(this,kind,now);
+    };}
+    if(g.fg){
+      const generate=g.fg.generate,byTexture=new WeakMap();
+      g.fg.generate=function(...args){const inputs=d.input.filter(e=>e.submitted===undefined),result=generate.apply(this,args);
+        byTexture.set(result.real.texture,inputs);d.currentFGJob=result;return result;};
+      const queued=g.presentQueued;g.presentQueued=function(now,generated,...args){
+        const inputs=!generated&&this.presenter.pending?byTexture.get(this.presenter.pending.inputs.color.texture):null;
+        const result=queued.call(this,now,generated,...args);
+        if(result&&inputs&&d.active){const at=performance.now();for(const e of inputs)e.endpointSubmit=at;
+          if(queueProbe)void this.device.queue.onSubmittedWorkDone().then(()=>{const at=performance.now();for(const e of inputs)e.endpointComplete=at;});
+        }return result;
+      };
+    }
+    wrap(g.fg,'generate','framegenCPU');
     for(const [o,k,n] of [[g.scene,'sync','sceneSync'],[g.shadows,'prepare','shadowCPU'],[g.renderer,'render','threeCPU'],[g.passes,'draw','postCPU'],[g.compute,'reconstruct','sgsrCPU'],[g.motion,'render','velocityCPU'],[g.device.queue,'submit','submitCPU'],[g.device.queue,'writeBuffer','uploads'],[g.renderer.backend.getContext(),'getCurrentTexture','swapAcquireCPU'],[g,'updateParameters','uniformCPU'],[g.temporal,'begin','temporalCPU'],[g.nativeCanvas,'getBoundingClientRect','layoutCPU'],[GPUCommandEncoder.prototype,'finish','finishCPU']])wrap(o,k,n);
+    // Presentation is a separate submission in FG modes. Time it independently
+    // rather than mixing short display passes into the real-render distribution.
+    const display=g.__presentationProfiler=new g.profiler.constructor(g.device);display.sampleInterval=1;
+    const draw=g.passes.draw;g.passes.draw=function(encoder,name,target,inputs,profiler,...args){
+      if(name!=='finish'||profiler||!profiling)return draw.call(this,encoder,name,target,inputs,profiler,...args);
+      display.begin(true);draw.call(this,encoder,name,target,inputs,display,...args);
+      const slot=display.end(encoder);queueMicrotask(()=>display.submitted(slot));
+    };
     for(const [o,k] of [[g.device,'createBindGroup'],[g.device,'createTexture'],[g.device,'createBuffer'],[g.device,'createRenderPipeline'],[g.device,'createRenderPipelineAsync'],[g.device,'createComputePipelineAsync'],[g.device,'createShaderModule']])wrap(o,k,k,{resource:true});
     g.profiler.sampleInterval=1;
     };
     d.instrumentGpu(c?.backends?.gpu);
-  },{queueProbe,frameLimit});
+  },{queueProbe,frameLimit,profiling});
 
   for(const resolution of resolutions) {
     const [width,height] = resolution.split('x').map(Number);
     await page.setViewportSize({width,height});
     for(const scale of noMod || hotDisable ? [1] : scales) {
-      const name = `${resolution}-${noMod?'game-only':hotDisable?'hot-disabled':scale===1?'native':`${temporalMode==='fsr31'?'fsr':'sgsr'}${Math.round(scale*100)}`}`;
+      const native=scale===1&&!temporalAt100;
+      const name = `${resolution}-${noMod?'game-only':hotDisable?'hot-disabled':native?'native':`${temporalMode==='fsr31'?'fsr':'sgsr'}${Math.round(scale*100)}`}${frameGeneration?'-fg':''}`;
       console.log(`${label}: ${name}`);
-      if(!noMod&&!hotDisable) await page.evaluate(({scale,profiling,temporalMode})=>{
-        const c=window.__controller,s=c.getSettings();s.preset='cinematic';s.overrides={upscaling:scale===1?'native':temporalMode,upscaleQuality:'custom',upscaleCustomScale:scale,debugProfile:profiling};c.notifySettingsChanged();
-      },{scale,profiling,temporalMode});
-      if(temporalMode==='fsr31' && scale!==1) await page.waitForFunction(()=>{
+      if(!noMod&&!hotDisable) await page.evaluate(({scale,native,profiling,temporalMode,frameGeneration,frameGenerationPacing,forceFG,motionBlurOverride})=>{
+        // Isolated diagnostic only. Product validation clamps the floor to >=25.
+        const c=window.__controller,s=c.getSettings();s.preset='cinematic';s.overrides={upscaling:native?'native':temporalMode,upscaleQuality:'custom',upscaleCustomScale:scale,debugProfile:profiling,frameGeneration,frameGenerationPacing,fgMinimumFPS:forceFG?1:25,
+          ...(motionBlurOverride===null?{}:{motionBlurEnabled:motionBlurOverride})};c.notifySettingsChanged();
+      },{scale,native,profiling,temporalMode,frameGeneration,frameGenerationPacing,forceFG,motionBlurOverride});
+      if(temporalMode==='fsr31' && !native) await page.waitForFunction(()=>{
         const g=window.__controller?.backends.gpu;
         if(g?.fsrFailure)throw Error(g.fsrFailure);
         return g?.selection?.backend==='fsr31';
       },null,{timeout:90000});
+      if(frameGeneration)await page.waitForFunction(()=>{
+        const g=window.__controller.backends.gpu;if(g.fgFailure)throw Error(g.fgFailure);return g.fg?.ready;
+      },null,{timeout:90000});
+      if(process.env.POLYSHADE_WARM_INPUT==='1') {
+        // Warm the acceleration/brake material variants through real input,
+        // then restart. Otherwise first-touch compilation pollutes the first
+        // measured Native case despite an already-warm stationary renderer.
+        await page.keyboard.press('t');await page.keyboard.down('w');await page.waitForTimeout(500);
+        await page.keyboard.up('w');await page.keyboard.down('s');await page.waitForTimeout(150);await page.keyboard.up('s');
+      }
       await page.keyboard.press('t');
       await page.waitForTimeout(2500);
       await page.evaluate(()=>window.__gameplay.instrumentGpu(window.__controller?.backends?.gpu));
       const before = await cdp.send('Performance.getMetrics');
-      await page.evaluate(()=>{const d=window.__gameplay;d.active=true;d.times={};d.frames=[];d.rendered=[];d.input=[];d.longTasks=[];d.queue=[];d.queuePeak=0;d.allocations={};d.uploadBytes=0;d.start=performance.now();d.cameraStart=window.__controller?.camera?.position.toArray();window.__controller?.backends?.gpu?.profiler.samples.clear();});
+      await page.evaluate(()=>{const d=window.__gameplay;d.active=true;d.times={};d.frames=[];d.rendered=[];d.presented=[];d.input=[];d.longTasks=[];d.queue=[];d.queuePeak=0;d.allocations={};d.uploadBytes=0;d.start=performance.now();d.cameraStart=window.__controller?.camera?.position.toArray();window.__controller?.backends?.gpu?.profiler.samples.clear();window.__controller?.backends?.gpu?.__presentationProfiler?.samples.clear();});
       const hwSamples=[hardware()];
       await page.keyboard.down('w');
       const start=Date.now();
@@ -136,7 +182,12 @@ try {
         }
         const gl=document.querySelector('canvas')?.getContext('webgl2');const ext=gl?.getExtension('WEBGL_debug_renderer_info');
         return{durationMs,frames:stat(d.frames),rafFPS:d.frames.length*1000/d.frames.reduce((a,b)=>a+b,0),effectiveFPS:(g?d.rendered.length:d.frames.length)*1000/durationMs,renderIntervals:stat(d.rendered.slice(1).map((t,i)=>t-d.rendered[i])),renderedFrames:d.rendered.length,cpu:Object.fromEntries(Object.entries(d.times).map(([n,a])=>[n,stat(a)])),
-          input:{events:d.input,trusted:d.input.every(e=>e.trusted),deliveryMs:stat(d.input.map(e=>e.delivered-e.eventTime)),nextRenderMs:stat(d.input.filter(e=>e.renderStart!==undefined).map(e=>e.renderStart-e.delivered)),toSubmitMs:stat(d.input.filter(e=>e.submitted!==undefined).map(e=>e.submitted-e.eventTime)),toCompletionMs:stat(d.input.filter(e=>e.queueComplete!==undefined).map(e=>e.queueComplete-e.eventTime))},
+          input:{events:d.input,trusted:d.input.every(e=>e.trusted),deliveryMs:stat(d.input.map(e=>e.delivered-e.eventTime)),nextRenderMs:stat(d.input.filter(e=>e.renderStart!==undefined).map(e=>e.renderStart-e.delivered)),toSubmitMs:stat(d.input.filter(e=>e.submitted!==undefined).map(e=>e.submitted-e.eventTime)),toCompletionMs:stat(d.input.filter(e=>e.queueComplete!==undefined).map(e=>e.queueComplete-e.eventTime)),
+            toRealEndpointSubmitMs:stat(d.input.filter(e=>e.endpointSubmit!==undefined).map(e=>e.endpointSubmit-e.eventTime)),
+            toRealEndpointCompleteMs:stat(d.input.filter(e=>e.endpointComplete!==undefined).map(e=>e.endpointComplete-e.eventTime))},
+          presentation:{submittedFPS:d.presented.length*1000/durationMs,generated:d.presented.filter(p=>p.kind==='generated').length,
+            real:d.presented.filter(p=>p.kind==='real').length,intervals:stat(d.presented.slice(1).map((p,i)=>p.at-d.presented[i].at)),
+            gpu:g?.__presentationProfiler?.report(),method:'Canvas submissions on ordinary game RAF; not measured physical scan-out'},
           longTasks:stat(d.longTasks),queueCompletionMs:stat(d.queue),queuePeak:d.queuePeak,queuePending:d.queuePending,
           allocations:d.allocations,uploadBytes:d.uploadBytes,heap:performance.memory?{used:performance.memory.usedJSHeapSize,total:performance.memory.totalJSHeapSize,limit:performance.memory.jsHeapSizeLimit}:null,
           cameraStart:d.cameraStart,cameraEnd:c?.camera?.position.toArray(),gpu,resources,attachments,logicalPostTextureBytes:resources?.reduce((s,r)=>s+r.estimatedBytes,0),logicalOwnedTextureBytes:resources?.reduce((s,r)=>s+r.estimatedBytes,attachments.reduce((s,r)=>s+r.estimatedBytes,0)),nativeGL:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):null,
@@ -147,7 +198,7 @@ try {
         assert.deepEqual(result.gpu.output,[width,height]);
         assert.equal(result.gpu.ready,true,'renderer must remain active');
         assert.ok(result.renderedFrames>15,'must measure actual rendered images');
-        assert.equal(result.gpu.selection.backend,scale===1?'native':temporalMode,'requested reconstruction must actually run');
+        assert.equal(result.gpu.selection.backend,native?'native':temporalMode,'requested reconstruction must actually run');
         assert.deepEqual(result.gpu.internal,[Math.round(width*scale),Math.round(height*scale)]);
         assert.ok(result.cameraStart.some((v,i)=>Math.abs(v-result.cameraEnd[i])>.001),'the camera must move during live driving');
       }

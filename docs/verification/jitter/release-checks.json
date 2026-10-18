@@ -1,0 +1,189 @@
+{
+  "date": "2026-10-18T23:36:41.474Z",
+  "bundle": "experimental/0.6.0-fsr31.1/main.mod.js",
+  "sha256": "61803a37cc46f10e3ee353095123a48a4cfe25c4be5ca5c8d9c6f5e908ffee1e",
+  "results": [
+    {
+      "label": "release-swarm-fsr31-1",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 27811,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-swarm-fsr31-1.log"
+    },
+    {
+      "label": "release-swarm-fsr31-100",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 36096,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-swarm-fsr31-100.log"
+    },
+    {
+      "label": "release-swarm-fsr31-500",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 45239,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-swarm-fsr31-500.log"
+    },
+    {
+      "label": "release-swarm-sgsr2-compute-1",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 25910,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-swarm-sgsr2-compute-1.log"
+    },
+    {
+      "label": "release-swarm-sgsr2-compute-100",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 29757,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-swarm-sgsr2-compute-100.log"
+    },
+    {
+      "label": "release-swarm-sgsr2-compute-500",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 46127,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-swarm-sgsr2-compute-500.log"
+    },
+    {
+      "label": "release-swarm-fsr31-1-fg",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 29179,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-swarm-fsr31-1-fg.log"
+    },
+    {
+      "label": "release-swarm-fsr31-100-fg",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 33024,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-swarm-fsr31-100-fg.log"
+    },
+    {
+      "label": "release-swarm-fsr31-500-fg",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 48972,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-swarm-fsr31-500-fg.log"
+    },
+    {
+      "label": "release-swarm-sgsr2-compute-1-fg",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 28741,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-swarm-sgsr2-compute-1-fg.log"
+    },
+    {
+      "label": "release-swarm-sgsr2-compute-100-fg",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 32787,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-swarm-sgsr2-compute-100-fg.log"
+    },
+    {
+      "label": "release-swarm-sgsr2-compute-500-fg",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 48064,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-swarm-sgsr2-compute-500-fg.log"
+    },
+    {
+      "label": "release-stack",
+      "args": [
+        "scripts/verify-fsr-stack.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 513372,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-stack.log"
+    },
+    {
+      "label": "jitter-release-1280x720",
+      "args": [
+        "scripts/verify-jitter.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 56183,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-release-1280x720.log"
+    },
+    {
+      "label": "release-regions",
+      "args": [
+        "scripts/jitter-regions.mjs",
+        "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-release-1280x720"
+      ],
+      "exitCode": 0,
+      "durationMs": 6227,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-regions.log"
+    },
+    {
+      "label": "release-flicker",
+      "args": [
+        "scripts/jitter-flicker.mjs",
+        "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-release-1280x720"
+      ],
+      "exitCode": 0,
+      "durationMs": 8379,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-flicker.log"
+    },
+    {
+      "label": "jitter-release-1920x1080",
+      "args": [
+        "scripts/verify-jitter.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 85241,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-release-1920x1080.log"
+    },
+    {
+      "label": "jitter-release-2560x1440",
+      "args": [
+        "scripts/verify-jitter.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 118013,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-release-2560x1440.log"
+    },
+    {
+      "label": "jitter-release-3840x2160",
+      "args": [
+        "scripts/verify-jitter.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 216177,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-release-3840x2160.log"
+    },
+    {
+      "label": "release-collect",
+      "args": [
+        "scripts/collect-jitter-results.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 180,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-release-collect.log"
+    }
+  ]
+}

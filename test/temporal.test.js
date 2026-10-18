@@ -1,7 +1,45 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import * as THREE from "three";
+import {STATIC_VELOCITY} from '../src/shaders/webgpu-post.wgsl.js';
 import { TemporalState, selectUpscaling } from "../src/rendering/temporal-state.js";
+
+test('jitter diagnostics use render pixels and advance only on real-frame commit',()=>{
+  const t=new TemporalState(THREE),scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera();
+  camera.coordinateSystem=THREE.WebGPUCoordinateSystem;camera.updateProjectionMatrix();
+  for(const backend of ['sgsr2-compute','fsr31']) {
+    const before=t.frameIndex;
+    t.begin(scene,camera,858,482,1280,720,{backend,upscaleJitter:true},100+before*16);
+    const report=t.report();
+    assert.equal(report.jitterIndex,1);
+    assert.equal(report.phaseCount,backend==='fsr31'?17:18);
+    assert.deepEqual(report.renderSize,[858,482]);
+    assert.deepEqual(report.outputSize,[1280,720]);
+    assert.equal(report.jitter[0],0);assert.ok(Math.abs(report.jitter[1]+1/6)<1e-15);
+    assert.deepEqual(report.jitterUV,[0,report.jitter[1]/482]);
+    assert.deepEqual(report.jitterNDC,[0,-2*report.jitter[1]/482]);
+    assert.equal(t.frameIndex,before,'diagnostics do not consume samples');
+    t.commit();t.restoreCamera();assert.equal(t.frameIndex,before+1);
+  }
+});
+
+test('composed clip reprojection preserves camera translation, zoom and sky directions',()=>{
+  const state=new TemporalState(THREE),scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(60,16/9,.1,100000);
+  camera.coordinateSystem=THREE.WebGPUCoordinateSystem;camera.position.set(1000,4,1500);camera.updateProjectionMatrix();
+  state.begin(scene,camera,640,360,1280,720,{upscaleJitter:true},100);
+  const previous=state.currentJitteredVP.clone();state.commit();state.restoreCamera();
+  camera.position.x+=.2;camera.fov+=.5;camera.updateProjectionMatrix();
+  state.begin(scene,camera,640,360,1280,720,{upscaleJitter:true},116);
+  for(const point of [new THREE.Vector4(1002,2,1450,1),new THREE.Vector4(.2,.1,-1,0)]) {
+    const current=point.clone().applyMatrix4(state.currentJitteredVP);
+    const expected=point.clone().applyMatrix4(previous),actual=current.applyMatrix4(state.clipToPrevious);
+    assert.ok(Math.abs(actual.x/actual.w-expected.x/expected.w)<1e-10);
+    assert.ok(Math.abs(actual.y/actual.w-expected.y/expected.w)<1e-10);
+  }
+  assert.match(STATIC_VELOCITY,/p\.clipToPrevious\*vec4f/);
+  assert.doesNotMatch(STATIC_VELOCITY,/world\/=|p\.previousVP\*world/);
+  state.restoreCamera();
+});
 
 test('WebGPU uses top-down jitter and the actual previous rendered projection',()=>{
   const state=new TemporalState(THREE),scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(60,16/9,.1,1000);

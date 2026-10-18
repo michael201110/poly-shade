@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { PNG } from 'pngjs';
 import { openUpscalingHarness } from '../upscaling-harness.mjs';
-process.env.POLYSHADE_BUNDLE ??= 'experimental/0.6.0-fsr31.0/main.mod.js';
 const output = `${process.env.TEMP}/polyshade-fsr31-matched`;
 await mkdir(output, {recursive:true});
 const {browser,page,errors} = await openUpscalingHarness();

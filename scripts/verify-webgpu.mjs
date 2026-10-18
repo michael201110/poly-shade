@@ -109,6 +109,7 @@ try {
     "history",
     "low-resolution",
     "native",
+    "source-vs-final",
   ]) {
     await configure({ upscaleDebugView: view });
     await page.waitForTimeout(300);

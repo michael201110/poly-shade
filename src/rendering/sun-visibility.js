@@ -8,6 +8,14 @@ export function sunScreenVisibility(clipW, uv) {
   return t * t * (3 - 2 * t);
 }
 
+// A directional light is a homogeneous direction, not a finite world point.
+// Renderer-owned cameras can carry authoritative matrices while .position is
+// deliberately untouched (matrixAutoUpdate=false).
+export function projectSunDirection(camera, direction, view, clip) {
+  view.copy(direction).transformDirection(camera.matrixWorldInverse);
+  return clip.set(view.x, view.y, view.z, 0).applyMatrix4(camera.projectionMatrix);
+}
+
 export class SunVisibility {
   constructor(renderer) {
     this.gl = renderer.getContext();

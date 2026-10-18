@@ -21,10 +21,15 @@ PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses th
 FSR 3.1 SR development is on `experiment/fsr31-webgpu`, with a separate opt-in
 `experimental/` PML manifest. Stable latest and historical release bundles are
 preserved. See [port status, movement fixes and verification](docs/fsr31-webgpu.md).
-Frame generation is not implemented in that development snapshot.
+The experimental preview adds the official analytical AMD optical-flow/frame-generation
+pipeline (off by default), with bounded presentation, diagnostics and fallback.
+See [implementation and T500 measurements](docs/frame-generation.md).
 
-[Install the pinned SR preview](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.6.0-fsr31.0/experimental/).
-This preview includes the movement-triggered temporal-history and MRT fixes.
+[Install the pinned preview](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.6.0-fsr31.1/experimental/).
+This includes the movement/history fixes plus
+[temporal edge-shimmer corrections](docs/temporal-jitter-stability.md).
+FG does not deliver 4K/60 on the tested T500; leave it off when ordinary
+rendering already reaches 60 FPS. Stable latest remains 0.5.6.
 
 ## What's changed in 0.5.6
 

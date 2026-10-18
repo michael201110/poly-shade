@@ -1,0 +1,1635 @@
+{
+  "label": "final-swarm-fsr31-1",
+  "date": "2026-10-18T23:08:29.555Z",
+  "count": 1,
+  "scale": 0.5,
+  "mode": "fsr31",
+  "frameGeneration": false,
+  "file": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-perf/swarm-1.jsonl",
+  "commands": 5,
+  "hardwareBefore": "name, driver_version, temperature.gpu, utilization.gpu [%], memory.used [MiB], clocks.current.graphics [MHz]\r\nNVIDIA T500, 573.91, 66, 25 %, 704 MiB, 1620 MHz",
+  "initial": {
+    "renderer": "WebGPU",
+    "threeRevision": "181",
+    "ready": true,
+    "frames": 294,
+    "selection": {
+      "requested": "fsr31",
+      "backend": "fsr31",
+      "scale": 0.5,
+      "supported": true,
+      "compute": true,
+      "reason": null
+    },
+    "temporal": {
+      "valid": false,
+      "resets": 6,
+      "lastReset": "resolution or settings changed",
+      "frameIndex": 294,
+      "jitterIndex": 1,
+      "renderSize": [
+        640,
+        360
+      ],
+      "outputSize": [
+        1280,
+        720
+      ],
+      "phase": 1,
+      "phaseCount": 32,
+      "jitter": [
+        0,
+        -0.16666666666666669
+      ],
+      "previousJitter": [
+        0,
+        -0.16666666666666669
+      ],
+      "jitterUV": [
+        0,
+        -0.00046296296296296303
+      ],
+      "previousJitterUV": [
+        0,
+        -0.00046296296296296303
+      ],
+      "jitterNDC": [
+        0,
+        0.0009259259259259261
+      ],
+      "previousJitterNDC": [
+        0,
+        0.0009259259259259261
+      ],
+      "jitterDelta": [
+        0,
+        0
+      ],
+      "deltaMs": 2367.5
+    },
+    "compute": {
+      "dispatches": 284,
+      "ping": 0,
+      "workgroups": {
+        "convert": [
+          80,
+          45,
+          1
+        ],
+        "upscale": [
+          160,
+          90,
+          1
+        ]
+      }
+    },
+    "fsr31": {
+      "ready": true,
+      "frameIndex": 1,
+      "dispatches": 9,
+      "resources": [
+        {
+          "name": "shading-chain",
+          "width": 320,
+          "height": 180,
+          "format": "rgba16float",
+          "mipLevelCount": 6
+        },
+        {
+          "name": "depth-then-luma-instability",
+          "width": 640,
+          "height": 360,
+          "format": "rgba16float",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "luma-1",
+          "width": 640,
+          "height": 360,
+          "format": "rgba16float",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "luma-0",
+          "width": 640,
+          "height": 360,
+          "format": "rgba16float",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "unit-exposure",
+          "width": 1,
+          "height": 1,
+          "format": "rgba32float",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "zero-mask",
+          "width": 1,
+          "height": 1,
+          "format": "rgba8unorm",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "accumulation-1",
+          "width": 640,
+          "height": 360,
+          "format": "rgba8unorm",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "history-1",
+          "width": 1280,
+          "height": 720,
+          "format": "rgba16float",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "history-0",
+          "width": 1280,
+          "height": 720,
+          "format": "rgba16float",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "output",
+          "width": 1280,
+          "height": 720,
+          "format": "rgba16float",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "accumulation-0",
+          "width": 640,
+          "height": 360,
+          "format": "rgba8unorm",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "dilated-motion",
+          "width": 640,
+          "height": 360,
+          "format": "rgba16float",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "dilated-depth",
+          "width": 640,
+          "height": 360,
+          "format": "r32float",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "farthest-depth-mip1",
+          "width": 320,
+          "height": 180,
+          "format": "rgba16float",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "shading-change",
+          "width": 320,
+          "height": 180,
+          "format": "rgba8unorm",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "new-locks",
+          "width": 1280,
+          "height": 720,
+          "format": "r32float",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "dilated-reactive",
+          "width": 640,
+          "height": 360,
+          "format": "rgba8unorm",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "luma-history-1",
+          "width": 640,
+          "height": 360,
+          "format": "rgba16float",
+          "mipLevelCount": 1
+        },
+        {
+          "name": "luma-history-0",
+          "width": 640,
+          "height": 360,
+          "format": "rgba16float",
+          "mipLevelCount": 1
+        }
+      ],
+      "buffers": [
+        {
+          "name": "constants",
+          "bytes": 160
+        },
+        {
+          "name": "spd-constants",
+          "bytes": 32
+        },
+        {
+          "name": "secondary",
+          "bytes": 16
+        },
+        {
+          "name": "reconstructed-depth",
+          "bytes": 921600
+        },
+        {
+          "name": "frame-info",
+          "bytes": 16
+        }
+      ]
+    },
+    "presentation": {
+      "enabled": false,
+      "active": false,
+      "mode": "smooth",
+      "pending": 0,
+      "limit": 1,
+      "realFrames": 294,
+      "generatedFrames": 0,
+      "presentations": 294,
+      "realFPS": null,
+      "submittedPresentationFPS": null,
+      "displayIntervalMs": 16.47326149784254,
+      "nominalAddedLatencyMs": 0,
+      "dropped": 0,
+      "suspensions": 0,
+      "paused": false,
+      "timing": "RAF canvas submissions; not measured monitor scan-out"
+    },
+    "frameQueue": {
+      "limit": 2,
+      "pending": 1,
+      "peak": 2,
+      "submissions": 294,
+      "completed": 293,
+      "skipped": 11
+    },
+    "output": [
+      1280,
+      720
+    ],
+    "internal": [
+      640,
+      360
+    ],
+    "resources": [
+      {
+        "name": "zero",
+        "width": 1,
+        "height": 1,
+        "format": "rgba16float",
+        "usage": 20
+      },
+      {
+        "name": "white",
+        "width": 1,
+        "height": 1,
+        "format": "rgba16float",
+        "usage": 20
+      },
+      {
+        "name": "sun-visibility",
+        "width": 1,
+        "height": 1,
+        "format": "rgba16float",
+        "usage": 20
+      },
+      {
+        "name": "velocity",
+        "width": 640,
+        "height": 360,
+        "format": "rgba16float",
+        "usage": 20
+      },
+      {
+        "name": "ao-raw",
+        "width": 320,
+        "height": 180,
+        "format": "rgba16float",
+        "usage": 20
+      },
+      {
+        "name": "ao",
+        "width": 320,
+        "height": 180,
+        "format": "rgba16float",
+        "usage": 20
+      },
+      {
+        "name": "bloom-raw",
+        "width": 160,
+        "height": 90,
+        "format": "rgba16float",
+        "usage": 20
+      },
+      {
+        "name": "bloom",
+        "width": 160,
+        "height": 90,
+        "format": "rgba16float",
+        "usage": 20
+      },
+      {
+        "name": "graded",
+        "width": 640,
+        "height": 360,
+        "format": "rgba16float",
+        "usage": 20
+      },
+      {
+        "name": "sun-mask",
+        "width": 256,
+        "height": 256,
+        "format": "rgba16float",
+        "usage": 20
+      },
+      {
+        "name": "rays",
+        "width": 640,
+        "height": 360,
+        "format": "rgba16float",
+        "usage": 20
+      }
+    ],
+    "profile": {
+      "supported": true,
+      "passes": {
+        "scene": {
+          "samples": 73,
+          "median": 0.32768,
+          "p95": 0.32768,
+          "p99": 0.393216
+        },
+        "shadows": {
+          "samples": 6,
+          "median": 1.048576,
+          "p95": 1.114112,
+          "p99": 1.114112
+        },
+        "staticVelocity": {
+          "samples": 73,
+          "median": 0,
+          "p95": 0.065536,
+          "p99": 0.065536
+        },
+        "swarm-velocity": {
+          "samples": 73,
+          "median": 0,
+          "p95": 0,
+          "p99": 0.065536
+        },
+        "sun": {
+          "samples": 73,
+          "median": 0,
+          "p95": 0,
+          "p99": 0.065536
+        },
+        "ao": {
+          "samples": 73,
+          "median": 0.065536,
+          "p95": 0.065536,
+          "p99": 0.131072
+        },
+        "aoHorizontal": {
+          "samples": 73,
+          "median": 0.065536,
+          "p95": 0.065536,
+          "p99": 0.065536
+        },
+        "aoVertical": {
+          "samples": 73,
+          "median": 0,
+          "p95": 0.065536,
+          "p99": 0.065536
+        },
+        "bloom": {
+          "samples": 73,
+          "median": 0,
+          "p95": 0.065536,
+          "p99": 0.065536
+        },
+        "bloomBlur": {
+          "samples": 73,
+          "median": 0,
+          "p95": 0.065536,
+          "p99": 0.065536
+        },
+        "bloomBlurWide": {
+          "samples": 73,
+          "median": 0,
+          "p95": 0.065536,
+          "p99": 0.065536
+        },
+        "sunMask": {
+          "samples": 73,
+          "median": 0,
+          "p95": 0.065536,
+          "p99": 0.065536
+        },
+        "rays": {
+          "samples": 73,
+          "median": 0,
+          "p95": 0.065536,
+          "p99": 0.065536
+        },
+        "grade": {
+          "samples": 73,
+          "median": 0.131072,
+          "p95": 0.131072,
+          "p99": 0.131072
+        },
+        "sgsr2-convert": {
+          "samples": 73,
+          "median": 0.196608,
+          "p95": 0.196608,
+          "p99": 0.196608
+        },
+        "sgsr2-upscale": {
+          "samples": 73,
+          "median": 0.524288,
+          "p95": 0.589824,
+          "p99": 0.65536
+        },
+        "geometry": {
+          "samples": 73,
+          "median": 0.065536,
+          "p95": 0.065536,
+          "p99": 0.065536
+        },
+        "finish": {
+          "samples": 73,
+          "median": 0.131072,
+          "p95": 0.196608,
+          "p99": 0.196608
+        },
+        "total": {
+          "samples": 73,
+          "median": 2.359296,
+          "p95": 2.555904,
+          "p99": 2.62144
+        },
+        "reconstruction": {
+          "samples": 73,
+          "median": 0.720896,
+          "p95": 0.786432,
+          "p99": 0.786432
+        },
+        "shadow-cascade-0": {
+          "samples": 67,
+          "median": 0.393216,
+          "p95": 0.524288,
+          "p99": 0.524288
+        },
+        "shadow-cascade-1": {
+          "samples": 67,
+          "median": 0.32768,
+          "p95": 0.458752,
+          "p99": 0.458752
+        },
+        "shadow-cascade-2": {
+          "samples": 67,
+          "median": 0.065536,
+          "p95": 0.131072,
+          "p99": 0.131072
+        }
+      }
+    },
+    "shadowCache": {
+      "updated": 144,
+      "reused": 150,
+      "animated": false
+    },
+    "adapter": {
+      "vendor": "nvidia",
+      "architecture": "turing",
+      "device": "",
+      "description": ""
+    },
+    "meshes": 57,
+    "cars": 7,
+    "swarm": {
+      "sources": 1,
+      "colourDraws": 11,
+      "triangles": 3102,
+      "bytes": 331968,
+      "uploadMs": 0,
+      "skidSegments": 0
+    },
+    "swarmVelocity": {
+      "batches": 11,
+      "sourceVertices": 5106,
+      "velocityVertices": 1280,
+      "triangles": 1702
+    },
+    "sceneDrawCalls": 200,
+    "sceneTriangles": 129792,
+    "projectedShadowProxiesReplaced": 36
+  },
+  "status": {
+    "loaded_ghosts": 1,
+    "swarm_renderer": {
+      "backend": "Worker + PolyShade WebGPU",
+      "cars": 1,
+      "visible": 1,
+      "lod": {
+        "full": 1,
+        "medium": 0,
+        "far": 0
+      },
+      "workerMedianMs": 0.09999999403953552,
+      "workerP95Ms": 0.20000001788139343,
+      "workerP99Ms": 0.6000000238418579,
+      "interpolationMs": 0,
+      "packingMs": 0,
+      "frames": 58,
+      "clock": 3.966400000000003,
+      "ready": true,
+      "failure": null,
+      "mainThreadMs": 0.06249999813735485,
+      "canonicalBytes": 106000,
+      "geometryBytes": 82512,
+      "inFlight": 1,
+      "sharedMemory": false,
+      "interop": {
+        "sources": 1,
+        "colourDraws": 11,
+        "triangles": 3102,
+        "bytes": 124176,
+        "uploadMs": 0,
+        "skidSegments": 0,
+        "sceneDrawCalls": 200,
+        "sceneTriangles": 129792,
+        "gpu": {
+          "scene": {
+            "samples": 6,
+            "median": 0.32768,
+            "p95": 0.393216,
+            "p99": 0.393216
+          },
+          "shadows": {
+            "samples": 6,
+            "median": 1.048576,
+            "p95": 1.114112,
+            "p99": 1.114112
+          },
+          "staticVelocity": {
+            "samples": 6,
+            "median": 0.065536,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "swarm-velocity": {
+            "samples": 6,
+            "median": 0,
+            "p95": 0,
+            "p99": 0
+          },
+          "sun": {
+            "samples": 6,
+            "median": 0,
+            "p95": 0,
+            "p99": 0
+          },
+          "ao": {
+            "samples": 6,
+            "median": 0.065536,
+            "p95": 0.131072,
+            "p99": 0.131072
+          },
+          "aoHorizontal": {
+            "samples": 6,
+            "median": 0.065536,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "aoVertical": {
+            "samples": 6,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "bloom": {
+            "samples": 6,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "bloomBlur": {
+            "samples": 6,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "bloomBlurWide": {
+            "samples": 6,
+            "median": 0,
+            "p95": 0,
+            "p99": 0
+          },
+          "sunMask": {
+            "samples": 6,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "rays": {
+            "samples": 6,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "grade": {
+            "samples": 6,
+            "median": 0.065536,
+            "p95": 0.131072,
+            "p99": 0.131072
+          },
+          "sgsr2-convert": {
+            "samples": 6,
+            "median": 0.196608,
+            "p95": 0.196608,
+            "p99": 0.196608
+          },
+          "sgsr2-upscale": {
+            "samples": 6,
+            "median": 0.458752,
+            "p95": 0.524288,
+            "p99": 0.524288
+          },
+          "geometry": {
+            "samples": 6,
+            "median": 0.065536,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "finish": {
+            "samples": 6,
+            "median": 0.131072,
+            "p95": 0.196608,
+            "p99": 0.196608
+          },
+          "total": {
+            "samples": 6,
+            "median": 2.4903680000000006,
+            "p95": 2.62144,
+            "p99": 2.62144
+          },
+          "reconstruction": {
+            "samples": 6,
+            "median": 0.6553599999999999,
+            "p95": 0.720896,
+            "p99": 0.720896
+          }
+        }
+      },
+      "renderClock": 4.3163000000000045
+    },
+    "visible_ghosts": 1,
+    "playing": true,
+    "playback_seconds": 4.333000000000004,
+    "duration_seconds": 14.94,
+    "play_alongside_loaded_ghosts": false,
+    "instanced_batches": 0,
+    "batched_parts": 0,
+    "training_step_range": [
+      2088871,
+      2088871
+    ],
+    "average_render_ms": 1.2571428574266887,
+    "performance": {
+      "samples": 60,
+      "frame_ms": 18.064999999602637,
+      "replay_update_ms": 1.0783333326379458,
+      "renderer": {
+        "calls": 2,
+        "triangles": 210,
+        "render_cpu_ms": 6.163333334525427,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    "camera_mode": "best_run_chase",
+    "leader_episode_id": "7822786e329348cb87963760d67a9f19:episode-000004",
+    "rendered_episodes": [
+      {
+        "episode_id": "7822786e329348cb87963760d67a9f19:episode-000004",
+        "visible": true,
+        "position": {
+          "x": -94.9036467488609,
+          "y": 5.327203373908996,
+          "z": 58.85083306630435
+        },
+        "color": "#f9ff00",
+        "effects": {
+          "skidmarks_enabled": true,
+          "skid_trails": 4,
+          "skid_cooldowns": [
+            0.075,
+            0.075,
+            0.075,
+            0.075
+          ]
+        },
+        "wheel_contacts": 4,
+        "skidding_wheels": 0
+      }
+    ]
+  },
+  "frames": {
+    "samples": 481,
+    "median": 16.69999999999709,
+    "p95": 16.899999999997817,
+    "p99": 16.900000000001455
+  },
+  "final": {
+    "gpu": {
+      "renderer": "WebGPU",
+      "threeRevision": "181",
+      "ready": true,
+      "frames": 770,
+      "selection": {
+        "requested": "fsr31",
+        "backend": "sgsr2-compute",
+        "scale": 0.5,
+        "supported": true,
+        "compute": true,
+        "reason": "FSR is initializing or unavailable; using sgsr2-compute."
+      },
+      "temporal": {
+        "valid": true,
+        "resets": 7,
+        "lastReset": "resolution or settings changed",
+        "frameIndex": 770,
+        "jitterIndex": 8,
+        "renderSize": [
+          640,
+          360
+        ],
+        "outputSize": [
+          1280,
+          720
+        ],
+        "phase": 328,
+        "phaseCount": 32,
+        "jitter": [
+          -0.4375,
+          0.38888888888888884
+        ],
+        "previousJitter": [
+          0.375,
+          0.05555555555555558
+        ],
+        "jitterUV": [
+          -0.00068359375,
+          0.0010802469135802468
+        ],
+        "previousJitterUV": [
+          0.0005859375,
+          0.00015432098765432107
+        ],
+        "jitterNDC": [
+          -0.0013671875,
+          -0.0021604938271604936
+        ],
+        "previousJitterNDC": [
+          0.001171875,
+          -0.00030864197530864213
+        ],
+        "jitterDelta": [
+          -0.8125,
+          0.33333333333333326
+        ],
+        "deltaMs": 18.19999998807907
+      },
+      "compute": {
+        "dispatches": 940,
+        "ping": 0,
+        "workgroups": {
+          "convert": [
+            80,
+            45,
+            1
+          ],
+          "upscale": [
+            160,
+            90,
+            1
+          ]
+        }
+      },
+      "fsr31Failure": "WebGPU validation: [Invalid CommandBuffer from CommandEncoder \"renderContext_13\"] is invalid due to a previous error.\n - While calling [Queue].Submit([[Invalid CommandBuffer from CommandEncoder \"renderContext_13\"]])\n",
+      "presentation": {
+        "enabled": false,
+        "active": false,
+        "mode": "smooth",
+        "pending": 0,
+        "limit": 1,
+        "realFrames": 770,
+        "generatedFrames": 0,
+        "presentations": 770,
+        "realFPS": 59.615906572694,
+        "submittedPresentationFPS": 60.025220680958384,
+        "displayIntervalMs": 16.774046684681835,
+        "nominalAddedLatencyMs": 0,
+        "dropped": 0,
+        "suspensions": 0,
+        "paused": false,
+        "timing": "RAF canvas submissions; not measured monitor scan-out"
+      },
+      "frameQueue": {
+        "limit": 2,
+        "pending": 1,
+        "peak": 2,
+        "submissions": 770,
+        "completed": 769,
+        "skipped": 17
+      },
+      "output": [
+        1280,
+        720
+      ],
+      "internal": [
+        640,
+        360
+      ],
+      "resources": [
+        {
+          "name": "zero",
+          "width": 1,
+          "height": 1,
+          "format": "rgba16float",
+          "usage": 20
+        },
+        {
+          "name": "white",
+          "width": 1,
+          "height": 1,
+          "format": "rgba16float",
+          "usage": 20
+        },
+        {
+          "name": "sun-visibility",
+          "width": 1,
+          "height": 1,
+          "format": "rgba16float",
+          "usage": 20
+        },
+        {
+          "name": "velocity",
+          "width": 640,
+          "height": 360,
+          "format": "rgba16float",
+          "usage": 20
+        },
+        {
+          "name": "ao-raw",
+          "width": 320,
+          "height": 180,
+          "format": "rgba16float",
+          "usage": 20
+        },
+        {
+          "name": "ao",
+          "width": 320,
+          "height": 180,
+          "format": "rgba16float",
+          "usage": 20
+        },
+        {
+          "name": "bloom-raw",
+          "width": 160,
+          "height": 90,
+          "format": "rgba16float",
+          "usage": 20
+        },
+        {
+          "name": "bloom",
+          "width": 160,
+          "height": 90,
+          "format": "rgba16float",
+          "usage": 20
+        },
+        {
+          "name": "graded",
+          "width": 640,
+          "height": 360,
+          "format": "rgba16float",
+          "usage": 20
+        },
+        {
+          "name": "sun-mask",
+          "width": 256,
+          "height": 256,
+          "format": "rgba16float",
+          "usage": 20
+        },
+        {
+          "name": "rays",
+          "width": 640,
+          "height": 360,
+          "format": "rgba16float",
+          "usage": 20
+        },
+        {
+          "name": "sgsr-converted",
+          "width": 640,
+          "height": 360,
+          "format": "rgba16float",
+          "usage": 12
+        },
+        {
+          "name": "sgsr-ycocg",
+          "width": 640,
+          "height": 360,
+          "format": "r32uint",
+          "usage": 12
+        },
+        {
+          "name": "sgsr-rejection",
+          "width": 640,
+          "height": 360,
+          "format": "r32float",
+          "usage": 12
+        },
+        {
+          "name": "sgsr-history-a",
+          "width": 1280,
+          "height": 720,
+          "format": "rgba16float",
+          "usage": 12
+        },
+        {
+          "name": "sgsr-history-b",
+          "width": 1280,
+          "height": 720,
+          "format": "rgba16float",
+          "usage": 12
+        },
+        {
+          "name": "sgsr-geometry",
+          "width": 640,
+          "height": 360,
+          "format": "rgba16float",
+          "usage": 20
+        },
+        {
+          "name": "sgsr-output",
+          "width": 1280,
+          "height": 720,
+          "format": "rgba16float",
+          "usage": 12
+        }
+      ],
+      "profile": {
+        "supported": true,
+        "passes": {
+          "scene": {
+            "samples": 300,
+            "median": 0.262144,
+            "p95": 0.32768,
+            "p99": 0.32768
+          },
+          "shadows": {
+            "samples": 6,
+            "median": 1.048576,
+            "p95": 1.114112,
+            "p99": 1.114112
+          },
+          "staticVelocity": {
+            "samples": 300,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "swarm-velocity": {
+            "samples": 300,
+            "median": 0,
+            "p95": 0,
+            "p99": 0.065536
+          },
+          "sun": {
+            "samples": 300,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "ao": {
+            "samples": 300,
+            "median": 0.065536,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "aoHorizontal": {
+            "samples": 300,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "aoVertical": {
+            "samples": 300,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "bloom": {
+            "samples": 300,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "bloomBlur": {
+            "samples": 300,
+            "median": 0,
+            "p95": 0,
+            "p99": 0.065536
+          },
+          "bloomBlurWide": {
+            "samples": 300,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "sunMask": {
+            "samples": 289,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "rays": {
+            "samples": 289,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "grade": {
+            "samples": 300,
+            "median": 0.065536,
+            "p95": 0.131072,
+            "p99": 0.131072
+          },
+          "sgsr2-convert": {
+            "samples": 300,
+            "median": 0.131072,
+            "p95": 0.196608,
+            "p99": 0.196608
+          },
+          "sgsr2-upscale": {
+            "samples": 300,
+            "median": 0.524288,
+            "p95": 0.589824,
+            "p99": 0.65536
+          },
+          "geometry": {
+            "samples": 300,
+            "median": 0.065536,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "finish": {
+            "samples": 300,
+            "median": 0.196608,
+            "p95": 0.196608,
+            "p99": 0.196608
+          },
+          "total": {
+            "samples": 300,
+            "median": 1.572864,
+            "p95": 2.162688,
+            "p99": 2.2937600000000002
+          },
+          "reconstruction": {
+            "samples": 300,
+            "median": 0.6553599999999999,
+            "p95": 0.786432,
+            "p99": 0.786432
+          },
+          "shadow-cascade-0": {
+            "samples": 300,
+            "median": 0.065536,
+            "p95": 0.32768,
+            "p99": 0.393216
+          },
+          "shadow-cascade-1": {
+            "samples": 300,
+            "median": 0.065536,
+            "p95": 0.262144,
+            "p99": 0.32768
+          },
+          "shadow-cascade-2": {
+            "samples": 300,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "fsr-clearDepth": {
+            "samples": 149,
+            "median": 0.065536,
+            "p95": 0.065536,
+            "p99": 0.262144
+          },
+          "fsr-prepareInputs": {
+            "samples": 149,
+            "median": 0.196608,
+            "p95": 0.262144,
+            "p99": 2.94912
+          },
+          "fsr-lumaPyramid": {
+            "samples": 149,
+            "median": 0.065536,
+            "p95": 0.065536,
+            "p99": 0.262144
+          },
+          "fsr-lumaTail": {
+            "samples": 149,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.065536
+          },
+          "fsr-shadingPyramid": {
+            "samples": 149,
+            "median": 2.097152,
+            "p95": 2.62144,
+            "p99": 9.50272
+          },
+          "fsr-shadingChange": {
+            "samples": 149,
+            "median": 0,
+            "p95": 0.065536,
+            "p99": 0.131072
+          },
+          "fsr-prepareReactivity": {
+            "samples": 149,
+            "median": 0.196608,
+            "p95": 0.589824,
+            "p99": 0.98304
+          },
+          "fsr-lumaInstability": {
+            "samples": 149,
+            "median": 0.131072,
+            "p95": 0.32768,
+            "p99": 0.589824
+          },
+          "fsr-accumulate": {
+            "samples": 149,
+            "median": 0.917504,
+            "p95": 1.179648,
+            "p99": 3.080192
+          }
+        }
+      },
+      "shadowCache": {
+        "updated": 620,
+        "reused": 150,
+        "animated": false
+      },
+      "adapter": {
+        "vendor": "nvidia",
+        "architecture": "turing",
+        "device": "",
+        "description": ""
+      },
+      "meshes": 57,
+      "cars": 7,
+      "swarm": {
+        "sources": 1,
+        "colourDraws": 12,
+        "triangles": 4246,
+        "bytes": 331968,
+        "uploadMs": 0,
+        "skidSegments": 572
+      },
+      "swarmVelocity": {
+        "batches": 11,
+        "sourceVertices": 5106,
+        "velocityVertices": 1280,
+        "triangles": 1702
+      },
+      "sceneDrawCalls": 202,
+      "sceneTriangles": 131094,
+      "projectedShadowProxiesReplaced": 36
+    },
+    "status": {
+      "ok": true,
+      "result": {
+        "loaded_ghosts": 1,
+        "swarm_renderer": {
+          "backend": "Worker + PolyShade WebGPU",
+          "cars": 1,
+          "visible": 1,
+          "lod": {
+            "full": 1,
+            "medium": 0,
+            "far": 0
+          },
+          "workerMedianMs": 0,
+          "workerP95Ms": 0.10000002384185791,
+          "workerP99Ms": 0.20000001788139343,
+          "interpolationMs": 0,
+          "packingMs": 0,
+          "frames": 686,
+          "clock": 9.866700000000018,
+          "ready": true,
+          "failure": null,
+          "mainThreadMs": 0.05552367265289449,
+          "canonicalBytes": 106000,
+          "geometryBytes": 82512,
+          "inFlight": 1,
+          "sharedMemory": false,
+          "interop": {
+            "sources": 1,
+            "colourDraws": 12,
+            "triangles": 4246,
+            "bytes": 331968,
+            "uploadMs": 0,
+            "skidSegments": 572,
+            "sceneDrawCalls": 202,
+            "sceneTriangles": 131094,
+            "gpu": {
+              "scene": {
+                "samples": 300,
+                "median": 0.262144,
+                "p95": 0.32768,
+                "p99": 0.32768
+              },
+              "shadows": {
+                "samples": 6,
+                "median": 1.048576,
+                "p95": 1.114112,
+                "p99": 1.114112
+              },
+              "staticVelocity": {
+                "samples": 300,
+                "median": 0,
+                "p95": 0.065536,
+                "p99": 0.065536
+              },
+              "swarm-velocity": {
+                "samples": 300,
+                "median": 0,
+                "p95": 0,
+                "p99": 0.065536
+              },
+              "sun": {
+                "samples": 300,
+                "median": 0,
+                "p95": 0.065536,
+                "p99": 0.065536
+              },
+              "ao": {
+                "samples": 300,
+                "median": 0.065536,
+                "p95": 0.065536,
+                "p99": 0.065536
+              },
+              "aoHorizontal": {
+                "samples": 300,
+                "median": 0,
+                "p95": 0.065536,
+                "p99": 0.065536
+              },
+              "aoVertical": {
+                "samples": 300,
+                "median": 0,
+                "p95": 0.065536,
+                "p99": 0.065536
+              },
+              "bloom": {
+                "samples": 300,
+                "median": 0,
+                "p95": 0.065536,
+                "p99": 0.065536
+              },
+              "bloomBlur": {
+                "samples": 300,
+                "median": 0,
+                "p95": 0,
+                "p99": 0.065536
+              },
+              "bloomBlurWide": {
+                "samples": 300,
+                "median": 0,
+                "p95": 0.065536,
+                "p99": 0.065536
+              },
+              "sunMask": {
+                "samples": 289,
+                "median": 0,
+                "p95": 0.065536,
+                "p99": 0.065536
+              },
+              "rays": {
+                "samples": 289,
+                "median": 0,
+                "p95": 0.065536,
+                "p99": 0.065536
+              },
+              "grade": {
+                "samples": 300,
+                "median": 0.065536,
+                "p95": 0.131072,
+                "p99": 0.131072
+              },
+              "sgsr2-convert": {
+                "samples": 300,
+                "median": 0.131072,
+                "p95": 0.196608,
+                "p99": 0.196608
+              },
+              "sgsr2-upscale": {
+                "samples": 300,
+                "median": 0.524288,
+                "p95": 0.589824,
+                "p99": 0.65536
+              },
+              "geometry": {
+                "samples": 300,
+                "median": 0.065536,
+                "p95": 0.065536,
+                "p99": 0.065536
+              },
+              "finish": {
+                "samples": 300,
+                "median": 0.196608,
+                "p95": 0.196608,
+                "p99": 0.196608
+              },
+              "total": {
+                "samples": 300,
+                "median": 1.572864,
+                "p95": 2.162688,
+                "p99": 2.2937600000000002
+              },
+              "reconstruction": {
+                "samples": 300,
+                "median": 0.6553599999999999,
+                "p95": 0.786432,
+                "p99": 0.786432
+              },
+              "shadow-cascade-0": {
+                "samples": 300,
+                "median": 0.065536,
+                "p95": 0.32768,
+                "p99": 0.393216
+              },
+              "shadow-cascade-1": {
+                "samples": 300,
+                "median": 0.065536,
+                "p95": 0.262144,
+                "p99": 0.32768
+              },
+              "shadow-cascade-2": {
+                "samples": 300,
+                "median": 0,
+                "p95": 0.065536,
+                "p99": 0.065536
+              },
+              "fsr-clearDepth": {
+                "samples": 149,
+                "median": 0.065536,
+                "p95": 0.065536,
+                "p99": 0.262144
+              },
+              "fsr-prepareInputs": {
+                "samples": 149,
+                "median": 0.196608,
+                "p95": 0.262144,
+                "p99": 2.94912
+              },
+              "fsr-lumaPyramid": {
+                "samples": 149,
+                "median": 0.065536,
+                "p95": 0.065536,
+                "p99": 0.262144
+              },
+              "fsr-lumaTail": {
+                "samples": 149,
+                "median": 0,
+                "p95": 0.065536,
+                "p99": 0.065536
+              },
+              "fsr-shadingPyramid": {
+                "samples": 149,
+                "median": 2.097152,
+                "p95": 2.62144,
+                "p99": 9.50272
+              },
+              "fsr-shadingChange": {
+                "samples": 149,
+                "median": 0,
+                "p95": 0.065536,
+                "p99": 0.131072
+              },
+              "fsr-prepareReactivity": {
+                "samples": 149,
+                "median": 0.196608,
+                "p95": 0.589824,
+                "p99": 0.98304
+              },
+              "fsr-lumaInstability": {
+                "samples": 149,
+                "median": 0.131072,
+                "p95": 0.32768,
+                "p99": 0.589824
+              },
+              "fsr-accumulate": {
+                "samples": 149,
+                "median": 0.917504,
+                "p95": 1.179648,
+                "p99": 3.080192
+              }
+            }
+          },
+          "renderClock": 10.033400000000018
+        },
+        "visible_ghosts": 1,
+        "playing": true,
+        "playback_seconds": 10.049800000000015,
+        "duration_seconds": 14.94,
+        "play_alongside_loaded_ghosts": false,
+        "instanced_batches": 0,
+        "batched_parts": 0,
+        "training_step_range": [
+          2088871,
+          2088871
+        ],
+        "average_render_ms": 0.9407936516262236,
+        "performance": {
+          "samples": 60,
+          "frame_ms": 16.66500000009934,
+          "replay_update_ms": 0.8900000010927518,
+          "renderer": {
+            "calls": 2,
+            "triangles": 210,
+            "render_cpu_ms": 5.608333333333333,
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "camera_mode": "best_run_chase",
+        "leader_episode_id": "7822786e329348cb87963760d67a9f19:episode-000004",
+        "rendered_episodes": [
+          {
+            "episode_id": "7822786e329348cb87963760d67a9f19:episode-000004",
+            "visible": true,
+            "position": {
+              "x": 118.29587732950868,
+              "y": 5.3182235511144,
+              "z": -115.82738276163836
+            },
+            "color": "#f9ff00",
+            "effects": {
+              "skidmarks_enabled": true,
+              "skid_trails": 4,
+              "skid_cooldowns": [
+                0.014999999999999994,
+                0.034999999999999996,
+                0.075,
+                0.075
+              ]
+            },
+            "wheel_contacts": 4,
+            "skidding_wheels": 2
+          }
+        ]
+      }
+    },
+    "binds": 846,
+    "cars": {
+      "sources": 1,
+      "colourDraws": 12,
+      "triangles": 4246,
+      "bytes": 331968,
+      "uploadMs": 0,
+      "skidSegments": 572
+    },
+    "draws": 202,
+    "triangles": 131094,
+    "shadows": [
+      {
+        "cascade": 0,
+        "updates": 544,
+        "staticDrawsPerUpdate": 36,
+        "dynamicDrawsPerUpdate": 0,
+        "swarmDrawsPerUpdate": 11,
+        "staticTrianglesPerUpdate": 24950,
+        "dynamicTrianglesPerUpdate": 0,
+        "swarmTrianglesPerUpdate": 3102,
+        "swarmInstancesPerUpdate": 17,
+        "updateCpuMsMedian": 0.6718750001095674,
+        "gpu": {
+          "samples": 300,
+          "median": 0.065536,
+          "p95": 0.32768,
+          "p99": 0.393216
+        }
+      },
+      {
+        "cascade": 1,
+        "updates": 544,
+        "staticDrawsPerUpdate": 36,
+        "dynamicDrawsPerUpdate": 0,
+        "swarmDrawsPerUpdate": 11,
+        "staticTrianglesPerUpdate": 24950,
+        "dynamicTrianglesPerUpdate": 0,
+        "swarmTrianglesPerUpdate": 3102,
+        "swarmInstancesPerUpdate": 17,
+        "updateCpuMsMedian": 0.5222426467191648,
+        "gpu": {
+          "samples": 300,
+          "median": 0.065536,
+          "p95": 0.262144,
+          "p99": 0.32768
+        }
+      },
+      {
+        "cascade": 2,
+        "updates": 544,
+        "staticDrawsPerUpdate": 36,
+        "dynamicDrawsPerUpdate": 0,
+        "swarmDrawsPerUpdate": 11,
+        "staticTrianglesPerUpdate": 24950,
+        "dynamicTrianglesPerUpdate": 0,
+        "swarmTrianglesPerUpdate": 3102,
+        "swarmInstancesPerUpdate": 17,
+        "updateCpuMsMedian": 0.4687500002739184,
+        "gpu": {
+          "samples": 300,
+          "median": 0,
+          "p95": 0.065536,
+          "p99": 0.065536
+        }
+      }
+    ],
+    "heap": 461233545,
+    "physics": null
+  },
+  "shadowCascades": [
+    {
+      "cascade": 0,
+      "updates": 544,
+      "staticDrawsPerUpdate": 36,
+      "dynamicDrawsPerUpdate": 0,
+      "swarmDrawsPerUpdate": 11,
+      "staticTrianglesPerUpdate": 24950,
+      "dynamicTrianglesPerUpdate": 0,
+      "swarmTrianglesPerUpdate": 3102,
+      "swarmInstancesPerUpdate": 17,
+      "updateCpuMsMedian": 0.6718750001095674,
+      "gpu": {
+        "samples": 300,
+        "median": 0.065536,
+        "p95": 0.32768,
+        "p99": 0.393216
+      }
+    },
+    {
+      "cascade": 1,
+      "updates": 544,
+      "staticDrawsPerUpdate": 36,
+      "dynamicDrawsPerUpdate": 0,
+      "swarmDrawsPerUpdate": 11,
+      "staticTrianglesPerUpdate": 24950,
+      "dynamicTrianglesPerUpdate": 0,
+      "swarmTrianglesPerUpdate": 3102,
+      "swarmInstancesPerUpdate": 17,
+      "updateCpuMsMedian": 0.5222426467191648,
+      "gpu": {
+        "samples": 300,
+        "median": 0.065536,
+        "p95": 0.262144,
+        "p99": 0.32768
+      }
+    },
+    {
+      "cascade": 2,
+      "updates": 544,
+      "staticDrawsPerUpdate": 36,
+      "dynamicDrawsPerUpdate": 0,
+      "swarmDrawsPerUpdate": 11,
+      "staticTrianglesPerUpdate": 24950,
+      "dynamicTrianglesPerUpdate": 0,
+      "swarmTrianglesPerUpdate": 3102,
+      "swarmInstancesPerUpdate": 17,
+      "updateCpuMsMedian": 0.4687500002739184,
+      "gpu": {
+        "samples": 300,
+        "median": 0,
+        "p95": 0.065536,
+        "p99": 0.065536
+      }
+    }
+  ],
+  "hardwareAfter": "name, driver_version, temperature.gpu, utilization.gpu [%], memory.used [MiB], clocks.current.graphics [MHz]\r\nNVIDIA T500, 573.91, 65, 30 %, 1186 MiB, 1020 MHz",
+  "errors": [
+    "THREE.Color target has no corresponding fragment stage output but writeMask (ColorWriteMask::(Red|Green|Blue|Alpha)) is not zero.\n - While validating targets[1] framebuffer output.\n - While validating fragment state.\n - While calling [Device].CreateRenderPipeline([RenderPipelineDescriptor \"\"renderPipeline_MeshBasicNodeMaterial_59\"\"]).\n",
+    "[Invalid RenderPipeline \"renderPipeline_MeshBasicNodeMaterial_59\"] is invalid due to a previous error.\n - While encoding [RenderPassEncoder (unlabeled)].SetPipeline([Invalid RenderPipeline \"renderPipeline_MeshBasicNodeMaterial_59\"]).\n - While finishing [CommandEncoder \"renderContext_13\"].\n"
+  ],
+  "bundleSHA256": "0aaed20d4795417ea26df4ae6d1f6b27a9d7f9c294eac3bb4efd880cffcf9e11"
+}

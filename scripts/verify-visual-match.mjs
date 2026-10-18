@@ -14,10 +14,10 @@ for(const reference of [true,false]){
   await page.evaluate(state=>{
    window.__freezeGame=true;
    const c=window.__controller,scene=c.activeScene,camera=c.camera,renderer=c.activeRenderer;
-   if(state){camera.position.fromArray(state.position);camera.quaternion.fromArray(state.quaternion);camera.projectionMatrix.fromArray(state.projection);camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();camera.near=state.near;camera.far=state.far;camera.updateMatrixWorld(true);}
+   if(state){camera.position.fromArray(state.position);camera.quaternion.fromArray(state.quaternion);camera.scale.fromArray(state.scale);camera.matrix.fromArray(state.world);camera.matrixWorld.fromArray(state.world);camera.matrixWorldInverse.copy(camera.matrixWorld).invert();camera.projectionMatrix.fromArray(state.projection);camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();camera.near=state.near;camera.far=state.far;camera.fov=state.fov;camera.aspect=state.aspect;}
    const loop=()=>{renderer.render(scene,camera);window.__testRAF(loop);};window.__testRAF(loop);
   },cameraState);
-  cameraState??=await page.evaluate(()=>{const c=window.__controller.camera;return {position:c.position.toArray(),quaternion:c.quaternion.toArray(),projection:c.projectionMatrix.toArray(),near:c.near,far:c.far};});
+  cameraState??=await page.evaluate(()=>{const c=window.__controller.camera,p=c.position.clone(),q=c.quaternion.clone(),s=c.scale.clone();c.matrixWorld.decompose(p,q,s);return {position:p.toArray(),quaternion:q.toArray(),scale:s.toArray(),world:c.matrixWorld.toArray(),projection:c.projectionMatrix.toArray(),near:c.near,far:c.far,fov:c.fov,aspect:c.aspect};});
   await page.locator('#polyshade-panel button').filter({hasText:/^Hide$/}).click();
   for(const preset of ['cinematic','clear-day','overcast','recording']){
    await page.evaluate(({preset,backend})=>{const c=window.__controller,s=c.getSettings();s.preset=preset;s.overrides={renderBackend:backend,upscaling:'native',motionBlurEnabled:false,cloudsEnabled:false};c.notifySettingsChanged();window.__visualBefore=c.backends?.gpu?.frames??c.cinematic.post.frames;},{preset,backend});
@@ -28,7 +28,7 @@ for(const reference of [true,false]){
     const c=window.__controller;
     return (c.backends?.gpu?.frames??c.cinematic.post.frames)>=window.__visualBefore+60;
    },undefined,{polling:50,timeout:60000});
-   const diagnostic=await page.evaluate(()=>({backend:window.__controller.backends.active,failure:window.__controller.backends.failure}));
+   const diagnostic=await page.evaluate(()=>{const c=window.__controller;return {backend:c.backends.active,failure:c.backends.failure,world:c.camera.matrixWorld.toArray(),projection:c.backends.gpu?.temporal.projection.toArray()??c.camera.projectionMatrix.toArray()};});
    assert.equal(diagnostic.failure,undefined);
    await page.screenshot({path:`${output}/${preset}-${backend}.png`});report.cases.push({preset,...diagnostic});
   }

@@ -1,6 +1,6 @@
 import { GPU_POST_COMMON } from "../../shaders/webgpu-post.wgsl.js";
 const INPUT_BINDINGS = [[1,'color'],[2,'depth'],[3,'velocity'],[4,'ao'],
-  [5,'bloom'],[6,'rays'],[8,'volume'],[9,'sun'],[10,'rejection'],[11,'sunMask']];
+  [5,'bloom'],[6,'rays'],[8,'volume'],[9,'sun'],[10,'rejection'],[11,'sunMask'],[12,'source']];
 
 export async function checkedModule(device, code, label) {
   const module = device.createShaderModule({ code, label });
@@ -51,6 +51,7 @@ export class GPUPasses {
         texture(9),
         texture(10, "unfilterable-float"),
         texture(11),
+        texture(12),
       ],
     });
     this.pipelineLayout = device.createPipelineLayout({

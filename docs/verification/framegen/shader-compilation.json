@@ -1,0 +1,3451 @@
+{
+  "features": [
+    "subgroups",
+    "float32-filterable",
+    "shader-f16",
+    "timestamp-query"
+  ],
+  "adapter": {
+    "vendor": "nvidia",
+    "architecture": "turing"
+  },
+  "passes": [
+    {
+      "name": "frameinterpolation_compute_game_vector_field_inpainting_pyramid_pass.wgsl",
+      "messages": []
+    },
+    {
+      "name": "frameinterpolation_compute_game_vector_field_inpainting_pyramid_pass_tail.wgsl",
+      "messages": []
+    },
+    {
+      "name": "frameinterpolation_compute_inpainting_pyramid_pass.wgsl",
+      "messages": []
+    },
+    {
+      "name": "frameinterpolation_compute_inpainting_pyramid_pass_tail.wgsl",
+      "messages": []
+    },
+    {
+      "name": "frameinterpolation_debug_view_pass.wgsl",
+      "messages": []
+    },
+    {
+      "name": "frameinterpolation_disocclusion_mask_pass.wgsl",
+      "messages": []
+    },
+    {
+      "name": "frameinterpolation_game_motion_vector_field_pass.wgsl",
+      "messages": []
+    },
+    {
+      "name": "frameinterpolation_inpainting_pass.wgsl",
+      "messages": []
+    },
+    {
+      "name": "frameinterpolation_optical_flow_vector_field_pass.wgsl",
+      "messages": []
+    },
+    {
+      "name": "frameinterpolation_pass.wgsl",
+      "messages": []
+    },
+    {
+      "name": "frameinterpolation_reconstruct_and_dilate_pass.wgsl",
+      "messages": []
+    },
+    {
+      "name": "frameinterpolation_reconstruct_previous_depth_pass.wgsl",
+      "messages": []
+    },
+    {
+      "name": "frameinterpolation_setup_pass.wgsl",
+      "messages": []
+    },
+    {
+      "name": "opticalflow_compute_luminance_pyramid_pass.wgsl",
+      "messages": []
+    },
+    {
+      "name": "opticalflow_compute_optical_flow_advanced_pass_v5.wgsl",
+      "messages": []
+    },
+    {
+      "name": "opticalflow_compute_scd_divergence_pass.wgsl",
+      "messages": []
+    },
+    {
+      "name": "opticalflow_filter_optical_flow_pass_v5.wgsl",
+      "messages": []
+    },
+    {
+      "name": "opticalflow_generate_scd_histogram_pass.wgsl",
+      "messages": []
+    },
+    {
+      "name": "opticalflow_prepare_luma_pass.wgsl",
+      "messages": []
+    },
+    {
+      "name": "opticalflow_scale_optical_flow_advanced_pass_v5.wgsl",
+      "messages": []
+    }
+  ],
+  "errors": [],
+  "syntheticCases": [
+    {
+      "options": {},
+      "errors": [],
+      "ranges": [
+        {
+          "min": 0.25,
+          "max": 0.25,
+          "nonFinite": 0
+        },
+        {
+          "min": 0.5,
+          "max": 0.5,
+          "nonFinite": 0
+        },
+        {
+          "min": 0.75,
+          "max": 0.75,
+          "nonFinite": 0
+        },
+        {
+          "min": 1,
+          "max": 1,
+          "nonFinite": 0
+        }
+      ],
+      "flatFlowNonzero": 0,
+      "centerFlow": [
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ]
+      ],
+      "resize": {
+        "valid": false,
+        "frameIndex": 0,
+        "dimensions": [
+          130,
+          130
+        ],
+        "nonFinite": 0
+      },
+      "midpoint": {
+        "mae": 0,
+        "currentFrameMAE": 0.3337477620442708,
+        "nonFinite": 0
+      },
+      "dilatedMotion": [
+        -0.03125,
+        0,
+        0,
+        0
+      ],
+      "reset": {
+        "valid": false,
+        "frameIndex": 0,
+        "center": [
+          0.25,
+          0.5,
+          0.75,
+          1
+        ]
+      },
+      "restored": {
+        "valid": false,
+        "frameIndex": 0
+      },
+      "report": {
+        "ready": true,
+        "frameIndex": 1,
+        "dispatches": 856,
+        "resources": [
+          {
+            "name": "real-0",
+            "width": 128,
+            "height": 128,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 131072
+          },
+          {
+            "name": "real-1",
+            "width": 128,
+            "height": 128,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 131072
+          },
+          {
+            "name": "dilated-depth",
+            "width": 128,
+            "height": 128,
+            "format": "r32float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 65536
+          },
+          {
+            "name": "dilated-motion",
+            "width": 128,
+            "height": 128,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 131072
+          },
+          {
+            "name": "disocclusion",
+            "width": 128,
+            "height": 128,
+            "format": "rgba8unorm",
+            "mipLevelCount": 1,
+            "estimatedBytes": 65536
+          },
+          {
+            "name": "interpolated-raw",
+            "width": 128,
+            "height": 128,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 131072
+          },
+          {
+            "name": "inpaint-mask",
+            "width": 128,
+            "height": 128,
+            "format": "rgba8unorm",
+            "mipLevelCount": 1,
+            "estimatedBytes": 65536
+          },
+          {
+            "name": "zero-distortion",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "luma-0-0",
+            "width": 128,
+            "height": 128,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 65536
+          },
+          {
+            "name": "luma-0-1",
+            "width": 64,
+            "height": 64,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 16384
+          },
+          {
+            "name": "luma-0-2",
+            "width": 32,
+            "height": 32,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 4096
+          },
+          {
+            "name": "luma-0-3",
+            "width": 16,
+            "height": 16,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 1024
+          },
+          {
+            "name": "luma-0-4",
+            "width": 8,
+            "height": 8,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 256
+          },
+          {
+            "name": "luma-0-5",
+            "width": 4,
+            "height": 4,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 64
+          },
+          {
+            "name": "luma-0-6",
+            "width": 2,
+            "height": 2,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 16
+          },
+          {
+            "name": "luma-1-0",
+            "width": 128,
+            "height": 128,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 65536
+          },
+          {
+            "name": "luma-1-1",
+            "width": 64,
+            "height": 64,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 16384
+          },
+          {
+            "name": "luma-1-2",
+            "width": 32,
+            "height": 32,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 4096
+          },
+          {
+            "name": "luma-1-3",
+            "width": 16,
+            "height": 16,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 1024
+          },
+          {
+            "name": "luma-1-4",
+            "width": 8,
+            "height": 8,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 256
+          },
+          {
+            "name": "luma-1-5",
+            "width": 4,
+            "height": 4,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 64
+          },
+          {
+            "name": "luma-1-6",
+            "width": 2,
+            "height": 2,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 16
+          },
+          {
+            "name": "scd-previous",
+            "width": 2304,
+            "height": 1,
+            "format": "r32float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 9216
+          },
+          {
+            "name": "game-pyramid",
+            "width": 64,
+            "height": 64,
+            "format": "rgba16float",
+            "mipLevelCount": 7,
+            "estimatedBytes": 43688
+          },
+          {
+            "name": "game-pyramid-unused-7",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "game-pyramid-unused-8",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "game-pyramid-unused-9",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "game-pyramid-unused-10",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "game-pyramid-unused-11",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "paint-pyramid",
+            "width": 64,
+            "height": 64,
+            "format": "rgba16float",
+            "mipLevelCount": 7,
+            "estimatedBytes": 43688
+          },
+          {
+            "name": "paint-pyramid-unused-7",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "paint-pyramid-unused-8",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "paint-pyramid-unused-9",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "paint-pyramid-unused-10",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "paint-pyramid-unused-11",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "generated",
+            "width": 128,
+            "height": 128,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 131072
+          },
+          {
+            "name": "inpaint-final-mask",
+            "width": 128,
+            "height": 128,
+            "format": "rgba8unorm",
+            "mipLevelCount": 1,
+            "estimatedBytes": 65536
+          }
+        ],
+        "buffers": [
+          {
+            "name": "fi-constants",
+            "bytes": 176,
+            "uniform": true
+          },
+          {
+            "name": "fi-shapes",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "fi-counters",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-result",
+            "bytes": 2048,
+            "uniform": false
+          },
+          {
+            "name": "scd-output",
+            "bytes": 12,
+            "uniform": false
+          },
+          {
+            "name": "reconstructed_depth_previous_frame",
+            "bytes": 65536,
+            "uniform": false
+          },
+          {
+            "name": "reconstructed_depth_interpolated_frame",
+            "bytes": 65536,
+            "uniform": false
+          },
+          {
+            "name": "game_motion_vector_field_x",
+            "bytes": 65536,
+            "uniform": false
+          },
+          {
+            "name": "game_motion_vector_field_y",
+            "bytes": 65536,
+            "uniform": false
+          },
+          {
+            "name": "optical_flow_motion_vector_field_x",
+            "bytes": 65536,
+            "uniform": false
+          },
+          {
+            "name": "optical_flow_motion_vector_field_y",
+            "bytes": 65536,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-0",
+            "bytes": 2048,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-1",
+            "bytes": 512,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-2",
+            "bytes": 128,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-3",
+            "bytes": 32,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-4",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-5",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-6",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-0",
+            "bytes": 2048,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-1",
+            "bytes": 512,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-2",
+            "bytes": 128,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-3",
+            "bytes": 32,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-4",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-5",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-6",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "of-spd",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "scd-histogram",
+            "bytes": 9216,
+            "uniform": false
+          },
+          {
+            "name": "scd-temp",
+            "bytes": 12,
+            "uniform": false
+          },
+          {
+            "name": "of-constants-0",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-0",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-1",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-1",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-2",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-2",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-3",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-3",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-4",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-4",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-5",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-5",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-6",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-6",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "pyramid-color",
+            "bytes": 16,
+            "uniform": true
+          },
+          {
+            "name": "pyramid-game",
+            "bytes": 16,
+            "uniform": true
+          }
+        ],
+        "estimatedOwnedBytes": 1599656
+      },
+      "released": {
+        "ready": true,
+        "frameIndex": 0,
+        "dispatches": 888,
+        "resources": [],
+        "buffers": [],
+        "estimatedOwnedBytes": 0
+      },
+      "cleanup": {
+        "ready": false,
+        "frameIndex": 0,
+        "dispatches": 920,
+        "resources": [],
+        "buffers": [],
+        "estimatedOwnedBytes": 0
+      }
+    },
+    {
+      "options": {
+        "width": 130,
+        "height": 98,
+        "internalWidth": 65,
+        "internalHeight": 64
+      },
+      "errors": [],
+      "ranges": [
+        {
+          "min": 0.25,
+          "max": 0.25,
+          "nonFinite": 0
+        },
+        {
+          "min": 0.5,
+          "max": 0.5,
+          "nonFinite": 0
+        },
+        {
+          "min": 0.75,
+          "max": 0.75,
+          "nonFinite": 0
+        },
+        {
+          "min": 1,
+          "max": 1,
+          "nonFinite": 0
+        }
+      ],
+      "flatFlowNonzero": 0,
+      "centerFlow": [
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          0
+        ]
+      ],
+      "resize": {
+        "valid": false,
+        "frameIndex": 0,
+        "dimensions": [
+          132,
+          100
+        ],
+        "nonFinite": 0
+      },
+      "midpoint": {
+        "mae": 0.00026239274963130795,
+        "currentFrameMAE": 0.3355388762311238,
+        "nonFinite": 0
+      },
+      "dilatedMotion": [
+        -0.03076171875,
+        0,
+        0,
+        0
+      ],
+      "reset": {
+        "valid": false,
+        "frameIndex": 0,
+        "center": [
+          0.25,
+          0.5,
+          0.75,
+          1
+        ]
+      },
+      "restored": {
+        "valid": false,
+        "frameIndex": 0
+      },
+      "report": {
+        "ready": true,
+        "frameIndex": 1,
+        "dispatches": 836,
+        "resources": [
+          {
+            "name": "real-0",
+            "width": 130,
+            "height": 98,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 101920
+          },
+          {
+            "name": "real-1",
+            "width": 130,
+            "height": 98,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 101920
+          },
+          {
+            "name": "dilated-depth",
+            "width": 65,
+            "height": 64,
+            "format": "r32float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 16640
+          },
+          {
+            "name": "dilated-motion",
+            "width": 65,
+            "height": 64,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 33280
+          },
+          {
+            "name": "disocclusion",
+            "width": 65,
+            "height": 64,
+            "format": "rgba8unorm",
+            "mipLevelCount": 1,
+            "estimatedBytes": 16640
+          },
+          {
+            "name": "interpolated-raw",
+            "width": 130,
+            "height": 98,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 101920
+          },
+          {
+            "name": "inpaint-mask",
+            "width": 130,
+            "height": 98,
+            "format": "rgba8unorm",
+            "mipLevelCount": 1,
+            "estimatedBytes": 50960
+          },
+          {
+            "name": "zero-distortion",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "luma-0-0",
+            "width": 130,
+            "height": 98,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 50960
+          },
+          {
+            "name": "luma-0-1",
+            "width": 65,
+            "height": 49,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 12740
+          },
+          {
+            "name": "luma-0-2",
+            "width": 32,
+            "height": 24,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 3072
+          },
+          {
+            "name": "luma-0-3",
+            "width": 16,
+            "height": 12,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 768
+          },
+          {
+            "name": "luma-0-4",
+            "width": 8,
+            "height": 6,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 192
+          },
+          {
+            "name": "luma-0-5",
+            "width": 4,
+            "height": 3,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 48
+          },
+          {
+            "name": "luma-0-6",
+            "width": 2,
+            "height": 1,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "luma-1-0",
+            "width": 130,
+            "height": 98,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 50960
+          },
+          {
+            "name": "luma-1-1",
+            "width": 65,
+            "height": 49,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 12740
+          },
+          {
+            "name": "luma-1-2",
+            "width": 32,
+            "height": 24,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 3072
+          },
+          {
+            "name": "luma-1-3",
+            "width": 16,
+            "height": 12,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 768
+          },
+          {
+            "name": "luma-1-4",
+            "width": 8,
+            "height": 6,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 192
+          },
+          {
+            "name": "luma-1-5",
+            "width": 4,
+            "height": 3,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 48
+          },
+          {
+            "name": "luma-1-6",
+            "width": 2,
+            "height": 1,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "scd-previous",
+            "width": 2304,
+            "height": 1,
+            "format": "r32float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 9216
+          },
+          {
+            "name": "game-pyramid",
+            "width": 32,
+            "height": 32,
+            "format": "rgba16float",
+            "mipLevelCount": 6,
+            "estimatedBytes": 10920
+          },
+          {
+            "name": "game-pyramid-unused-6",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "game-pyramid-unused-7",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "game-pyramid-unused-8",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "game-pyramid-unused-9",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "game-pyramid-unused-10",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "game-pyramid-unused-11",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "paint-pyramid",
+            "width": 65,
+            "height": 49,
+            "format": "rgba16float",
+            "mipLevelCount": 7,
+            "estimatedBytes": 33664
+          },
+          {
+            "name": "paint-pyramid-unused-7",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "paint-pyramid-unused-8",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "paint-pyramid-unused-9",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "paint-pyramid-unused-10",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "paint-pyramid-unused-11",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "generated",
+            "width": 130,
+            "height": 98,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 101920
+          },
+          {
+            "name": "inpaint-final-mask",
+            "width": 130,
+            "height": 98,
+            "format": "rgba8unorm",
+            "mipLevelCount": 1,
+            "estimatedBytes": 50960
+          }
+        ],
+        "buffers": [
+          {
+            "name": "fi-constants",
+            "bytes": 176,
+            "uniform": true
+          },
+          {
+            "name": "fi-shapes",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "fi-counters",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-result",
+            "bytes": 1768,
+            "uniform": false
+          },
+          {
+            "name": "scd-output",
+            "bytes": 12,
+            "uniform": false
+          },
+          {
+            "name": "reconstructed_depth_previous_frame",
+            "bytes": 16640,
+            "uniform": false
+          },
+          {
+            "name": "reconstructed_depth_interpolated_frame",
+            "bytes": 16640,
+            "uniform": false
+          },
+          {
+            "name": "game_motion_vector_field_x",
+            "bytes": 16640,
+            "uniform": false
+          },
+          {
+            "name": "game_motion_vector_field_y",
+            "bytes": 16640,
+            "uniform": false
+          },
+          {
+            "name": "optical_flow_motion_vector_field_x",
+            "bytes": 16640,
+            "uniform": false
+          },
+          {
+            "name": "optical_flow_motion_vector_field_y",
+            "bytes": 16640,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-0",
+            "bytes": 1768,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-1",
+            "bytes": 504,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-2",
+            "bytes": 160,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-3",
+            "bytes": 48,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-4",
+            "bytes": 16,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-5",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-6",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-0",
+            "bytes": 1768,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-1",
+            "bytes": 504,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-2",
+            "bytes": 160,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-3",
+            "bytes": 48,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-4",
+            "bytes": 16,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-5",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-6",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "of-spd",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "scd-histogram",
+            "bytes": 9216,
+            "uniform": false
+          },
+          {
+            "name": "scd-temp",
+            "bytes": 12,
+            "uniform": false
+          },
+          {
+            "name": "of-constants-0",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-0",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-1",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-1",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-2",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-2",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-3",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-3",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-4",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-4",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-5",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-5",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-6",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-6",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "pyramid-color",
+            "bytes": 16,
+            "uniform": true
+          },
+          {
+            "name": "pyramid-game",
+            "bytes": 16,
+            "uniform": true
+          }
+        ],
+        "estimatedOwnedBytes": 882232
+      },
+      "released": {
+        "ready": true,
+        "frameIndex": 0,
+        "dispatches": 868,
+        "resources": [],
+        "buffers": [],
+        "estimatedOwnedBytes": 0
+      },
+      "cleanup": {
+        "ready": false,
+        "frameIndex": 0,
+        "dispatches": 900,
+        "resources": [],
+        "buffers": [],
+        "estimatedOwnedBytes": 0
+      }
+    },
+    {
+      "options": {
+        "internalWidth": 86,
+        "internalHeight": 86,
+        "speedX": -4,
+        "speedY": 2
+      },
+      "errors": [],
+      "ranges": [
+        {
+          "min": 0.25,
+          "max": 0.25,
+          "nonFinite": 0
+        },
+        {
+          "min": 0.5,
+          "max": 0.5,
+          "nonFinite": 0
+        },
+        {
+          "min": 0.75,
+          "max": 0.75,
+          "nonFinite": 0
+        },
+        {
+          "min": 1,
+          "max": 1,
+          "nonFinite": 0
+        }
+      ],
+      "flatFlowNonzero": 0,
+      "centerFlow": [
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          4,
+          -2
+        ]
+      ],
+      "resize": {
+        "valid": false,
+        "frameIndex": 0,
+        "dimensions": [
+          130,
+          130
+        ],
+        "nonFinite": 0
+      },
+      "midpoint": {
+        "mae": 0,
+        "currentFrameMAE": 0.335699462890625,
+        "nonFinite": 0
+      },
+      "dilatedMotion": [
+        0.03125,
+        -0.015625,
+        -0.015625,
+        -0.015625
+      ],
+      "reset": {
+        "valid": false,
+        "frameIndex": 0,
+        "center": [
+          0.25,
+          0.5,
+          0.75,
+          1
+        ]
+      },
+      "restored": {
+        "valid": false,
+        "frameIndex": 0
+      },
+      "report": {
+        "ready": true,
+        "frameIndex": 1,
+        "dispatches": 836,
+        "resources": [
+          {
+            "name": "real-0",
+            "width": 128,
+            "height": 128,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 131072
+          },
+          {
+            "name": "real-1",
+            "width": 128,
+            "height": 128,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 131072
+          },
+          {
+            "name": "dilated-depth",
+            "width": 86,
+            "height": 86,
+            "format": "r32float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 29584
+          },
+          {
+            "name": "dilated-motion",
+            "width": 86,
+            "height": 86,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 59168
+          },
+          {
+            "name": "disocclusion",
+            "width": 86,
+            "height": 86,
+            "format": "rgba8unorm",
+            "mipLevelCount": 1,
+            "estimatedBytes": 29584
+          },
+          {
+            "name": "interpolated-raw",
+            "width": 128,
+            "height": 128,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 131072
+          },
+          {
+            "name": "inpaint-mask",
+            "width": 128,
+            "height": 128,
+            "format": "rgba8unorm",
+            "mipLevelCount": 1,
+            "estimatedBytes": 65536
+          },
+          {
+            "name": "zero-distortion",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "luma-0-0",
+            "width": 128,
+            "height": 128,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 65536
+          },
+          {
+            "name": "luma-0-1",
+            "width": 64,
+            "height": 64,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 16384
+          },
+          {
+            "name": "luma-0-2",
+            "width": 32,
+            "height": 32,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 4096
+          },
+          {
+            "name": "luma-0-3",
+            "width": 16,
+            "height": 16,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 1024
+          },
+          {
+            "name": "luma-0-4",
+            "width": 8,
+            "height": 8,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 256
+          },
+          {
+            "name": "luma-0-5",
+            "width": 4,
+            "height": 4,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 64
+          },
+          {
+            "name": "luma-0-6",
+            "width": 2,
+            "height": 2,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 16
+          },
+          {
+            "name": "luma-1-0",
+            "width": 128,
+            "height": 128,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 65536
+          },
+          {
+            "name": "luma-1-1",
+            "width": 64,
+            "height": 64,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 16384
+          },
+          {
+            "name": "luma-1-2",
+            "width": 32,
+            "height": 32,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 4096
+          },
+          {
+            "name": "luma-1-3",
+            "width": 16,
+            "height": 16,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 1024
+          },
+          {
+            "name": "luma-1-4",
+            "width": 8,
+            "height": 8,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 256
+          },
+          {
+            "name": "luma-1-5",
+            "width": 4,
+            "height": 4,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 64
+          },
+          {
+            "name": "luma-1-6",
+            "width": 2,
+            "height": 2,
+            "format": "r32uint",
+            "mipLevelCount": 1,
+            "estimatedBytes": 16
+          },
+          {
+            "name": "scd-previous",
+            "width": 2304,
+            "height": 1,
+            "format": "r32float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 9216
+          },
+          {
+            "name": "game-pyramid",
+            "width": 43,
+            "height": 43,
+            "format": "rgba16float",
+            "mipLevelCount": 6,
+            "estimatedBytes": 19360
+          },
+          {
+            "name": "game-pyramid-unused-6",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "game-pyramid-unused-7",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "game-pyramid-unused-8",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "game-pyramid-unused-9",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "game-pyramid-unused-10",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "game-pyramid-unused-11",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "paint-pyramid",
+            "width": 64,
+            "height": 64,
+            "format": "rgba16float",
+            "mipLevelCount": 7,
+            "estimatedBytes": 43688
+          },
+          {
+            "name": "paint-pyramid-unused-7",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "paint-pyramid-unused-8",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "paint-pyramid-unused-9",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "paint-pyramid-unused-10",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "paint-pyramid-unused-11",
+            "width": 1,
+            "height": 1,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 8
+          },
+          {
+            "name": "generated",
+            "width": 128,
+            "height": 128,
+            "format": "rgba16float",
+            "mipLevelCount": 1,
+            "estimatedBytes": 131072
+          },
+          {
+            "name": "inpaint-final-mask",
+            "width": 128,
+            "height": 128,
+            "format": "rgba8unorm",
+            "mipLevelCount": 1,
+            "estimatedBytes": 65536
+          }
+        ],
+        "buffers": [
+          {
+            "name": "fi-constants",
+            "bytes": 176,
+            "uniform": true
+          },
+          {
+            "name": "fi-shapes",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "fi-counters",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-result",
+            "bytes": 2048,
+            "uniform": false
+          },
+          {
+            "name": "scd-output",
+            "bytes": 12,
+            "uniform": false
+          },
+          {
+            "name": "reconstructed_depth_previous_frame",
+            "bytes": 29584,
+            "uniform": false
+          },
+          {
+            "name": "reconstructed_depth_interpolated_frame",
+            "bytes": 29584,
+            "uniform": false
+          },
+          {
+            "name": "game_motion_vector_field_x",
+            "bytes": 29584,
+            "uniform": false
+          },
+          {
+            "name": "game_motion_vector_field_y",
+            "bytes": 29584,
+            "uniform": false
+          },
+          {
+            "name": "optical_flow_motion_vector_field_x",
+            "bytes": 29584,
+            "uniform": false
+          },
+          {
+            "name": "optical_flow_motion_vector_field_y",
+            "bytes": 29584,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-0",
+            "bytes": 2048,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-1",
+            "bytes": 512,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-2",
+            "bytes": 128,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-3",
+            "bytes": 32,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-4",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-5",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-0-6",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-0",
+            "bytes": 2048,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-1",
+            "bytes": 512,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-2",
+            "bytes": 128,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-3",
+            "bytes": 32,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-4",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-5",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "flow-1-6",
+            "bytes": 8,
+            "uniform": false
+          },
+          {
+            "name": "of-spd",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "scd-histogram",
+            "bytes": 9216,
+            "uniform": false
+          },
+          {
+            "name": "scd-temp",
+            "bytes": 12,
+            "uniform": false
+          },
+          {
+            "name": "of-constants-0",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-0",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-1",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-1",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-2",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-2",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-3",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-3",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-4",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-4",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-5",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-5",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-constants-6",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "of-shapes-6",
+            "bytes": 32,
+            "uniform": true
+          },
+          {
+            "name": "pyramid-color",
+            "bytes": 16,
+            "uniform": true
+          },
+          {
+            "name": "pyramid-game",
+            "bytes": 16,
+            "uniform": true
+          }
+        ],
+        "estimatedOwnedBytes": 1215816
+      },
+      "released": {
+        "ready": true,
+        "frameIndex": 0,
+        "dispatches": 868,
+        "resources": [],
+        "buffers": [],
+        "estimatedOwnedBytes": 0
+      },
+      "cleanup": {
+        "ready": false,
+        "frameIndex": 0,
+        "dispatches": 900,
+        "resources": [],
+        "buffers": [],
+        "estimatedOwnedBytes": 0
+      }
+    }
+  ],
+  "synthetic": {
+    "options": {},
+    "errors": [],
+    "ranges": [
+      {
+        "min": 0.25,
+        "max": 0.25,
+        "nonFinite": 0
+      },
+      {
+        "min": 0.5,
+        "max": 0.5,
+        "nonFinite": 0
+      },
+      {
+        "min": 0.75,
+        "max": 0.75,
+        "nonFinite": 0
+      },
+      {
+        "min": 1,
+        "max": 1,
+        "nonFinite": 0
+      }
+    ],
+    "flatFlowNonzero": 0,
+    "centerFlow": [
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        -4,
+        0
+      ]
+    ],
+    "resize": {
+      "valid": false,
+      "frameIndex": 0,
+      "dimensions": [
+        130,
+        130
+      ],
+      "nonFinite": 0
+    },
+    "midpoint": {
+      "mae": 0,
+      "currentFrameMAE": 0.3337477620442708,
+      "nonFinite": 0
+    },
+    "dilatedMotion": [
+      -0.03125,
+      0,
+      0,
+      0
+    ],
+    "reset": {
+      "valid": false,
+      "frameIndex": 0,
+      "center": [
+        0.25,
+        0.5,
+        0.75,
+        1
+      ]
+    },
+    "restored": {
+      "valid": false,
+      "frameIndex": 0
+    },
+    "report": {
+      "ready": true,
+      "frameIndex": 1,
+      "dispatches": 856,
+      "resources": [
+        {
+          "name": "real-0",
+          "width": 128,
+          "height": 128,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 131072
+        },
+        {
+          "name": "real-1",
+          "width": 128,
+          "height": 128,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 131072
+        },
+        {
+          "name": "dilated-depth",
+          "width": 128,
+          "height": 128,
+          "format": "r32float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 65536
+        },
+        {
+          "name": "dilated-motion",
+          "width": 128,
+          "height": 128,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 131072
+        },
+        {
+          "name": "disocclusion",
+          "width": 128,
+          "height": 128,
+          "format": "rgba8unorm",
+          "mipLevelCount": 1,
+          "estimatedBytes": 65536
+        },
+        {
+          "name": "interpolated-raw",
+          "width": 128,
+          "height": 128,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 131072
+        },
+        {
+          "name": "inpaint-mask",
+          "width": 128,
+          "height": 128,
+          "format": "rgba8unorm",
+          "mipLevelCount": 1,
+          "estimatedBytes": 65536
+        },
+        {
+          "name": "zero-distortion",
+          "width": 1,
+          "height": 1,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 8
+        },
+        {
+          "name": "luma-0-0",
+          "width": 128,
+          "height": 128,
+          "format": "r32uint",
+          "mipLevelCount": 1,
+          "estimatedBytes": 65536
+        },
+        {
+          "name": "luma-0-1",
+          "width": 64,
+          "height": 64,
+          "format": "r32uint",
+          "mipLevelCount": 1,
+          "estimatedBytes": 16384
+        },
+        {
+          "name": "luma-0-2",
+          "width": 32,
+          "height": 32,
+          "format": "r32uint",
+          "mipLevelCount": 1,
+          "estimatedBytes": 4096
+        },
+        {
+          "name": "luma-0-3",
+          "width": 16,
+          "height": 16,
+          "format": "r32uint",
+          "mipLevelCount": 1,
+          "estimatedBytes": 1024
+        },
+        {
+          "name": "luma-0-4",
+          "width": 8,
+          "height": 8,
+          "format": "r32uint",
+          "mipLevelCount": 1,
+          "estimatedBytes": 256
+        },
+        {
+          "name": "luma-0-5",
+          "width": 4,
+          "height": 4,
+          "format": "r32uint",
+          "mipLevelCount": 1,
+          "estimatedBytes": 64
+        },
+        {
+          "name": "luma-0-6",
+          "width": 2,
+          "height": 2,
+          "format": "r32uint",
+          "mipLevelCount": 1,
+          "estimatedBytes": 16
+        },
+        {
+          "name": "luma-1-0",
+          "width": 128,
+          "height": 128,
+          "format": "r32uint",
+          "mipLevelCount": 1,
+          "estimatedBytes": 65536
+        },
+        {
+          "name": "luma-1-1",
+          "width": 64,
+          "height": 64,
+          "format": "r32uint",
+          "mipLevelCount": 1,
+          "estimatedBytes": 16384
+        },
+        {
+          "name": "luma-1-2",
+          "width": 32,
+          "height": 32,
+          "format": "r32uint",
+          "mipLevelCount": 1,
+          "estimatedBytes": 4096
+        },
+        {
+          "name": "luma-1-3",
+          "width": 16,
+          "height": 16,
+          "format": "r32uint",
+          "mipLevelCount": 1,
+          "estimatedBytes": 1024
+        },
+        {
+          "name": "luma-1-4",
+          "width": 8,
+          "height": 8,
+          "format": "r32uint",
+          "mipLevelCount": 1,
+          "estimatedBytes": 256
+        },
+        {
+          "name": "luma-1-5",
+          "width": 4,
+          "height": 4,
+          "format": "r32uint",
+          "mipLevelCount": 1,
+          "estimatedBytes": 64
+        },
+        {
+          "name": "luma-1-6",
+          "width": 2,
+          "height": 2,
+          "format": "r32uint",
+          "mipLevelCount": 1,
+          "estimatedBytes": 16
+        },
+        {
+          "name": "scd-previous",
+          "width": 2304,
+          "height": 1,
+          "format": "r32float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 9216
+        },
+        {
+          "name": "game-pyramid",
+          "width": 64,
+          "height": 64,
+          "format": "rgba16float",
+          "mipLevelCount": 7,
+          "estimatedBytes": 43688
+        },
+        {
+          "name": "game-pyramid-unused-7",
+          "width": 1,
+          "height": 1,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 8
+        },
+        {
+          "name": "game-pyramid-unused-8",
+          "width": 1,
+          "height": 1,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 8
+        },
+        {
+          "name": "game-pyramid-unused-9",
+          "width": 1,
+          "height": 1,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 8
+        },
+        {
+          "name": "game-pyramid-unused-10",
+          "width": 1,
+          "height": 1,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 8
+        },
+        {
+          "name": "game-pyramid-unused-11",
+          "width": 1,
+          "height": 1,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 8
+        },
+        {
+          "name": "paint-pyramid",
+          "width": 64,
+          "height": 64,
+          "format": "rgba16float",
+          "mipLevelCount": 7,
+          "estimatedBytes": 43688
+        },
+        {
+          "name": "paint-pyramid-unused-7",
+          "width": 1,
+          "height": 1,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 8
+        },
+        {
+          "name": "paint-pyramid-unused-8",
+          "width": 1,
+          "height": 1,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 8
+        },
+        {
+          "name": "paint-pyramid-unused-9",
+          "width": 1,
+          "height": 1,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 8
+        },
+        {
+          "name": "paint-pyramid-unused-10",
+          "width": 1,
+          "height": 1,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 8
+        },
+        {
+          "name": "paint-pyramid-unused-11",
+          "width": 1,
+          "height": 1,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 8
+        },
+        {
+          "name": "generated",
+          "width": 128,
+          "height": 128,
+          "format": "rgba16float",
+          "mipLevelCount": 1,
+          "estimatedBytes": 131072
+        },
+        {
+          "name": "inpaint-final-mask",
+          "width": 128,
+          "height": 128,
+          "format": "rgba8unorm",
+          "mipLevelCount": 1,
+          "estimatedBytes": 65536
+        }
+      ],
+      "buffers": [
+        {
+          "name": "fi-constants",
+          "bytes": 176,
+          "uniform": true
+        },
+        {
+          "name": "fi-shapes",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "fi-counters",
+          "bytes": 8,
+          "uniform": false
+        },
+        {
+          "name": "flow-result",
+          "bytes": 2048,
+          "uniform": false
+        },
+        {
+          "name": "scd-output",
+          "bytes": 12,
+          "uniform": false
+        },
+        {
+          "name": "reconstructed_depth_previous_frame",
+          "bytes": 65536,
+          "uniform": false
+        },
+        {
+          "name": "reconstructed_depth_interpolated_frame",
+          "bytes": 65536,
+          "uniform": false
+        },
+        {
+          "name": "game_motion_vector_field_x",
+          "bytes": 65536,
+          "uniform": false
+        },
+        {
+          "name": "game_motion_vector_field_y",
+          "bytes": 65536,
+          "uniform": false
+        },
+        {
+          "name": "optical_flow_motion_vector_field_x",
+          "bytes": 65536,
+          "uniform": false
+        },
+        {
+          "name": "optical_flow_motion_vector_field_y",
+          "bytes": 65536,
+          "uniform": false
+        },
+        {
+          "name": "flow-0-0",
+          "bytes": 2048,
+          "uniform": false
+        },
+        {
+          "name": "flow-0-1",
+          "bytes": 512,
+          "uniform": false
+        },
+        {
+          "name": "flow-0-2",
+          "bytes": 128,
+          "uniform": false
+        },
+        {
+          "name": "flow-0-3",
+          "bytes": 32,
+          "uniform": false
+        },
+        {
+          "name": "flow-0-4",
+          "bytes": 8,
+          "uniform": false
+        },
+        {
+          "name": "flow-0-5",
+          "bytes": 8,
+          "uniform": false
+        },
+        {
+          "name": "flow-0-6",
+          "bytes": 8,
+          "uniform": false
+        },
+        {
+          "name": "flow-1-0",
+          "bytes": 2048,
+          "uniform": false
+        },
+        {
+          "name": "flow-1-1",
+          "bytes": 512,
+          "uniform": false
+        },
+        {
+          "name": "flow-1-2",
+          "bytes": 128,
+          "uniform": false
+        },
+        {
+          "name": "flow-1-3",
+          "bytes": 32,
+          "uniform": false
+        },
+        {
+          "name": "flow-1-4",
+          "bytes": 8,
+          "uniform": false
+        },
+        {
+          "name": "flow-1-5",
+          "bytes": 8,
+          "uniform": false
+        },
+        {
+          "name": "flow-1-6",
+          "bytes": 8,
+          "uniform": false
+        },
+        {
+          "name": "of-spd",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "scd-histogram",
+          "bytes": 9216,
+          "uniform": false
+        },
+        {
+          "name": "scd-temp",
+          "bytes": 12,
+          "uniform": false
+        },
+        {
+          "name": "of-constants-0",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "of-shapes-0",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "of-constants-1",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "of-shapes-1",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "of-constants-2",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "of-shapes-2",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "of-constants-3",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "of-shapes-3",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "of-constants-4",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "of-shapes-4",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "of-constants-5",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "of-shapes-5",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "of-constants-6",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "of-shapes-6",
+          "bytes": 32,
+          "uniform": true
+        },
+        {
+          "name": "pyramid-color",
+          "bytes": 16,
+          "uniform": true
+        },
+        {
+          "name": "pyramid-game",
+          "bytes": 16,
+          "uniform": true
+        }
+      ],
+      "estimatedOwnedBytes": 1599656
+    },
+    "released": {
+      "ready": true,
+      "frameIndex": 0,
+      "dispatches": 888,
+      "resources": [],
+      "buffers": [],
+      "estimatedOwnedBytes": 0
+    },
+    "cleanup": {
+      "ready": false,
+      "frameIndex": 0,
+      "dispatches": 920,
+      "resources": [],
+      "buffers": [],
+      "estimatedOwnedBytes": 0
+    }
+  }
+}

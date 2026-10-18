@@ -2,7 +2,6 @@
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { openUpscalingHarness } from './upscaling-harness.mjs';
-process.env.POLYSHADE_BUNDLE ??= 'experimental/0.6.0-fsr31.0/main.mod.js';
 process.env.POLYSHADE_HEADED ??= '1';
 const { browser, page, errors } = await openUpscalingHarness({ freezeSupport:false });
 const cases = [];

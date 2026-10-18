@@ -1,6 +1,5 @@
 import { openUpscalingHarness } from '../upscaling-harness.mjs';
 import { writeFile, mkdir } from 'node:fs/promises';
-process.env.POLYSHADE_BUNDLE ??= 'experimental/0.6.0-fsr31.0/main.mod.js';
 const { browser, page, errors } = await openUpscalingHarness({ freezeSupport: false });
 try {
   page.on('console', m => { if (m.type() === 'warning' || m.type() === 'error') console.log(m.type(), m.text().slice(0, 2500)); });

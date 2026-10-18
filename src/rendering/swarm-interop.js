@@ -140,6 +140,9 @@ export class SwarmInstances {
       buffer.name='PolyShade swarm skid corners';
       for(let i=0;i<4;i++)geometry.setAttribute(`trail${i}`,new T.InterleavedBufferAttribute(buffer,3,i*3));
       const material=new T.MeshBasicNodeMaterial({color:0x010101,side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:0,depthWrite:true});
+      // Trails are created lazily, possibly after FSR enabled its second
+      // attachment. They must inherit the same MRT contract as car materials.
+      material.mrtNode=this.mirror.mrtNode??null;
       const p0=attribute('trail0','vec3'),p1=attribute('trail1','vec3'),p2=attribute('trail2','vec3'),p3=attribute('trail3','vec3');
       material.positionNode=mix(mix(p0,p2,positionLocal.x),mix(p1,p3,positionLocal.x),positionLocal.y);
       const mesh=new T.Mesh(geometry,material);mesh.frustumCulled=false;geometry.instanceCount=0;

@@ -4,7 +4,7 @@ export function installHistoryEvents(document, invalidate) {
   const editable = event => event.target?.isContentEditable ||
     ["INPUT", "TEXTAREA", "SELECT"].includes(event.target?.tagName);
   const key = event => {
-    if (!event.repeat && !editable(event) && ["KeyR", "Enter", "Backspace", "Escape"].includes(event.code))
+    if (!event.repeat && !editable(event) && ["KeyT", "KeyR", "Enter", "Backspace", "Escape"].includes(event.code))
       invalidate("run or menu key");
   };
   const click = event => {

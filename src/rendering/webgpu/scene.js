@@ -337,8 +337,10 @@ export class GPUScene {
     };
     for (const material of this.materials.values()) update(material);
     update(this.skyMesh?.material);
-    for (const source of this.swarms.sources.values())
+    for (const source of this.swarms.sources.values()) {
       for (const group of source.groups) update(group.mesh.material);
+      update(source.trails?.mesh.material);
+    }
   }
   materialList(source) {
     if (!Array.isArray(source)) return this.material(source);

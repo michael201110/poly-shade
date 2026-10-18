@@ -78,6 +78,8 @@ export class GPUProfiler {
           (frame.get("sgsr2-convert") ?? 0) + (frame.get("sgsr2-upscale") ?? 0) +
             [...frame].filter(([name]) => name.startsWith('fsr-')).reduce((sum, [, ms]) => sum + ms, 0),
         );
+        const fg=[...frame].filter(([name])=>name.startsWith('fg-'));
+        if(fg.length)frame.set('frame-generation',fg.reduce((sum,[,ms])=>sum+ms,0));
         for (const [name, ms] of frame) {
           const arr = this.samples.get(name) ?? [];
           arr.push(ms);

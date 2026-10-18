@@ -1,0 +1,5166 @@
+{
+  "rows": [
+    {
+      "mode": "sgsr2-compute",
+      "requestedFPS": 15,
+      "realFPS": 13.560157790960234,
+      "above60Exercised": false,
+      "records": [
+        {
+          "at": 9309.300000011921,
+          "frame": 168,
+          "temporalFrame": 168,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 9382.59999999404,
+          "frame": 169,
+          "temporalFrame": 169,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 9456.5,
+          "frame": 170,
+          "temporalFrame": 170,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 9532.09999999404,
+          "frame": 171,
+          "temporalFrame": 171,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 9604.699999988079,
+          "frame": 172,
+          "temporalFrame": 172,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 9678.5,
+          "frame": 173,
+          "temporalFrame": 173,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 9751.199999988079,
+          "frame": 174,
+          "temporalFrame": 174,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 9823.40000000596,
+          "frame": 175,
+          "temporalFrame": 175,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 9898.40000000596,
+          "frame": 176,
+          "temporalFrame": 176,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 9971.90000000596,
+          "frame": 177,
+          "temporalFrame": 177,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 10046.59999999404,
+          "frame": 178,
+          "temporalFrame": 178,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 10122.199999988079,
+          "frame": 179,
+          "temporalFrame": 179,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 10198.59999999404,
+          "frame": 180,
+          "temporalFrame": 180,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 10271.5,
+          "frame": 181,
+          "temporalFrame": 181,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 10344.40000000596,
+          "frame": 182,
+          "temporalFrame": 182,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 10418.90000000596,
+          "frame": 183,
+          "temporalFrame": 183,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 10491.59999999404,
+          "frame": 184,
+          "temporalFrame": 184,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 10564.5,
+          "frame": 185,
+          "temporalFrame": 185,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 10637.300000011921,
+          "frame": 186,
+          "temporalFrame": 186,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 10710.40000000596,
+          "frame": 187,
+          "temporalFrame": 187,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 10784.800000011921,
+          "frame": 188,
+          "temporalFrame": 188,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 10858.90000000596,
+          "frame": 189,
+          "temporalFrame": 189,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 10931.90000000596,
+          "frame": 190,
+          "temporalFrame": 190,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11004.699999988079,
+          "frame": 191,
+          "temporalFrame": 191,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11079.59999999404,
+          "frame": 192,
+          "temporalFrame": 192,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11154.40000000596,
+          "frame": 193,
+          "temporalFrame": 193,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11228.59999999404,
+          "frame": 194,
+          "temporalFrame": 194,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11301.300000011921,
+          "frame": 195,
+          "temporalFrame": 195,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11375.699999988079,
+          "frame": 196,
+          "temporalFrame": 196,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11449.59999999404,
+          "frame": 197,
+          "temporalFrame": 197,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11521.59999999404,
+          "frame": 198,
+          "temporalFrame": 198,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11595.59999999404,
+          "frame": 199,
+          "temporalFrame": 199,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11669.199999988079,
+          "frame": 200,
+          "temporalFrame": 200,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11742.90000000596,
+          "frame": 201,
+          "temporalFrame": 201,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        }
+      ]
+    },
+    {
+      "mode": "sgsr2-compute",
+      "requestedFPS": 30,
+      "realFPS": 25.67132553691904,
+      "above60Exercised": false,
+      "records": [
+        {
+          "at": 11781.300000011921,
+          "frame": 202,
+          "temporalFrame": 202,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11820.40000000596,
+          "frame": 203,
+          "temporalFrame": 203,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11860,
+          "frame": 204,
+          "temporalFrame": 204,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11897.5,
+          "frame": 205,
+          "temporalFrame": 205,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11936.09999999404,
+          "frame": 206,
+          "temporalFrame": 206,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 11976.199999988079,
+          "frame": 207,
+          "temporalFrame": 207,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12014.59999999404,
+          "frame": 208,
+          "temporalFrame": 208,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12053.199999988079,
+          "frame": 209,
+          "temporalFrame": 209,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12091.40000000596,
+          "frame": 210,
+          "temporalFrame": 210,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12132.5,
+          "frame": 211,
+          "temporalFrame": 211,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12171.199999988079,
+          "frame": 212,
+          "temporalFrame": 212,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12209.800000011921,
+          "frame": 213,
+          "temporalFrame": 213,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12247.40000000596,
+          "frame": 214,
+          "temporalFrame": 214,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12286.09999999404,
+          "frame": 215,
+          "temporalFrame": 215,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12325.800000011921,
+          "frame": 216,
+          "temporalFrame": 216,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12364.40000000596,
+          "frame": 217,
+          "temporalFrame": 217,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12402.59999999404,
+          "frame": 218,
+          "temporalFrame": 218,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12441.59999999404,
+          "frame": 219,
+          "temporalFrame": 219,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12480.40000000596,
+          "frame": 220,
+          "temporalFrame": 220,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12518.199999988079,
+          "frame": 221,
+          "temporalFrame": 221,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12557.300000011921,
+          "frame": 222,
+          "temporalFrame": 222,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12596.300000011921,
+          "frame": 223,
+          "temporalFrame": 223,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12634.5,
+          "frame": 224,
+          "temporalFrame": 224,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12672.90000000596,
+          "frame": 225,
+          "temporalFrame": 225,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12711.59999999404,
+          "frame": 226,
+          "temporalFrame": 226,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12750.699999988079,
+          "frame": 227,
+          "temporalFrame": 227,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12788.300000011921,
+          "frame": 228,
+          "temporalFrame": 228,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12827,
+          "frame": 229,
+          "temporalFrame": 229,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12866.199999988079,
+          "frame": 230,
+          "temporalFrame": 230,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12904.40000000596,
+          "frame": 231,
+          "temporalFrame": 231,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12943.59999999404,
+          "frame": 232,
+          "temporalFrame": 232,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 12981.699999988079,
+          "frame": 233,
+          "temporalFrame": 233,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13019.40000000596,
+          "frame": 234,
+          "temporalFrame": 234,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13056.90000000596,
+          "frame": 235,
+          "temporalFrame": 235,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13096.40000000596,
+          "frame": 236,
+          "temporalFrame": 236,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13135.699999988079,
+          "frame": 237,
+          "temporalFrame": 237,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13176.40000000596,
+          "frame": 238,
+          "temporalFrame": 238,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13214.5,
+          "frame": 239,
+          "temporalFrame": 239,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13253.300000011921,
+          "frame": 240,
+          "temporalFrame": 240,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13291.300000011921,
+          "frame": 241,
+          "temporalFrame": 241,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13330.59999999404,
+          "frame": 242,
+          "temporalFrame": 242,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13368.90000000596,
+          "frame": 243,
+          "temporalFrame": 243,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13410.09999999404,
+          "frame": 244,
+          "temporalFrame": 244,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13449,
+          "frame": 245,
+          "temporalFrame": 245,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13486.699999988079,
+          "frame": 246,
+          "temporalFrame": 246,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13525.09999999404,
+          "frame": 247,
+          "temporalFrame": 247,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13564.90000000596,
+          "frame": 248,
+          "temporalFrame": 248,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13603.5,
+          "frame": 249,
+          "temporalFrame": 249,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13645.09999999404,
+          "frame": 250,
+          "temporalFrame": 250,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13684.5,
+          "frame": 251,
+          "temporalFrame": 251,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13723.800000011921,
+          "frame": 252,
+          "temporalFrame": 252,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13764.300000011921,
+          "frame": 253,
+          "temporalFrame": 253,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13804.40000000596,
+          "frame": 254,
+          "temporalFrame": 254,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13844.5,
+          "frame": 255,
+          "temporalFrame": 255,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13882.59999999404,
+          "frame": 256,
+          "temporalFrame": 256,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13921.40000000596,
+          "frame": 257,
+          "temporalFrame": 257,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 13962.40000000596,
+          "frame": 258,
+          "temporalFrame": 258,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14001.40000000596,
+          "frame": 259,
+          "temporalFrame": 259,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14039.300000011921,
+          "frame": 260,
+          "temporalFrame": 260,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14078.40000000596,
+          "frame": 261,
+          "temporalFrame": 261,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14117.59999999404,
+          "frame": 262,
+          "temporalFrame": 262,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14155.699999988079,
+          "frame": 263,
+          "temporalFrame": 263,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14195.59999999404,
+          "frame": 264,
+          "temporalFrame": 264,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14235.40000000596,
+          "frame": 265,
+          "temporalFrame": 265,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        }
+      ]
+    },
+    {
+      "mode": "sgsr2-compute",
+      "requestedFPS": 60,
+      "realFPS": 45.36877183142925,
+      "above60Exercised": false,
+      "records": [
+        {
+          "at": 14296.40000000596,
+          "frame": 267,
+          "temporalFrame": 267,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14317.59999999404,
+          "frame": 268,
+          "temporalFrame": 268,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14338,
+          "frame": 269,
+          "temporalFrame": 269,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14359.40000000596,
+          "frame": 270,
+          "temporalFrame": 270,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14380.699999988079,
+          "frame": 271,
+          "temporalFrame": 271,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14401.300000011921,
+          "frame": 272,
+          "temporalFrame": 272,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14422,
+          "frame": 273,
+          "temporalFrame": 273,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14444.5,
+          "frame": 274,
+          "temporalFrame": 274,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14465.699999988079,
+          "frame": 275,
+          "temporalFrame": 275,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14486.5,
+          "frame": 276,
+          "temporalFrame": 276,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14507.40000000596,
+          "frame": 277,
+          "temporalFrame": 277,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14528.300000011921,
+          "frame": 278,
+          "temporalFrame": 278,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14549.40000000596,
+          "frame": 279,
+          "temporalFrame": 279,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14570.300000011921,
+          "frame": 280,
+          "temporalFrame": 280,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14591.300000011921,
+          "frame": 281,
+          "temporalFrame": 281,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14613.199999988079,
+          "frame": 282,
+          "temporalFrame": 282,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14635,
+          "frame": 283,
+          "temporalFrame": 283,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14656,
+          "frame": 284,
+          "temporalFrame": 284,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14678.90000000596,
+          "frame": 285,
+          "temporalFrame": 285,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14699.699999988079,
+          "frame": 286,
+          "temporalFrame": 286,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14720.40000000596,
+          "frame": 287,
+          "temporalFrame": 287,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14741.699999988079,
+          "frame": 288,
+          "temporalFrame": 288,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14764.09999999404,
+          "frame": 289,
+          "temporalFrame": 289,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14784.800000011921,
+          "frame": 290,
+          "temporalFrame": 290,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14806.699999988079,
+          "frame": 291,
+          "temporalFrame": 291,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14828.800000011921,
+          "frame": 292,
+          "temporalFrame": 292,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14849.800000011921,
+          "frame": 293,
+          "temporalFrame": 293,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14870.90000000596,
+          "frame": 294,
+          "temporalFrame": 294,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14892.699999988079,
+          "frame": 295,
+          "temporalFrame": 295,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14914.300000011921,
+          "frame": 296,
+          "temporalFrame": 296,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14935.5,
+          "frame": 297,
+          "temporalFrame": 297,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14957.199999988079,
+          "frame": 298,
+          "temporalFrame": 298,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 14980.800000011921,
+          "frame": 299,
+          "temporalFrame": 299,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15001.59999999404,
+          "frame": 300,
+          "temporalFrame": 300,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15022.59999999404,
+          "frame": 301,
+          "temporalFrame": 301,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15045.300000011921,
+          "frame": 302,
+          "temporalFrame": 302,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15066.199999988079,
+          "frame": 303,
+          "temporalFrame": 303,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15088.300000011921,
+          "frame": 304,
+          "temporalFrame": 304,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15112.199999988079,
+          "frame": 305,
+          "temporalFrame": 305,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15133.800000011921,
+          "frame": 306,
+          "temporalFrame": 306,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15157.40000000596,
+          "frame": 307,
+          "temporalFrame": 307,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15179.699999988079,
+          "frame": 308,
+          "temporalFrame": 308,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15200.800000011921,
+          "frame": 309,
+          "temporalFrame": 309,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15221.90000000596,
+          "frame": 310,
+          "temporalFrame": 310,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15244.40000000596,
+          "frame": 311,
+          "temporalFrame": 311,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15266.40000000596,
+          "frame": 312,
+          "temporalFrame": 312,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15288,
+          "frame": 313,
+          "temporalFrame": 313,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15310.199999988079,
+          "frame": 314,
+          "temporalFrame": 314,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15331.199999988079,
+          "frame": 315,
+          "temporalFrame": 315,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15352.09999999404,
+          "frame": 316,
+          "temporalFrame": 316,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15373.199999988079,
+          "frame": 317,
+          "temporalFrame": 317,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15395.300000011921,
+          "frame": 318,
+          "temporalFrame": 318,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15416.199999988079,
+          "frame": 319,
+          "temporalFrame": 319,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15436.90000000596,
+          "frame": 320,
+          "temporalFrame": 320,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15459.59999999404,
+          "frame": 321,
+          "temporalFrame": 321,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15481.40000000596,
+          "frame": 322,
+          "temporalFrame": 322,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15502.59999999404,
+          "frame": 323,
+          "temporalFrame": 323,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15523.800000011921,
+          "frame": 324,
+          "temporalFrame": 324,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15545.800000011921,
+          "frame": 325,
+          "temporalFrame": 325,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15566.699999988079,
+          "frame": 326,
+          "temporalFrame": 326,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15588.800000011921,
+          "frame": 327,
+          "temporalFrame": 327,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15610.90000000596,
+          "frame": 328,
+          "temporalFrame": 328,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15632,
+          "frame": 329,
+          "temporalFrame": 329,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15653.09999999404,
+          "frame": 330,
+          "temporalFrame": 330,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15674,
+          "frame": 331,
+          "temporalFrame": 331,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15696.09999999404,
+          "frame": 332,
+          "temporalFrame": 332,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15717.300000011921,
+          "frame": 333,
+          "temporalFrame": 333,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15738.199999988079,
+          "frame": 334,
+          "temporalFrame": 334,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15759.90000000596,
+          "frame": 335,
+          "temporalFrame": 335,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15781.199999988079,
+          "frame": 336,
+          "temporalFrame": 336,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15802.199999988079,
+          "frame": 337,
+          "temporalFrame": 337,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15824.90000000596,
+          "frame": 338,
+          "temporalFrame": 338,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15847.199999988079,
+          "frame": 339,
+          "temporalFrame": 339,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15868.800000011921,
+          "frame": 340,
+          "temporalFrame": 340,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15890.90000000596,
+          "frame": 341,
+          "temporalFrame": 341,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15914.199999988079,
+          "frame": 342,
+          "temporalFrame": 342,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15935.40000000596,
+          "frame": 343,
+          "temporalFrame": 343,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15957.199999988079,
+          "frame": 344,
+          "temporalFrame": 344,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 15981,
+          "frame": 345,
+          "temporalFrame": 345,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16003.09999999404,
+          "frame": 346,
+          "temporalFrame": 346,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16024.800000011921,
+          "frame": 347,
+          "temporalFrame": 347,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16047.199999988079,
+          "frame": 348,
+          "temporalFrame": 348,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16068.199999988079,
+          "frame": 349,
+          "temporalFrame": 349,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16089.199999988079,
+          "frame": 350,
+          "temporalFrame": 350,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16112.199999988079,
+          "frame": 351,
+          "temporalFrame": 351,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16134.59999999404,
+          "frame": 352,
+          "temporalFrame": 352,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16160.199999988079,
+          "frame": 353,
+          "temporalFrame": 353,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16183.699999988079,
+          "frame": 354,
+          "temporalFrame": 354,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16208,
+          "frame": 355,
+          "temporalFrame": 355,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16231.699999988079,
+          "frame": 356,
+          "temporalFrame": 356,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16254.699999988079,
+          "frame": 357,
+          "temporalFrame": 357,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16280.300000011921,
+          "frame": 358,
+          "temporalFrame": 358,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16303,
+          "frame": 359,
+          "temporalFrame": 359,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16326.59999999404,
+          "frame": 360,
+          "temporalFrame": 360,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16349.59999999404,
+          "frame": 361,
+          "temporalFrame": 361,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16371.699999988079,
+          "frame": 362,
+          "temporalFrame": 362,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16395.5,
+          "frame": 363,
+          "temporalFrame": 363,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16418.59999999404,
+          "frame": 364,
+          "temporalFrame": 364,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16441.09999999404,
+          "frame": 365,
+          "temporalFrame": 365,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16465.80000001192,
+          "frame": 366,
+          "temporalFrame": 366,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16488.30000001192,
+          "frame": 367,
+          "temporalFrame": 367,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16512.09999999404,
+          "frame": 368,
+          "temporalFrame": 368,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16534.30000001192,
+          "frame": 369,
+          "temporalFrame": 369,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16557.5,
+          "frame": 370,
+          "temporalFrame": 370,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16581.19999998808,
+          "frame": 371,
+          "temporalFrame": 371,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16602.69999998808,
+          "frame": 372,
+          "temporalFrame": 372,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16626.59999999404,
+          "frame": 373,
+          "temporalFrame": 373,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16648.90000000596,
+          "frame": 374,
+          "temporalFrame": 374,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16670.90000000596,
+          "frame": 375,
+          "temporalFrame": 375,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16694.09999999404,
+          "frame": 376,
+          "temporalFrame": 376,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16718.19999998808,
+          "frame": 377,
+          "temporalFrame": 377,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16740.80000001192,
+          "frame": 378,
+          "temporalFrame": 378,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16765.30000001192,
+          "frame": 379,
+          "temporalFrame": 379,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16787.09999999404,
+          "frame": 380,
+          "temporalFrame": 380,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        }
+      ]
+    },
+    {
+      "mode": "sgsr2-compute",
+      "requestedFPS": "uncapped",
+      "realFPS": 171.0426407696763,
+      "above60Exercised": true,
+      "records": [
+        {
+          "at": 16816.5,
+          "frame": 382,
+          "temporalFrame": 382,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16821.90000000596,
+          "frame": 383,
+          "temporalFrame": 383,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16829.80000001192,
+          "frame": 384,
+          "temporalFrame": 384,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16835.90000000596,
+          "frame": 385,
+          "temporalFrame": 385,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16843.90000000596,
+          "frame": 386,
+          "temporalFrame": 386,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16850.30000001192,
+          "frame": 387,
+          "temporalFrame": 387,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16857.09999999404,
+          "frame": 388,
+          "temporalFrame": 388,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16864.80000001192,
+          "frame": 389,
+          "temporalFrame": 389,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16870.80000001192,
+          "frame": 390,
+          "temporalFrame": 390,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16878.30000001192,
+          "frame": 391,
+          "temporalFrame": 391,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16883.80000001192,
+          "frame": 392,
+          "temporalFrame": 392,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16889.69999998808,
+          "frame": 393,
+          "temporalFrame": 393,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16896.80000001192,
+          "frame": 394,
+          "temporalFrame": 394,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16902.5,
+          "frame": 395,
+          "temporalFrame": 395,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16908.59999999404,
+          "frame": 396,
+          "temporalFrame": 396,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16914.90000000596,
+          "frame": 397,
+          "temporalFrame": 397,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16920.80000001192,
+          "frame": 398,
+          "temporalFrame": 398,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16928.30000001192,
+          "frame": 399,
+          "temporalFrame": 399,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16934.19999998808,
+          "frame": 400,
+          "temporalFrame": 400,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16941.19999998808,
+          "frame": 401,
+          "temporalFrame": 401,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16948.69999998808,
+          "frame": 402,
+          "temporalFrame": 402,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16955.19999998808,
+          "frame": 403,
+          "temporalFrame": 403,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16963,
+          "frame": 404,
+          "temporalFrame": 404,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16969.40000000596,
+          "frame": 405,
+          "temporalFrame": 405,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16975.69999998808,
+          "frame": 406,
+          "temporalFrame": 406,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16982.59999999404,
+          "frame": 407,
+          "temporalFrame": 407,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16988.80000001192,
+          "frame": 408,
+          "temporalFrame": 408,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 16997.30000001192,
+          "frame": 409,
+          "temporalFrame": 409,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17002.90000000596,
+          "frame": 410,
+          "temporalFrame": 410,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17009.30000001192,
+          "frame": 411,
+          "temporalFrame": 411,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17016.30000001192,
+          "frame": 412,
+          "temporalFrame": 412,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17022.09999999404,
+          "frame": 413,
+          "temporalFrame": 413,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17029.80000001192,
+          "frame": 414,
+          "temporalFrame": 414,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17035.90000000596,
+          "frame": 415,
+          "temporalFrame": 415,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17042,
+          "frame": 416,
+          "temporalFrame": 416,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17049.59999999404,
+          "frame": 417,
+          "temporalFrame": 417,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17056,
+          "frame": 418,
+          "temporalFrame": 418,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17064.09999999404,
+          "frame": 419,
+          "temporalFrame": 419,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17069.90000000596,
+          "frame": 420,
+          "temporalFrame": 420,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17076.30000001192,
+          "frame": 421,
+          "temporalFrame": 421,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17083.5,
+          "frame": 422,
+          "temporalFrame": 422,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17091.5,
+          "frame": 423,
+          "temporalFrame": 423,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17099.90000000596,
+          "frame": 424,
+          "temporalFrame": 424,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17106.30000001192,
+          "frame": 425,
+          "temporalFrame": 425,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17114.5,
+          "frame": 426,
+          "temporalFrame": 426,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17121.09999999404,
+          "frame": 427,
+          "temporalFrame": 427,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17129.90000000596,
+          "frame": 428,
+          "temporalFrame": 428,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17137.09999999404,
+          "frame": 429,
+          "temporalFrame": 429,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17146.90000000596,
+          "frame": 430,
+          "temporalFrame": 430,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17153.80000001192,
+          "frame": 431,
+          "temporalFrame": 431,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17163.19999998808,
+          "frame": 432,
+          "temporalFrame": 432,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17169.80000001192,
+          "frame": 433,
+          "temporalFrame": 433,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17177.19999998808,
+          "frame": 434,
+          "temporalFrame": 434,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17185.40000000596,
+          "frame": 435,
+          "temporalFrame": 435,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17211.40000000596,
+          "frame": 436,
+          "temporalFrame": 436,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17217.69999998808,
+          "frame": 437,
+          "temporalFrame": 437,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17224.90000000596,
+          "frame": 438,
+          "temporalFrame": 438,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17234,
+          "frame": 439,
+          "temporalFrame": 439,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17239.90000000596,
+          "frame": 440,
+          "temporalFrame": 440,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17247.69999998808,
+          "frame": 441,
+          "temporalFrame": 441,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17253.40000000596,
+          "frame": 442,
+          "temporalFrame": 442,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17260.40000000596,
+          "frame": 443,
+          "temporalFrame": 443,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17284.30000001192,
+          "frame": 444,
+          "temporalFrame": 444,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17289.90000000596,
+          "frame": 445,
+          "temporalFrame": 445,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17296.69999998808,
+          "frame": 446,
+          "temporalFrame": 446,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17303,
+          "frame": 447,
+          "temporalFrame": 447,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17308.09999999404,
+          "frame": 448,
+          "temporalFrame": 448,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17314.59999999404,
+          "frame": 449,
+          "temporalFrame": 449,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17319.69999998808,
+          "frame": 450,
+          "temporalFrame": 450,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17324.09999999404,
+          "frame": 451,
+          "temporalFrame": 451,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17329.90000000596,
+          "frame": 452,
+          "temporalFrame": 452,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17334.40000000596,
+          "frame": 453,
+          "temporalFrame": 453,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17339.5,
+          "frame": 454,
+          "temporalFrame": 454,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17345.09999999404,
+          "frame": 455,
+          "temporalFrame": 455,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17350,
+          "frame": 456,
+          "temporalFrame": 456,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17354.5,
+          "frame": 457,
+          "temporalFrame": 457,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17361.80000001192,
+          "frame": 458,
+          "temporalFrame": 458,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17367.30000001192,
+          "frame": 459,
+          "temporalFrame": 459,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17372,
+          "frame": 460,
+          "temporalFrame": 460,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17377.80000001192,
+          "frame": 461,
+          "temporalFrame": 461,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17382.5,
+          "frame": 462,
+          "temporalFrame": 462,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17386.90000000596,
+          "frame": 463,
+          "temporalFrame": 463,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17408.90000000596,
+          "frame": 464,
+          "temporalFrame": 464,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17414.19999998808,
+          "frame": 465,
+          "temporalFrame": 465,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17421,
+          "frame": 466,
+          "temporalFrame": 466,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17426.80000001192,
+          "frame": 467,
+          "temporalFrame": 467,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17433.09999999404,
+          "frame": 468,
+          "temporalFrame": 468,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17437.30000001192,
+          "frame": 469,
+          "temporalFrame": 469,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17442,
+          "frame": 470,
+          "temporalFrame": 470,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17448.80000001192,
+          "frame": 471,
+          "temporalFrame": 471,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17453,
+          "frame": 472,
+          "temporalFrame": 472,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17458.80000001192,
+          "frame": 473,
+          "temporalFrame": 473,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17464.19999998808,
+          "frame": 474,
+          "temporalFrame": 474,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17468.59999999404,
+          "frame": 475,
+          "temporalFrame": 475,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17473,
+          "frame": 476,
+          "temporalFrame": 476,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17479.59999999404,
+          "frame": 477,
+          "temporalFrame": 477,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17483.5,
+          "frame": 478,
+          "temporalFrame": 478,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17488,
+          "frame": 479,
+          "temporalFrame": 479,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17493.5,
+          "frame": 480,
+          "temporalFrame": 480,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17498.40000000596,
+          "frame": 481,
+          "temporalFrame": 481,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17502.40000000596,
+          "frame": 482,
+          "temporalFrame": 482,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17507.19999998808,
+          "frame": 483,
+          "temporalFrame": 483,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17512.19999998808,
+          "frame": 484,
+          "temporalFrame": 484,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17516.40000000596,
+          "frame": 485,
+          "temporalFrame": 485,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17520.59999999404,
+          "frame": 486,
+          "temporalFrame": 486,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17525.69999998808,
+          "frame": 487,
+          "temporalFrame": 487,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17531.09999999404,
+          "frame": 488,
+          "temporalFrame": 488,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17536.09999999404,
+          "frame": 489,
+          "temporalFrame": 489,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17557.5,
+          "frame": 490,
+          "temporalFrame": 490,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17562.59999999404,
+          "frame": 491,
+          "temporalFrame": 491,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17566.59999999404,
+          "frame": 492,
+          "temporalFrame": 492,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17570.80000001192,
+          "frame": 493,
+          "temporalFrame": 493,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17575.59999999404,
+          "frame": 494,
+          "temporalFrame": 494,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17580.90000000596,
+          "frame": 495,
+          "temporalFrame": 495,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17585.30000001192,
+          "frame": 496,
+          "temporalFrame": 496,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17589.5,
+          "frame": 497,
+          "temporalFrame": 497,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17595.59999999404,
+          "frame": 498,
+          "temporalFrame": 498,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17600,
+          "frame": 499,
+          "temporalFrame": 499,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17604.59999999404,
+          "frame": 500,
+          "temporalFrame": 500,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17610.5,
+          "frame": 501,
+          "temporalFrame": 501,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17615.40000000596,
+          "frame": 502,
+          "temporalFrame": 502,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17620.19999998808,
+          "frame": 503,
+          "temporalFrame": 503,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17625.30000001192,
+          "frame": 504,
+          "temporalFrame": 504,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17630.90000000596,
+          "frame": 505,
+          "temporalFrame": 505,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17635.30000001192,
+          "frame": 506,
+          "temporalFrame": 506,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17640.80000001192,
+          "frame": 507,
+          "temporalFrame": 507,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17646.80000001192,
+          "frame": 508,
+          "temporalFrame": 508,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17651.30000001192,
+          "frame": 509,
+          "temporalFrame": 509,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17655.59999999404,
+          "frame": 510,
+          "temporalFrame": 510,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17662.30000001192,
+          "frame": 511,
+          "temporalFrame": 511,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17666.80000001192,
+          "frame": 512,
+          "temporalFrame": 512,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17671.09999999404,
+          "frame": 513,
+          "temporalFrame": 513,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17678,
+          "frame": 514,
+          "temporalFrame": 514,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17682.90000000596,
+          "frame": 515,
+          "temporalFrame": 515,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17686.69999998808,
+          "frame": 516,
+          "temporalFrame": 516,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17707.69999998808,
+          "frame": 517,
+          "temporalFrame": 517,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17712,
+          "frame": 518,
+          "temporalFrame": 518,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17716.30000001192,
+          "frame": 519,
+          "temporalFrame": 519,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17721.5,
+          "frame": 520,
+          "temporalFrame": 520,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17727.90000000596,
+          "frame": 521,
+          "temporalFrame": 521,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17732,
+          "frame": 522,
+          "temporalFrame": 522,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17736.5,
+          "frame": 523,
+          "temporalFrame": 523,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17741.5,
+          "frame": 524,
+          "temporalFrame": 524,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17747,
+          "frame": 525,
+          "temporalFrame": 525,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17768.90000000596,
+          "frame": 526,
+          "temporalFrame": 526,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17772.5,
+          "frame": 527,
+          "temporalFrame": 527,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17777.59999999404,
+          "frame": 528,
+          "temporalFrame": 528,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17781.5,
+          "frame": 529,
+          "temporalFrame": 529,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17785.80000001192,
+          "frame": 530,
+          "temporalFrame": 530,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17789.90000000596,
+          "frame": 531,
+          "temporalFrame": 531,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17795.30000001192,
+          "frame": 532,
+          "temporalFrame": 532,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17799.80000001192,
+          "frame": 533,
+          "temporalFrame": 533,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17803.90000000596,
+          "frame": 534,
+          "temporalFrame": 534,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17808.59999999404,
+          "frame": 535,
+          "temporalFrame": 535,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17814.19999998808,
+          "frame": 536,
+          "temporalFrame": 536,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17818.90000000596,
+          "frame": 537,
+          "temporalFrame": 537,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17822.90000000596,
+          "frame": 538,
+          "temporalFrame": 538,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17846.09999999404,
+          "frame": 539,
+          "temporalFrame": 539,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17851.30000001192,
+          "frame": 540,
+          "temporalFrame": 540,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17856.30000001192,
+          "frame": 541,
+          "temporalFrame": 541,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17862.69999998808,
+          "frame": 542,
+          "temporalFrame": 542,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17866.69999998808,
+          "frame": 543,
+          "temporalFrame": 543,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17870.90000000596,
+          "frame": 544,
+          "temporalFrame": 544,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17875.19999998808,
+          "frame": 545,
+          "temporalFrame": 545,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17881.59999999404,
+          "frame": 546,
+          "temporalFrame": 546,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17903.19999998808,
+          "frame": 547,
+          "temporalFrame": 547,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17907,
+          "frame": 548,
+          "temporalFrame": 548,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17912.69999998808,
+          "frame": 549,
+          "temporalFrame": 549,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17917,
+          "frame": 550,
+          "temporalFrame": 550,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17920.80000001192,
+          "frame": 551,
+          "temporalFrame": 551,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17926,
+          "frame": 552,
+          "temporalFrame": 552,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17931,
+          "frame": 553,
+          "temporalFrame": 553,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17935,
+          "frame": 554,
+          "temporalFrame": 554,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17939.59999999404,
+          "frame": 555,
+          "temporalFrame": 555,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17945.19999998808,
+          "frame": 556,
+          "temporalFrame": 556,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17949.40000000596,
+          "frame": 557,
+          "temporalFrame": 557,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17953.09999999404,
+          "frame": 558,
+          "temporalFrame": 558,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17957.69999998808,
+          "frame": 559,
+          "temporalFrame": 559,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17963,
+          "frame": 560,
+          "temporalFrame": 560,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17967.40000000596,
+          "frame": 561,
+          "temporalFrame": 561,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17971.80000001192,
+          "frame": 562,
+          "temporalFrame": 562,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17977.30000001192,
+          "frame": 563,
+          "temporalFrame": 563,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17981.30000001192,
+          "frame": 564,
+          "temporalFrame": 564,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17985.40000000596,
+          "frame": 565,
+          "temporalFrame": 565,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17989.69999998808,
+          "frame": 566,
+          "temporalFrame": 566,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17995,
+          "frame": 567,
+          "temporalFrame": 567,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 17998.90000000596,
+          "frame": 568,
+          "temporalFrame": 568,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18002.90000000596,
+          "frame": 569,
+          "temporalFrame": 569,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18007.19999998808,
+          "frame": 570,
+          "temporalFrame": 570,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18011.90000000596,
+          "frame": 571,
+          "temporalFrame": 571,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18015.90000000596,
+          "frame": 572,
+          "temporalFrame": 572,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18019.90000000596,
+          "frame": 573,
+          "temporalFrame": 573,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18024.30000001192,
+          "frame": 574,
+          "temporalFrame": 574,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18029.69999998808,
+          "frame": 575,
+          "temporalFrame": 575,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18033.90000000596,
+          "frame": 576,
+          "temporalFrame": 576,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18037.90000000596,
+          "frame": 577,
+          "temporalFrame": 577,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18042.40000000596,
+          "frame": 578,
+          "temporalFrame": 578,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18047.69999998808,
+          "frame": 579,
+          "temporalFrame": 579,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18053.19999998808,
+          "frame": 580,
+          "temporalFrame": 580,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18058.5,
+          "frame": 581,
+          "temporalFrame": 581,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18065.40000000596,
+          "frame": 582,
+          "temporalFrame": 582,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18070,
+          "frame": 583,
+          "temporalFrame": 583,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18075.30000001192,
+          "frame": 584,
+          "temporalFrame": 584,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18081.09999999404,
+          "frame": 585,
+          "temporalFrame": 585,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18085.5,
+          "frame": 586,
+          "temporalFrame": 586,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18089.80000001192,
+          "frame": 587,
+          "temporalFrame": 587,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18095.90000000596,
+          "frame": 588,
+          "temporalFrame": 588,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18100.09999999404,
+          "frame": 589,
+          "temporalFrame": 589,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18104.09999999404,
+          "frame": 590,
+          "temporalFrame": 590,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18108.59999999404,
+          "frame": 591,
+          "temporalFrame": 591,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18113.80000001192,
+          "frame": 592,
+          "temporalFrame": 592,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18118,
+          "frame": 593,
+          "temporalFrame": 593,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18122.30000001192,
+          "frame": 594,
+          "temporalFrame": 594,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18128.19999998808,
+          "frame": 595,
+          "temporalFrame": 595,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18132.40000000596,
+          "frame": 596,
+          "temporalFrame": 596,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18137,
+          "frame": 597,
+          "temporalFrame": 597,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18141.80000001192,
+          "frame": 598,
+          "temporalFrame": 598,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18150.30000001192,
+          "frame": 599,
+          "temporalFrame": 599,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18155.19999998808,
+          "frame": 600,
+          "temporalFrame": 600,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18162.59999999404,
+          "frame": 601,
+          "temporalFrame": 601,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18167.80000001192,
+          "frame": 602,
+          "temporalFrame": 602,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18172.19999998808,
+          "frame": 603,
+          "temporalFrame": 603,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18178.30000001192,
+          "frame": 604,
+          "temporalFrame": 604,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18182.59999999404,
+          "frame": 605,
+          "temporalFrame": 605,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18187.80000001192,
+          "frame": 606,
+          "temporalFrame": 606,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18192.90000000596,
+          "frame": 607,
+          "temporalFrame": 607,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18198.69999998808,
+          "frame": 608,
+          "temporalFrame": 608,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18202.5,
+          "frame": 609,
+          "temporalFrame": 609,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18207.59999999404,
+          "frame": 610,
+          "temporalFrame": 610,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18213,
+          "frame": 611,
+          "temporalFrame": 611,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18217.09999999404,
+          "frame": 612,
+          "temporalFrame": 612,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18221.69999998808,
+          "frame": 613,
+          "temporalFrame": 613,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18228.19999998808,
+          "frame": 614,
+          "temporalFrame": 614,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18232.09999999404,
+          "frame": 615,
+          "temporalFrame": 615,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18236.5,
+          "frame": 616,
+          "temporalFrame": 616,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18241.80000001192,
+          "frame": 617,
+          "temporalFrame": 617,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18249.40000000596,
+          "frame": 618,
+          "temporalFrame": 618,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18254.59999999404,
+          "frame": 619,
+          "temporalFrame": 619,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18261.5,
+          "frame": 620,
+          "temporalFrame": 620,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18266.40000000596,
+          "frame": 621,
+          "temporalFrame": 621,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18270.30000001192,
+          "frame": 622,
+          "temporalFrame": 622,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18274.90000000596,
+          "frame": 623,
+          "temporalFrame": 623,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18280,
+          "frame": 624,
+          "temporalFrame": 624,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18284.59999999404,
+          "frame": 625,
+          "temporalFrame": 625,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18288.69999998808,
+          "frame": 626,
+          "temporalFrame": 626,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18294.09999999404,
+          "frame": 627,
+          "temporalFrame": 627,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18299.09999999404,
+          "frame": 628,
+          "temporalFrame": 628,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18303.5,
+          "frame": 629,
+          "temporalFrame": 629,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18308.30000001192,
+          "frame": 630,
+          "temporalFrame": 630,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18313.30000001192,
+          "frame": 631,
+          "temporalFrame": 631,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18317.30000001192,
+          "frame": 632,
+          "temporalFrame": 632,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18321.40000000596,
+          "frame": 633,
+          "temporalFrame": 633,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18342.90000000596,
+          "frame": 634,
+          "temporalFrame": 634,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18346.90000000596,
+          "frame": 635,
+          "temporalFrame": 635,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18350.90000000596,
+          "frame": 636,
+          "temporalFrame": 636,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18354.69999998808,
+          "frame": 637,
+          "temporalFrame": 637,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18359.69999998808,
+          "frame": 638,
+          "temporalFrame": 638,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18364.69999998808,
+          "frame": 639,
+          "temporalFrame": 639,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18368.90000000596,
+          "frame": 640,
+          "temporalFrame": 640,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18372.80000001192,
+          "frame": 641,
+          "temporalFrame": 641,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18379.19999998808,
+          "frame": 642,
+          "temporalFrame": 642,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18383,
+          "frame": 643,
+          "temporalFrame": 643,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18387.90000000596,
+          "frame": 644,
+          "temporalFrame": 644,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18394.40000000596,
+          "frame": 645,
+          "temporalFrame": 645,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18398.69999998808,
+          "frame": 646,
+          "temporalFrame": 646,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18402.59999999404,
+          "frame": 647,
+          "temporalFrame": 647,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18406.69999998808,
+          "frame": 648,
+          "temporalFrame": 648,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18412,
+          "frame": 649,
+          "temporalFrame": 649,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18416,
+          "frame": 650,
+          "temporalFrame": 650,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18419.90000000596,
+          "frame": 651,
+          "temporalFrame": 651,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18424.69999998808,
+          "frame": 652,
+          "temporalFrame": 652,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18431.19999998808,
+          "frame": 653,
+          "temporalFrame": 653,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18435.30000001192,
+          "frame": 654,
+          "temporalFrame": 654,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18439.40000000596,
+          "frame": 655,
+          "temporalFrame": 655,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18445.30000001192,
+          "frame": 656,
+          "temporalFrame": 656,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18449.19999998808,
+          "frame": 657,
+          "temporalFrame": 657,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18453.19999998808,
+          "frame": 658,
+          "temporalFrame": 658,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18458,
+          "frame": 659,
+          "temporalFrame": 659,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18463.69999998808,
+          "frame": 660,
+          "temporalFrame": 660,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18467.80000001192,
+          "frame": 661,
+          "temporalFrame": 661,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18472.30000001192,
+          "frame": 662,
+          "temporalFrame": 662,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18478,
+          "frame": 663,
+          "temporalFrame": 663,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18482.19999998808,
+          "frame": 664,
+          "temporalFrame": 664,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18487.40000000596,
+          "frame": 665,
+          "temporalFrame": 665,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18492.19999998808,
+          "frame": 666,
+          "temporalFrame": 666,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18514.30000001192,
+          "frame": 667,
+          "temporalFrame": 667,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18518.5,
+          "frame": 668,
+          "temporalFrame": 668,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18522.59999999404,
+          "frame": 669,
+          "temporalFrame": 669,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18528.59999999404,
+          "frame": 670,
+          "temporalFrame": 670,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18532.69999998808,
+          "frame": 671,
+          "temporalFrame": 671,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18554.40000000596,
+          "frame": 672,
+          "temporalFrame": 672,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18558.90000000596,
+          "frame": 673,
+          "temporalFrame": 673,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18564,
+          "frame": 674,
+          "temporalFrame": 674,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18567.90000000596,
+          "frame": 675,
+          "temporalFrame": 675,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18571.80000001192,
+          "frame": 676,
+          "temporalFrame": 676,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18577,
+          "frame": 677,
+          "temporalFrame": 677,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18581.5,
+          "frame": 678,
+          "temporalFrame": 678,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18585.40000000596,
+          "frame": 679,
+          "temporalFrame": 679,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18589.69999998808,
+          "frame": 680,
+          "temporalFrame": 680,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18595.5,
+          "frame": 681,
+          "temporalFrame": 681,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18600,
+          "frame": 682,
+          "temporalFrame": 682,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18604,
+          "frame": 683,
+          "temporalFrame": 683,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18608.5,
+          "frame": 684,
+          "temporalFrame": 684,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18613.59999999404,
+          "frame": 685,
+          "temporalFrame": 685,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18618.09999999404,
+          "frame": 686,
+          "temporalFrame": 686,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18621.90000000596,
+          "frame": 687,
+          "temporalFrame": 687,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18628.09999999404,
+          "frame": 688,
+          "temporalFrame": 688,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18631.69999998808,
+          "frame": 689,
+          "temporalFrame": 689,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18635.69999998808,
+          "frame": 690,
+          "temporalFrame": 690,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18639.90000000596,
+          "frame": 691,
+          "temporalFrame": 691,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18645.69999998808,
+          "frame": 692,
+          "temporalFrame": 692,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18649.5,
+          "frame": 693,
+          "temporalFrame": 693,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18653.5,
+          "frame": 694,
+          "temporalFrame": 694,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18658.40000000596,
+          "frame": 695,
+          "temporalFrame": 695,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18663.59999999404,
+          "frame": 696,
+          "temporalFrame": 696,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18667.80000001192,
+          "frame": 697,
+          "temporalFrame": 697,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18688.69999998808,
+          "frame": 698,
+          "temporalFrame": 698,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18693.5,
+          "frame": 699,
+          "temporalFrame": 699,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18697.59999999404,
+          "frame": 700,
+          "temporalFrame": 700,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18702,
+          "frame": 701,
+          "temporalFrame": 701,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18706.40000000596,
+          "frame": 702,
+          "temporalFrame": 702,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18711.69999998808,
+          "frame": 703,
+          "temporalFrame": 703,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18716,
+          "frame": 704,
+          "temporalFrame": 704,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18720.69999998808,
+          "frame": 705,
+          "temporalFrame": 705,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18725.40000000596,
+          "frame": 706,
+          "temporalFrame": 706,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18730.30000001192,
+          "frame": 707,
+          "temporalFrame": 707,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18734.40000000596,
+          "frame": 708,
+          "temporalFrame": 708,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18738.19999998808,
+          "frame": 709,
+          "temporalFrame": 709,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18743.80000001192,
+          "frame": 710,
+          "temporalFrame": 710,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18748,
+          "frame": 711,
+          "temporalFrame": 711,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18751.80000001192,
+          "frame": 712,
+          "temporalFrame": 712,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18756,
+          "frame": 713,
+          "temporalFrame": 713,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18762.59999999404,
+          "frame": 714,
+          "temporalFrame": 714,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18766.69999998808,
+          "frame": 715,
+          "temporalFrame": 715,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18770.59999999404,
+          "frame": 716,
+          "temporalFrame": 716,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18774.80000001192,
+          "frame": 717,
+          "temporalFrame": 717,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18780.59999999404,
+          "frame": 718,
+          "temporalFrame": 718,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18784.69999998808,
+          "frame": 719,
+          "temporalFrame": 719,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18788.5,
+          "frame": 720,
+          "temporalFrame": 720,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18794.40000000596,
+          "frame": 721,
+          "temporalFrame": 721,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18798.40000000596,
+          "frame": 722,
+          "temporalFrame": 722,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18803.80000001192,
+          "frame": 723,
+          "temporalFrame": 723,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18807.80000001192,
+          "frame": 724,
+          "temporalFrame": 724,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18813,
+          "frame": 725,
+          "temporalFrame": 725,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18817.30000001192,
+          "frame": 726,
+          "temporalFrame": 726,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18821.69999998808,
+          "frame": 727,
+          "temporalFrame": 727,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18828.09999999404,
+          "frame": 728,
+          "temporalFrame": 728,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18832.19999998808,
+          "frame": 729,
+          "temporalFrame": 729,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18836.09999999404,
+          "frame": 730,
+          "temporalFrame": 730,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18857.80000001192,
+          "frame": 731,
+          "temporalFrame": 731,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18862.90000000596,
+          "frame": 732,
+          "temporalFrame": 732,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18866.69999998808,
+          "frame": 733,
+          "temporalFrame": 733,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18870.69999998808,
+          "frame": 734,
+          "temporalFrame": 734,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18876.19999998808,
+          "frame": 735,
+          "temporalFrame": 735,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18882.19999998808,
+          "frame": 736,
+          "temporalFrame": 736,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18886.90000000596,
+          "frame": 737,
+          "temporalFrame": 737,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18893.40000000596,
+          "frame": 738,
+          "temporalFrame": 738,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18898.5,
+          "frame": 739,
+          "temporalFrame": 739,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18902.30000001192,
+          "frame": 740,
+          "temporalFrame": 740,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18908.09999999404,
+          "frame": 741,
+          "temporalFrame": 741,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18913.40000000596,
+          "frame": 742,
+          "temporalFrame": 742,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18917.59999999404,
+          "frame": 743,
+          "temporalFrame": 743,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18921.69999998808,
+          "frame": 744,
+          "temporalFrame": 744,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18927.19999998808,
+          "frame": 745,
+          "temporalFrame": 745,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18947.80000001192,
+          "frame": 746,
+          "temporalFrame": 746,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18951.5,
+          "frame": 747,
+          "temporalFrame": 747,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18955.80000001192,
+          "frame": 748,
+          "temporalFrame": 748,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18962,
+          "frame": 749,
+          "temporalFrame": 749,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18969,
+          "frame": 750,
+          "temporalFrame": 750,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18973.5,
+          "frame": 751,
+          "temporalFrame": 751,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18979.80000001192,
+          "frame": 752,
+          "temporalFrame": 752,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18984.30000001192,
+          "frame": 753,
+          "temporalFrame": 753,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18988.59999999404,
+          "frame": 754,
+          "temporalFrame": 754,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 18994.90000000596,
+          "frame": 755,
+          "temporalFrame": 755,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19000.59999999404,
+          "frame": 756,
+          "temporalFrame": 756,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19004.90000000596,
+          "frame": 757,
+          "temporalFrame": 757,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19010.19999998808,
+          "frame": 758,
+          "temporalFrame": 758,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19014.69999998808,
+          "frame": 759,
+          "temporalFrame": 759,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19019.19999998808,
+          "frame": 760,
+          "temporalFrame": 760,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19023.09999999404,
+          "frame": 761,
+          "temporalFrame": 761,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19029.69999998808,
+          "frame": 762,
+          "temporalFrame": 762,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19033.69999998808,
+          "frame": 763,
+          "temporalFrame": 763,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19037.90000000596,
+          "frame": 764,
+          "temporalFrame": 764,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19043.5,
+          "frame": 765,
+          "temporalFrame": 765,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19048.80000001192,
+          "frame": 766,
+          "temporalFrame": 766,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19052.69999998808,
+          "frame": 767,
+          "temporalFrame": 767,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19056.59999999404,
+          "frame": 768,
+          "temporalFrame": 768,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19062.5,
+          "frame": 769,
+          "temporalFrame": 769,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19066.59999999404,
+          "frame": 770,
+          "temporalFrame": 770,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19088.19999998808,
+          "frame": 771,
+          "temporalFrame": 771,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19093.59999999404,
+          "frame": 772,
+          "temporalFrame": 772,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19097.80000001192,
+          "frame": 773,
+          "temporalFrame": 773,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19101.90000000596,
+          "frame": 774,
+          "temporalFrame": 774,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19106.09999999404,
+          "frame": 775,
+          "temporalFrame": 775,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19111.19999998808,
+          "frame": 776,
+          "temporalFrame": 776,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19115,
+          "frame": 777,
+          "temporalFrame": 777,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19119.30000001192,
+          "frame": 778,
+          "temporalFrame": 778,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19123.30000001192,
+          "frame": 779,
+          "temporalFrame": 779,
+          "jitterIndex": 32,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19128.69999998808,
+          "frame": 780,
+          "temporalFrame": 780,
+          "jitterIndex": 1,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19132.69999998808,
+          "frame": 781,
+          "temporalFrame": 781,
+          "jitterIndex": 2,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19137.19999998808,
+          "frame": 782,
+          "temporalFrame": 782,
+          "jitterIndex": 3,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19160.5,
+          "frame": 783,
+          "temporalFrame": 783,
+          "jitterIndex": 4,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19166,
+          "frame": 784,
+          "temporalFrame": 784,
+          "jitterIndex": 5,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19170.40000000596,
+          "frame": 785,
+          "temporalFrame": 785,
+          "jitterIndex": 6,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19193.5,
+          "frame": 786,
+          "temporalFrame": 786,
+          "jitterIndex": 7,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19197.30000001192,
+          "frame": 787,
+          "temporalFrame": 787,
+          "jitterIndex": 8,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19201.40000000596,
+          "frame": 788,
+          "temporalFrame": 788,
+          "jitterIndex": 9,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19205.40000000596,
+          "frame": 789,
+          "temporalFrame": 789,
+          "jitterIndex": 10,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19211.09999999404,
+          "frame": 790,
+          "temporalFrame": 790,
+          "jitterIndex": 11,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19216.09999999404,
+          "frame": 791,
+          "temporalFrame": 791,
+          "jitterIndex": 12,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19220,
+          "frame": 792,
+          "temporalFrame": 792,
+          "jitterIndex": 13,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19242.40000000596,
+          "frame": 793,
+          "temporalFrame": 793,
+          "jitterIndex": 14,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19246.40000000596,
+          "frame": 794,
+          "temporalFrame": 794,
+          "jitterIndex": 15,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19250.09999999404,
+          "frame": 795,
+          "temporalFrame": 795,
+          "jitterIndex": 16,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19254.09999999404,
+          "frame": 796,
+          "temporalFrame": 796,
+          "jitterIndex": 17,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19258.69999998808,
+          "frame": 797,
+          "temporalFrame": 797,
+          "jitterIndex": 18,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19264.19999998808,
+          "frame": 798,
+          "temporalFrame": 798,
+          "jitterIndex": 19,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19268.5,
+          "frame": 799,
+          "temporalFrame": 799,
+          "jitterIndex": 20,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19272.80000001192,
+          "frame": 800,
+          "temporalFrame": 800,
+          "jitterIndex": 21,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19278.69999998808,
+          "frame": 801,
+          "temporalFrame": 801,
+          "jitterIndex": 22,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19282.59999999404,
+          "frame": 802,
+          "temporalFrame": 802,
+          "jitterIndex": 23,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19287.30000001192,
+          "frame": 803,
+          "temporalFrame": 803,
+          "jitterIndex": 24,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19291.90000000596,
+          "frame": 804,
+          "temporalFrame": 804,
+          "jitterIndex": 25,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19297.19999998808,
+          "frame": 805,
+          "temporalFrame": 805,
+          "jitterIndex": 26,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19301.59999999404,
+          "frame": 806,
+          "temporalFrame": 806,
+          "jitterIndex": 27,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19305.59999999404,
+          "frame": 807,
+          "temporalFrame": 807,
+          "jitterIndex": 28,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19310.90000000596,
+          "frame": 808,
+          "temporalFrame": 808,
+          "jitterIndex": 29,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19314.90000000596,
+          "frame": 809,
+          "temporalFrame": 809,
+          "jitterIndex": 30,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        },
+        {
+          "at": 19318.80000001192,
+          "frame": 810,
+          "temporalFrame": 810,
+          "jitterIndex": 31,
+          "valid": true,
+          "lastReset": "resolution or settings changed"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "note": "Headed Edge with test-only uncapped browser flags and renderer admission limits. Counts actual real renders; not monitor scan-out. No extra RAF or simulation loop; no product setting changed."
+}

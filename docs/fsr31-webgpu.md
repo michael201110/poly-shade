@@ -1,9 +1,12 @@
 # FSR 3.1 WebGPU integration — experimental work in progress
 
 Branch: `experiment/fsr31-webgpu`. Base: `d76c056`, PolyShade 0.5.6.
-Experimental version: `0.6.0-fsr31.0`. PML latest remains **0.5.6**.
-Historical release bundles are untouched. This document records progress, not
-release qualification or completion of the requested SR + FG integration.
+Experimental source version: `0.6.0-fsr31.1`. PML latest remains **0.5.6**.
+Historical release bundles are untouched. The original SR preview is
+`0.6.0-fsr31.0`; the next experimental snapshot adds the official analytical FG
+pipeline and temporal stability corrections. See the separate
+[FG report](frame-generation.md) and [shimmer audit](temporal-jitter-stability.md)
+for current qualification and measured limitations.
 
 ## Reference and reproducibility
 
@@ -65,8 +68,9 @@ camera. The reconstruction factors follow AMD's host implementation.
 PolyShade velocity stores unjittered **current minus previous NDC** with +Y up.
 AMD expects **previous minus current UV**, +Y down. Its shader motion scale is
 therefore `(-0.5, +0.5)`. Jitter is excluded from motion and supplied separately
-in input pixel units. This mapping still needs the full numerical moving-scene
-and temporal artifact qualification; constant-color success does not prove it.
+in input pixel units. Numerical moving-camera, object-motion, depth, sign and
+reset regressions supplement constant-color checks. Complete-cycle stationary
+captures and edge-flicker measurements are recorded in the shimmer audit.
 
 The experimental MRT attachment supplies application-authored reactive coverage
 from final material alpha (including swarm opacity nodes) and emissive luminance.
@@ -84,7 +88,7 @@ disposes FSR. Validation scopes for FSR compute commands are asynchronous.
 No gameplay shader compilation, profiling map, image readback, or GPU completion
 is awaited by `reconstruct()`.
 
-## Current verification
+## Historical SR-preview verification (`0.6.0-fsr31.0`)
 
 The movement regression had two causes:
 
@@ -133,13 +137,13 @@ and 0.76 for FSR. FSR's mean channel shift is below 0.16. This is a static
 scene check, not proof of moving-image fidelity. The script asserts scene
 colour/exposure, settled history, selected mode and absence of GPU errors.
 
-The archived 0.4.0 sky comparison initially failed once. Unchanged 0.5.6 and
-the experimental build both passed on repeat (all four presets). The verifier
-now requires 60 completed frames after settings changes in addition to its
-two-second warmup; its original error threshold is unchanged. The strengthened
-final repeat passes all four presets, with sky errors 0.139, 0.201, 0.151 and
-0.139 display-code values respectively. The initial failure is retained as a
-startup-stability observation, not hidden or counted as a pass.
+The archived 0.4.0 sky comparison initially failed, then passed on repeat after
+strengthening the warmup. The subsequent `.1` qualification reproduced a real
+missing partial-sun-occlusion gate in the GPU shaft/volume path; it was not
+adequately explained by startup alone. Restoring reference gating reduces the
+cinematic mismatch from about 9.74 to 0.150 display codes. All four presets pass
+the original five-code limit. The harness now also copies the full camera pose
+and projection, rather than only its position/quaternion fields.
 
 `node scripts/benchmark-upscaling.mjs`: all eleven Native/Reduced/SGSR2
 720p scale cases pass, including return from Native to SGSR2. These are frozen
@@ -153,26 +157,30 @@ The fixed-view harness's callback rate must not be interpreted as displayed FPS.
 
 Verified bundle SHA-256:
 `cc6dac7f2862f335b00cfedc92ed221b2822e2206dc3c662f41c9791240aadb8`.
-The user's Edge profile had no open PML tab during the final inventory; these
-checks install the mod in fresh isolated Edge profiles and close them afterward.
-This snapshot is not installed in the user's normal profile.
+The `0.6.0-fsr31.0` SR preview was subsequently installed in the user's normal
+Edge PML tab and its heading verified. Development tests install their candidate
+in fresh isolated profiles and close those browsers afterward.
 
 Removing the DXC unroll annotation from the shading-change pyramid produced
 byte-identical WGSL. The no-unroll variant is rejected as an optimization; no
 performance gain is claimed for it.
 
-The first live attempt found an MRT PSO-cache collision and was rejected. The
-corrected static game session now renders FSR with valid histories. It is not
-yet an accepted live keyboard benchmark. No FPS gain, latency gain, image-quality
-equivalence, or frame-generation result is claimed.
+The first live attempt found an MRT PSO-cache collision and was rejected. Later
+live movement tests fixed replacement-material MRT state and smooth-FOV history
+invalidation. The `.1` candidate additionally corrects false static velocity,
+SGSR2 geometry-footprint rejection and transparent reactive-mask coverage.
 
-## Outstanding phases
+## Current experimental qualification (`0.6.0-fsr31.1`)
 
-1. Numerical depth/motion/jitter/reactivity tests; reset/resize/device lifecycle.
-2. RCAS integration and temporal artifact checks, including transparent ghosts.
-3. Headed SGSR2/FSR comparisons at all requested scales/resolutions, power-state
-   recording, bounded queue validation and matched captures/moving replay.
-4. Official optical flow and frame-interpolation WGSL port, midpoint fidelity.
-5. Browser-native real/generated presentation, latency and fallback.
-6. 1440p/4K memory/format/f16 study, 1/100/500-car regressions, all existing tests.
-7. Release only after live responsiveness and fidelity are qualified.
+- Official optical flow and frame interpolation are implemented, with numerical
+  translated-image midpoint fixtures, real/generated presentation, lifecycle,
+  fallback and bounded-queue checks. FG stays optional and off by default.
+- Golden Hour moving-gameplay cost matrices retain real render rates, canvas
+  submission rates, named GPU passes and actual hardware clocks. They do not
+  measure monitor scan-out or input-to-photon latency.
+- Stationary temporal stability covers Native plus 100/77/67/59/50% in both
+  upscalers at 720p, 1080p, 1440p and 4K. Axis/zero controls remain test-only.
+- The reports above contain final test, performance and moving-swarm evidence.
+  No image-quality equivalence or universal absence of temporal artifacts is
+  claimed. In particular the T500 does not meet a 4K 30-real/60-presented FG
+  target; an implementation can be correct and still too expensive there.

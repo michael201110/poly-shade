@@ -1,6 +1,6 @@
 export const GPU_POST_COMMON = `
 struct Params {
- inverseProjection:mat4x4f,cameraWorld:mat4x4f,inverseVP:mat4x4f,previousVP:mat4x4f,previousInverseProjection:mat4x4f,projection:mat4x4f,
+ inverseProjection:mat4x4f,cameraWorld:mat4x4f,inverseVP:mat4x4f,clipToPrevious:mat4x4f,previousInverseProjection:mat4x4f,projection:mat4x4f,
  size:vec4f,jitter:vec4f,sunUV:vec4f,sunDirection:vec4f,horizon:vec4f,sunColor:vec4f,cfg:array<vec4f,16>,
 };
 @group(0) @binding(0) var<uniform> p:Params;
@@ -15,6 +15,7 @@ struct Params {
 @group(0) @binding(9) var sunVisibility:texture_2d<f32>;
 @group(0) @binding(10) var rejection:texture_2d<f32>;
 @group(0) @binding(11) var apertureMask:texture_2d<f32>;
+@group(0) @binding(12) var jitteredSource:texture_2d<f32>;
 struct Vertex { @builtin(position) position:vec4f,@location(0) uv:vec2f };
 @vertex fn vertex(@builtin(vertex_index) id:u32)->Vertex{
  let xy=vec2f(f32((id<<1u)&2u),f32(id&2u));var out:Vertex;out.position=vec4f(xy*2.-1.,0,1);out.uv=vec2f(xy.x,1.-xy.y);return out;
@@ -30,9 +31,14 @@ fn cloudTransmission()->f32{let d=p.sunDirection.xyz;let q=d.xz/max(d.y+.35,.1)*
 `;
 export const STATIC_VELOCITY = `
 @fragment fn fragment(v:Vertex)->@location(0) vec4f{
- let uv=v.uv;let d=D(uv);var world=p.inverseVP*vec4f(uv*vec2f(2,-2)+vec2f(-1,1),d,1);world/=max(world.w,1e-6);
- if(d>=.9999999){world=vec4f(world.xyz-p.cameraWorld[3].xyz,0);}
- let old=p.previousVP*world;
+ let uv=v.uv;let d=D(uv);
+ // Compose current clip -> previous clip on the CPU in double precision.
+ // Reconstructing distant world positions in shader f32, dividing, then
+ // projecting again introduces jitter-dependent *physical* velocity even
+ // with identical camera poses. Sky is a direction at infinity (w_world=0),
+ // so camera translation cannot move it.
+ let z=select(d,p.projection[2][2]/p.projection[2][3],d>=.9999999);
+ let old=p.clipToPrevious*vec4f(uv*vec2f(2,-2)+vec2f(-1,1),z,1);
  let currentNDC=(uv-p.jitter.xy)*vec2f(2,-2)+vec2f(-1,1);
  let previousNDC=old.xy/max(old.w,1e-6)-p.jitter.zw*vec2f(2,-2);
  return vec4f(select(vec2f(0),currentNDC-previousNDC,p.cfg[9].w>.5),0,previousDepth(old));
@@ -74,7 +80,11 @@ fn skyCoverage(uv:vec2f)->f32{return select(0.,1.,D(uv)>.999999&&all(uv>=vec2f(0
 }`;
 export const RAYS = `
 @fragment fn fragment(v:Vertex)->@location(0) vec4f{
- let vis=textureLoad(sunVisibility,vec2i(0),0).rgb;let gate=(vis.r*.15+vis.g*.85)*vis.b*p.sunUV.w;if(gate<.001){return vec4f(0);}
+ let vis=textureLoad(sunVisibility,vec2i(0),0).rgb;
+ // Match the reference host's partial-occlusion gate. An entirely clear sun
+ // must not add a full-screen shaft veil or run the expensive march.
+ if(vis.g<=.01){return vec4f(0);}
+ let gate=(vis.r*.15+vis.g*.85)*vis.b*p.sunUV.w;if(gate<.001){return vec4f(0);}
  var uv=vec2f(.5);let stepUV=(v.uv-p.sunUV.xy)/vec2f(.24/p.sunUV.z,.24)*p.cfg[5].z/64.;
  var sum=0.;var weight=1.;for(var i=0;i<64;i++){uv+=stepUV;if(any(uv<vec2f(0))||any(uv>vec2f(1))){break;}sum+=textureSampleLevel(apertureMask,linearSampler,uv,0).r*weight;weight*=p.cfg[12].x;}
  return vec4f(p.sunColor.rgb*sum*.75/p.cfg[12].y*gate*p.cfg[5].w,1);
@@ -87,7 +97,9 @@ fn sunlit(pos:vec3f,distance:f32)->f32{
  return (smoothstep(-.45,.45,-viewPosition(uv+t).z+.08+q.z)+smoothstep(-.45,.45,-viewPosition(uv-t).z+.08+q.z))*.5*smoothstep(0.,.03,edge);
 }
 @fragment fn fragment(v:Vertex)->@location(0) vec4f{
- let surface=viewPosition(v.uv);let end=min(length(surface),p.cfg[7].x);let ray=normalize(surface);let vis=textureLoad(sunVisibility,vec2i(0),0).rgb;let partial=4.*vis.b*(1.-vis.b);
+ let surface=viewPosition(v.uv);let end=min(length(surface),p.cfg[7].x);let ray=normalize(surface);let vis=textureLoad(sunVisibility,vec2i(0),0).rgb;
+ if(vis.g<=.01){return vec4f(0,0,0,end/p.cfg[7].x);}
+ let partial=4.*vis.b*(1.-vis.b);
  let gate=(vis.g*.82+vis.r*(.14+partial*.25))*mix(vis.b,1.,partial*.25)*p.sunUV.w;
  var total=0.;let stepLength=end/max(p.cfg[6].w,1.);var attenuation=exp(-p.cfg[6].y*stepLength*.5);let attenuationStep=exp(-p.cfg[6].y*stepLength)*p.cfg[6].z;
  if(gate>.001){for(var i=0;i<16;i++){if(f32(i)>=p.cfg[6].w){break;}let pos=ray*(f32(i)+.5)*stepLength;let light=min(sunlit(pos,min(p.cfg[7].x*.15,12.)),sunlit(pos,min(p.cfg[7].x*1.5,160.)));total+=light*p.cfg[6].y*stepLength*attenuation;attenuation*=attenuationStep;}}
@@ -133,5 +145,8 @@ export const FINISH = `
  if(debug==7){c=select(vec3f(1,0,0),vec3f(0,1,0),p.cfg[9].w>.5);}
  if(debug==8){c=vec3f(textureLoad(rejection,clamp(vec2i(v.uv*vec2f(textureDimensions(rejection))),vec2i(0),vec2i(textureDimensions(rejection))-1),0).r);}
  if(debug==9){let xz=c.x-c.z;c=clamp(vec3f(xz+c.y,c.x+c.z,xz-c.y),vec3f(0),vec3f(1));c/=((1.+600./65504.)-max(max(c.r,c.g),c.b));}
+ // Diagnostic only: both halves show the same complete view. The left is the
+ // actual graded jittered raster; the right is the stable reconstructed grid.
+ if(debug==11){let uv=vec2f(fract(v.uv.x*2.),v.uv.y);c=select(textureSampleLevel(inputColor,linearSampler,uv,0).rgb,textureSampleLevel(jitteredSource,linearSampler,uv,0).rgb,v.uv.x<.5);}
  let srgb=select(c*12.92,1.055*pow(max(c,vec3f(0)),vec3f(1./2.4))-.055,c>vec3f(.0031308));return vec4f(srgb,1);
 }`;

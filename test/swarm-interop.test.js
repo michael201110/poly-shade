@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as T from 'three/src/Three.WebGPU.js';
 import {SwarmInstances,createSwarmInterop} from '../src/rendering/swarm-interop.js';
+import {GPUScene} from '../src/rendering/webgpu/scene.js';
 
 function fixture(kind=0) {
   const mirror={scene:new T.Scene(),topologyVersion:0};mirror.swarms=new SwarmInstances(mirror);
@@ -16,6 +17,29 @@ function packet(count) {
     data[at+12]=i;data[at+17]=1;data[at+19]=1;}
   return data;
 }
+
+test('FSR MRT applies to existing and lazily created swarm skid materials',()=>{
+  const {mirror,group}=fixture(),node={name:'reactive-mask'};
+  mirror.materials=new Map();
+  const first=mirror.swarms.register({version:1,maxCars:1,groups:[group]});
+  const skid=new Float32Array([0,1,2,3,4,5,6,7,8,9,10,11,12]);
+  mirror.swarms.updateTrails(first,skid,0,1,false);
+  const material=mirror.swarms.sources.get(first).trails.mesh.material,version=material.version;
+  GPUScene.prototype.setMRT.call(mirror,node);
+  assert.equal(material.mrtNode,node);assert.equal(material.version,version+1);
+  GPUScene.prototype.setMRT.call(mirror,node);
+  assert.equal(material.version,version+1,'unchanged MRT does not invalidate shaders each frame');
+  const second=mirror.swarms.register({version:1,maxCars:1,groups:[group]});
+  mirror.swarms.updateTrails(second,skid,0,1,false);
+  assert.equal(mirror.swarms.sources.get(second).groups[0].mesh.material.mrtNode,node);
+  assert.equal(mirror.swarms.sources.get(second).trails.mesh.material.mrtNode,node);
+  GPUScene.prototype.setMRT.call(mirror,null);
+  for(const source of mirror.swarms.sources.values()){
+    assert.equal(source.trails.mesh.material.mrtNode,null);
+    assert.equal(source.groups[0].mesh.material.mrtNode,null);
+  }
+  mirror.swarms.clear();
+});
 test('packed swarm uploads share one material/mesh for 100 and 500 bodies',()=>{
   for(const count of [1,25,50,100,250,500]){
     const {mirror,group}=fixture(),handle=mirror.swarms.register({version:1,maxCars:count,groups:[group]});

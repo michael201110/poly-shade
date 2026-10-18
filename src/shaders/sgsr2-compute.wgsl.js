@@ -28,20 +28,31 @@ fn gather(c:vec2i)->vec4f{return vec4f(D(c+vec2i(0,1)),D(c+vec2i(1,1)),D(c+vec2i
 fn minimum(v:vec4f)->f32{return min(min(v.x,v.y),min(v.z,v.w));}
 fn rejectHistory(uv:vec2f,v:vec4f)->f32{
  let oldUV=uv-p.jitterUV.xy+vec2f(-v.x,v.y)*0.5+p.jitterUV.zw;
- let at=vec2i(floor(oldUV*vec2f(p.renderSize)));
- let old=textureLoad(previousGeometry,bounded(at),0);
+ // Geometry history is in the old jittered raster grid. A subpixel lookup
+ // straddles texel centres: nearest-only depth/coverage can select the other
+ // side of a stationary silhouette as the jitter changes. Test the actual
+ // bilinear footprint for a compatible surface rather than rejecting that
+ // stable colour history on alternating phases.
+ let position=oldUV*vec2f(p.renderSize)-0.5;
+ let at=vec2i(floor(position));let fraction=fract(position);
+ let movingAt=vec2i(floor(oldUV*vec2f(p.renderSize)));
  var moving=0.0;
  for(var y=-1;y<=1;y++){for(var x=-1;x<=1;x++){
-   moving=max(moving,textureLoad(previousGeometry,bounded(at+vec2i(x,y)),0).b);
+   moving=max(moving,textureLoad(previousGeometry,bounded(movingAt+vec2i(x,y)),0).b);
  }}
  // Finite differences replace fragment derivatives in a compute invocation.
  let dx=abs(textureLoad(velocity,bounded(vec2i(uv*vec2f(p.renderSize))+vec2i(1,0)),0).w-v.w);
  let dy=abs(textureLoad(velocity,bounded(vec2i(uv*vec2f(p.renderSize))+vec2i(0,1)),0).w-v.w);
  let tolerance=max(0.03,max(v.w*0.015,2.0*max(dx,dy)));
  let car=v.z>0.5;
+ var compatible=false;
+ for(var y=0;y<=1;y++){for(var x=0;x<=1;x++){
+   let old=textureLoad(previousGeometry,bounded(at+vec2i(x,y)),0);
+   let weight=select(1.0-fraction.x,fraction.x,x==1)*select(1.0-fraction.y,fraction.y,y==1);
+   compatible=compatible||(weight>0.0&&old.a>0.5&&abs(old.r-v.w)<=tolerance&&((old.g>0.5)==car));
+ }}
  let outside=any(oldUV<vec2f(0))||any(oldUV>=vec2f(1));
- let reject=p.valid==0u||old.a<0.5||outside||abs(old.r-v.w)>tolerance||
-   (!car&&(old.g>0.5||moving>0.5))||(car&&old.g<0.5)||v.z>2.5;
+ let reject=p.valid==0u||outside||!compatible||(!car&&moving>0.5)||v.z>2.5;
  return select(0.0,1.0,reject);
 }
 @compute @workgroup_size(8,8,1)

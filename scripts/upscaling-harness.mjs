@@ -3,11 +3,20 @@ import { chromium } from "@playwright/test";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { createHash } from "node:crypto";
 
+export async function currentBundlePath() {
+  const {version}=JSON.parse(await readFile('package.json','utf8'));
+  return `${version.includes('-')?'experimental/':''}${version}/main.mod.js`;
+}
+
 export async function openUpscalingHarness({ backend = "webgpu", reference = false, freezeSupport = true, polyshade = true } = {}) {
+  // Verification must load the candidate we just built, rather than silently
+  // exercising stable latest or an older experimental snapshot.
+  if(!reference&&polyshade)process.env.POLYSHADE_BUNDLE??=await currentBundlePath();
   const browser = await chromium.launch({
     channel: "msedge",
     headless: process.env.POLYSHADE_HEADED !== "1",
-    args: ["--force_high_performance_gpu"],
+    args: ["--force_high_performance_gpu",...(process.env.POLYSHADE_UNCAPPED==='1'?
+      ['--disable-frame-rate-limit','--disable-gpu-vsync']:[])],
   });
   const viewport = process.env.POLYSHADE_VIEWPORT?.match(/^(\d+)x(\d+)$/);
   const page = await browser.newPage({

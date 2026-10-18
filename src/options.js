@@ -115,10 +115,14 @@ export const OPTIONS = {
   Upscaling: {
     upscaling: ["Upscaling", "native", ["native", "auto", "reduced", "sgsr2-compute", "fsr31"]],
     fsrSharpness: ["FSR RCAS sharpening (0 = off)", 0, 0, 1],
+    frameGeneration: ["FSR 3.1 frame generation (experimental)", false],
+    frameGenerationPacing: ["Frame pacing (smooth adds one real frame)", "smooth", ["smooth", "responsive"]],
+    fgMinimumFPS: ["Frame generation minimum real FPS", 25, 25, 40],
+    frameGenerationDebug: ["Frame generation view", "final", ["final", "generated", "real", "optical-flow", "game-motion", "disocclusion", "inpainting"]],
     upscaleQuality: ["Render scale preset", "quality", ["native", "ultra-quality", "quality", "balanced", "performance", "custom"]],
     upscaleCustomScale: ["Custom internal scale", 0.67, 0.5, 1],
     upscaleJitter: ["Projection jitter", true],
-    upscaleDebugView: ["Upscaling debug view", "final", ["final", "low-resolution", "depth", "static-velocity", "car-velocity", "combined-velocity", "jitter", "history-validity", "history-rejection", "history", "native"]],
+    upscaleDebugView: ["Upscaling debug view", "final", ["final", "low-resolution", "depth", "static-velocity", "car-velocity", "combined-velocity", "jitter", "history-validity", "history-rejection", "history", "native", "source-vs-final"]],
   },
   Quality: {
     renderScale: ["Render scale", 1, 1, 1.5],

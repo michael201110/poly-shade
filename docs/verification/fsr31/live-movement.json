@@ -6,15 +6,15 @@
       "sharpness": 0,
       "width": 1280,
       "height": 720,
-      "frames": 177,
-      "resets": 3,
+      "frames": 178,
+      "resets": 5,
       "queue": {
         "limit": 2,
         "pending": 1,
         "peak": 2,
-        "submissions": 219,
-        "completed": 218,
-        "skipped": 13
+        "submissions": 221,
+        "completed": 220,
+        "skipped": 12
       }
     },
     {
@@ -23,15 +23,15 @@
       "sharpness": 0,
       "width": 1920,
       "height": 1080,
-      "frames": 167,
-      "resets": 4,
+      "frames": 166,
+      "resets": 10,
       "queue": {
         "limit": 2,
-        "pending": 1,
+        "pending": 0,
         "peak": 2,
         "submissions": 416,
-        "completed": 415,
-        "skipped": 28
+        "completed": 416,
+        "skipped": 26
       }
     },
     {
@@ -40,15 +40,15 @@
       "sharpness": 0,
       "width": 1280,
       "height": 720,
-      "frames": 145,
-      "resets": 7,
+      "frames": 156,
+      "resets": 16,
       "queue": {
         "limit": 2,
-        "pending": 2,
+        "pending": 1,
         "peak": 2,
-        "submissions": 776,
-        "completed": 774,
-        "skipped": 53
+        "submissions": 742,
+        "completed": 741,
+        "skipped": 46
       }
     },
     {
@@ -57,15 +57,15 @@
       "sharpness": 0,
       "width": 1920,
       "height": 1080,
-      "frames": 160,
-      "resets": 9,
+      "frames": 165,
+      "resets": 21,
       "queue": {
         "limit": 2,
         "pending": 2,
         "peak": 2,
-        "submissions": 965,
-        "completed": 963,
-        "skipped": 77
+        "submissions": 938,
+        "completed": 936,
+        "skipped": 64
       }
     },
     {
@@ -74,15 +74,15 @@
       "sharpness": 0.5,
       "width": 1280,
       "height": 720,
-      "frames": 173,
-      "resets": 11,
+      "frames": 170,
+      "resets": 26,
       "queue": {
         "limit": 2,
         "pending": 1,
         "peak": 2,
-        "submissions": 1170,
-        "completed": 1169,
-        "skipped": 92
+        "submissions": 1140,
+        "completed": 1139,
+        "skipped": 76
       }
     },
     {
@@ -91,15 +91,15 @@
       "sharpness": 0,
       "width": 1920,
       "height": 1080,
-      "frames": 111,
-      "resets": 13,
+      "frames": 126,
+      "resets": 30,
       "queue": {
         "limit": 2,
-        "pending": 2,
+        "pending": 1,
         "peak": 2,
-        "submissions": 1303,
-        "completed": 1301,
-        "skipped": 162
+        "submissions": 1291,
+        "completed": 1290,
+        "skipped": 132
       }
     },
     {
@@ -108,15 +108,15 @@
       "sharpness": 0,
       "width": 1280,
       "height": 720,
-      "frames": 170,
-      "resets": 14,
+      "frames": 165,
+      "resets": 34,
       "queue": {
         "limit": 2,
         "pending": 0,
         "peak": 2,
-        "submissions": 1505,
-        "completed": 1505,
-        "skipped": 172
+        "submissions": 1489,
+        "completed": 1489,
+        "skipped": 144
       }
     },
     {
@@ -125,15 +125,15 @@
       "sharpness": 0,
       "width": 1920,
       "height": 1080,
-      "frames": 154,
-      "resets": 15,
+      "frames": 168,
+      "resets": 38,
       "queue": {
         "limit": 2,
-        "pending": 2,
+        "pending": 1,
         "peak": 2,
-        "submissions": 1689,
+        "submissions": 1688,
         "completed": 1687,
-        "skipped": 197
+        "skipped": 158
       }
     },
     {
@@ -142,15 +142,15 @@
       "sharpness": 0,
       "width": 1280,
       "height": 720,
-      "frames": 175,
-      "resets": 18,
+      "frames": 170,
+      "resets": 43,
       "queue": {
         "limit": 2,
-        "pending": 2,
+        "pending": 1,
         "peak": 2,
-        "submissions": 1898,
-        "completed": 1896,
-        "skipped": 209
+        "submissions": 1890,
+        "completed": 1889,
+        "skipped": 167
       }
     }
   ],

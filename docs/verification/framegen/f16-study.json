@@ -1,0 +1,29 @@
+{
+  "method": "Compile official FG shaders with FFX_HALF=1 and DXC native 16-bit types; compare generated WGSL against shipped FP32 variants. No runtime variant is selected when generated shaders are byte-identical.",
+  "passes": [
+    {
+      "pass": "frameinterpolation_compute_game_vector_field_inpainting_pyramid_pass.wgsl",
+      "halfSHA256": "a7a35fb5fc80a32715bf281e365f523a8ff8bf3a730abc8e56b96ca0684297da",
+      "fullSHA256": "a7a35fb5fc80a32715bf281e365f523a8ff8bf3a730abc8e56b96ca0684297da",
+      "identical": true
+    },
+    {
+      "pass": "frameinterpolation_game_motion_vector_field_pass.wgsl",
+      "halfSHA256": "0271654fa35a7c81723f09a063d82db424f7dac60c96b541bc3f920cf134ad9b",
+      "fullSHA256": "0271654fa35a7c81723f09a063d82db424f7dac60c96b541bc3f920cf134ad9b",
+      "identical": true
+    },
+    {
+      "pass": "frameinterpolation_inpainting_pass.wgsl",
+      "halfSHA256": "85114517a7e1712d4d0d35fcfa5142184f9b6f179a190152051eb0d12a33f833",
+      "fullSHA256": "85114517a7e1712d4d0d35fcfa5142184f9b6f179a190152051eb0d12a33f833",
+      "identical": true
+    },
+    {
+      "pass": "frameinterpolation_pass.wgsl",
+      "halfSHA256": "e3362bb55e0003b4424e3aa56554d56f89d5e7ef0f585a92b1ef3c09ac926dcd",
+      "fullSHA256": "e3362bb55e0003b4424e3aa56554d56f89d5e7ef0f585a92b1ef3c09ac926dcd",
+      "identical": true
+    }
+  ]
+}

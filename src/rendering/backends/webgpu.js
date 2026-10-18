@@ -2,7 +2,7 @@ import * as T from "three/src/Three.WebGPU.js";
 import Renderer from "three/src/renderers/common/Renderer.js";
 import ThreeGPUBackend from "three/src/renderers/webgpu/WebGPUBackend.js";
 import StandardNodeLibrary from "three/src/renderers/webgpu/nodes/StandardNodeLibrary.js";
-import { TemporalState, selectUpscaling } from "../temporal-state.js";
+import { TemporalState, selectUpscaling, projectionDiscontinuity } from "../temporal-state.js";
 import { GPUResources } from "../webgpu/resources.js";
 import { GPUScene } from "../webgpu/scene.js";
 import { GPUPasses } from "../webgpu/passes.js";
@@ -10,6 +10,7 @@ import { GPUProfiler } from "../webgpu/profiler.js";
 import { FrameQueue } from '../webgpu/frame-queue.js';
 import { SwarmMotion } from "../webgpu/swarm-motion.js";
 import { GPUMotion } from "../webgpu/motion.js";
+import { projectSunDirection, sunScreenVisibility } from '../sun-visibility.js';
 import { GPUShadowCache } from "../webgpu/shadows.js";
 import {
   gpuTexture,
@@ -19,6 +20,8 @@ import {
 } from "../webgpu/three-adapter.js";
 import { SGSR2Compute } from "../sgsr2-compute.js";
 import { FSR31SuperResolution } from '../fsr31/super-resolution.js';
+import { FSR31FrameGeneration } from '../framegen/frame-generation.js';
+import { FramePresenter } from '../framegen/presenter.js';
 import { mrt, output, diffuseColor, emissive, dot, vec3, vec4, max } from 'three/src/Three.TSL.js';
 import * as SH from "../../shaders/webgpu-post.wgsl.js";
 const ignoreRetiredDeviceLoss = () => {};
@@ -30,6 +33,8 @@ export class WebGPUBackend {
     this.frames = 0;
     this.warmFrames = 0;
     this.frameQueue = new FrameQueue(2);
+    this.presenter = new FramePresenter();
+    this.fgSourceWorld=new Float64Array(16);this.fgSourceProjection=new T.Matrix4();
     this.temporal = new TemporalState({Matrix4:T.Matrix4,Vector2:T.Vector2,Vector4:T.Vector4});
     this.params = new Float32Array(184);
     this.disposed = false;
@@ -172,7 +177,11 @@ export class WebGPUBackend {
       // opacity nodes (including packed swarm opacity); emissive lights react
       // independently of rigid motion. The extra attachment adds no scene draw.
       const reactivity = max(diffuseColor.a.oneMinus(), dot(emissive, vec3(.2126, .7152, .0722))).clamp(0, 1);
-      this.fsrMRT ??= mrt({ output, fsrMasks: vec4(reactivity, reactivity, 0, 1) });
+      // Every MRT attachment uses its own source alpha for blending. A forced
+      // mask alpha of one made even invisible portions of contact-shadow /
+      // translucent quads write full reactivity, discarding stable history
+      // around opaque silhouettes. Preserve the colour fragment's coverage.
+      this.fsrMRT ??= mrt({ output, fsrMasks: vec4(reactivity, reactivity, 0, diffuseColor.a) });
     }
     this.targetIsFsr = fsr;
     this.precompiled = false; this.compiling = null;
@@ -188,9 +197,29 @@ export class WebGPUBackend {
     this.fsrFailure = reason; this.capabilities.fsr31 = false;
     this.fsr?.dispose(); this.fsr = null; this.temporal.invalidate('FSR fallback');
   }
+  initializeFrameGeneration() {
+    if(this.fgInitializing||this.fg||this.fgFailure)return;
+    this.fg=new FSR31FrameGeneration(this.device);
+    this.fgInitializing=this.fg.init().then(()=>{
+      if(!this.disposed)this.temporal.invalidate('FG initialized');
+    }).catch(error=>this.failFrameGeneration(error.message));
+  }
+  failFrameGeneration(reason) {
+    this.fgFailure=reason;this.fg?.dispose();this.fg=null;
+    this.presenter.reset();this.temporal.invalidate('FG fallback');
+  }
+  presentQueued(now,generated=false,tracked=true) {
+    const item=generated?this.presenter.takeGenerated(now):this.presenter.takeReal(now);if(!item)return false;
+    const encoder=this.device.createCommandEncoder({label:'PolyShade '+(generated?'midpoint':'real-frame')+' presentation'});
+    this.passes.draw(encoder,'finish',gpuContext(this.renderer).getCurrentTexture(),item.inputs);
+    this.device.queue.submit([encoder.finish()]);
+    // Smooth mode's endpoint is a prefix of the following real-render epoch:
+    // that epoch's completion notification covers both GPU submissions.
+    if(tracked)this.frameQueue.submitted(this.device.queue);
+    this.presenter.presented(generated?'generated':'real',now);return true;
+  }
   render(source, sourceCamera, settings, logical) {
     if (!this.ready || this.disposed) return false;
-    if (!this.frameQueue.available()) return this.warmFrames >= 4;
     const requestedSettings = settings;
     if (settings.postEnabled === false) {
       if (this.noPostSource !== settings) {
@@ -216,6 +245,36 @@ export class WebGPUBackend {
     const ow = this.nativeCanvas.width,
       oh = this.nativeCanvas.height;
     if (!ow || !oh) return false;
+    if(settings.frameGeneration)this.initializeFrameGeneration();
+    const now=performance.now(),fgReady=!!(settings.frameGeneration&&this.fg?.ready),
+      fgView=settings.frameGenerationDebug??'final';
+    if(this.presenter.pending&&this.fgSourceAt) {
+      sourceCamera.updateMatrixWorld(true);
+      const a=sourceCamera.matrixWorld.elements,b=this.fgSourceWorld;
+      const travel=Math.hypot(a[12]-b[12],a[13]-b[13],a[14]-b[14]);
+      if(travel>Math.max(8,(now-this.fgSourceAt)*.8)||a[8]*b[8]+a[9]*b[9]+a[10]*b[10]<.5||
+        projectionDiscontinuity(sourceCamera.projectionMatrix,this.fgSourceProjection,sourceCamera.isPerspectiveCamera)) {
+        this.presenter.reset();this.temporal.invalidate('FG camera cut');
+      }
+    }
+    // Cached settings identity changes on every UI edit. A queued old frame
+    // must never survive resolution, scene, camera, settings or visibility cuts.
+    if(this.fgSettings!==settings||this.fgScene!==source||this.fgCamera!==sourceCamera||this.fgSize!==`${ow}x${oh}`) {
+      this.presenter.reset();this.fgSettings=settings;this.fgScene=source;this.fgCamera=sourceCamera;this.fgSize=`${ow}x${oh}`;
+      this.temporal.invalidate('presentation configuration changed');
+    }
+    const action=this.presenter.tick(now,fgReady&&fgView==='final',settings,settings.fgMinimumFPS??25,settings.frameGenerationPacing??'smooth');
+    // Permit the endpoint submission behind its midpoint, but admit a new
+    // expensive real render only after that pair drains. Completion callbacks
+    // can arrive after the next RAF despite a completed GPU command buffer.
+    const useFG=fgReady&&(fgView!=='final'||this.presenter.active);
+    this.frameQueue.limit=useFG&&action==='render'?1:2;
+    if(!this.frameQueue.available())return this.warmFrames>=4;
+    if(action==='present-real'&&this.presentQueued(now))return this.warmFrames>=4;
+    if(action==='present-generated'&&this.presentQueued(now,true))return this.warmFrames>=4;
+    if(action==='hold')return this.warmFrames>=4;
+    if(this.presenter.active&&this.presenter.mode==='smooth')this.presentQueued(now,false,false);
+    if(!useFG&&this.fg?.key)this.fg.releaseImages();
     if (this.canvas.parentElement !== this.nativeCanvas.parentElement)
       this.nativeCanvas.after(this.canvas);
     const rect = this.nativeCanvas.getBoundingClientRect();
@@ -466,10 +525,27 @@ export class WebGPUBackend {
       const finalInputs = {
         ...inputs,
         color: output,
+        source: grade,
         velocity: debugVelocity,
         rejection: this.compute?.rejection,
       };
-      this.passes.draw(
+      let fgScope=false,presentationKind='real';
+      if(useFG) {
+        this.device.pushErrorScope('validation');fgScope=true;
+        try {
+          const result=this.fg.generate(encoder,output,depth,velocity,this.temporal,this.profiler);
+          const presented=this.presenter.generated(result,finalInputs,now);
+          finalInputs.color=fgView==='real'?result.real:fgView==='generated'?result.generated:presented.color;
+          finalInputs.color=this.fg.debugView(encoder,fgView,this.profiler)??finalInputs.color;
+          if(fgView!=='final')this.presenter.pending=null;
+          presentationKind=fgView==='final'?presented.kind:fgView==='generated'?'generated':'real';
+        } catch(error) {
+          void this.device.popErrorScope();
+          if(fsrScope)void this.device.popErrorScope();
+          this.failFrameGeneration(error.message);return this.warmFrames>=4;
+        }
+      }else this.presenter.realRendered(now);
+      if(presentationKind!=='hold')this.passes.draw(
         encoder,
         "finish",
         gpuContext(this.renderer).getCurrentTexture(),
@@ -479,11 +555,18 @@ export class WebGPUBackend {
       const slot = this.profiler.end(encoder);
       this.device.queue.submit([encoder.finish()]);
       this.frameQueue.submitted(this.device.queue);
+      if(presentationKind!=='hold')this.presenter.presented(presentationKind,now);
+      if(fgScope)void this.device.popErrorScope().then(error=>{
+        if(error&&!this.disposed)this.failFrameGeneration(error.message);
+      });
       if (fsrScope) void this.device.popErrorScope().then(error => {
         if (error && !this.disposed) this.failFsr(error.message);
       });
       this.profiler.submitted(slot);
       this.temporal.commit();
+      if(useFG) {
+        this.fgSourceWorld.set(sourceCamera.matrixWorld.elements);this.fgSourceProjection.copy(sourceCamera.projectionMatrix);this.fgSourceAt=now;
+      }
       if (settings.shadowQuality !== "off") this.shadows.commit();
       this.frames++;
       this.warmFrames++;
@@ -505,30 +588,19 @@ export class WebGPUBackend {
       c.projectionMatrixInverse,
       c.matrixWorld,
       t.inverseJitteredVP,
-      t.previousJitteredVP,
+      t.clipToPrevious,
       t.previousInverseProjection,
       c.projectionMatrix,
     ].entries())
       f.set(m.elements, i * 16);
     f.set([w, h, ow, oh], 96);
     f.set(t.jitterUV.toArray(), 100);
-    const sun = new T.Vector3()
-      .copy(palette.direction)
-      .multiplyScalar(10000)
-      .add(c.position)
-      .project(c);
-    const forward = new T.Vector3()
-      .copy(palette.direction)
-      .transformDirection(c.matrixWorldInverse);
-    const visibility =
-      forward.z < 0 &&
-      sun.x > -1.2 &&
-      sun.x < 1.2 &&
-      sun.y > -1.2 &&
-      sun.y < 1.2
-        ? 1
-        : 0;
-    f.set([sun.x * 0.5 + 0.5, 0.5 - sun.y * 0.5, ow / oh, visibility], 104);
+    const sun=projectSunDirection(c,palette.direction,
+      this.sunView??=new T.Vector3(),this.sunClip??=new T.Vector4());
+    const sunUV=this.sunUV??=new T.Vector2();
+    sunUV.set(sun.x/Math.max(sun.w,.001)*.5+.5,.5-sun.y/Math.max(sun.w,.001)*.5);
+    const visibility=sunScreenVisibility(sun.w,sunUV);
+    f.set([sunUV.x, sunUV.y, ow / oh, visibility], 104);
     f.set([...palette.direction.toArray(), 0], 108);
     f.set([...palette.horizon.toArray(), 0], 112);
     f.set([...palette.sun.toArray(), 0], 116);
@@ -602,6 +674,7 @@ export class WebGPUBackend {
           "history-rejection",
           "history",
           "native",
+          "source-vs-final",
         ].indexOf(s.upscaleDebugView),
         s.sharpenEnabled && !(this.selection?.backend === 'fsr31' && s.fsrSharpness > 0) ? s.sharpenStrength : 0,
         !compute && s.fxaaEnabled ? 1 : 0,
@@ -639,6 +712,9 @@ export class WebGPUBackend {
       computeFailure: this.computeFailure,
       fsr31: this.fsr?.report(),
       fsr31Failure: this.fsrFailure,
+      frameGeneration:this.fg?.report(),
+      frameGenerationFailure:this.fgFailure,
+      presentation:this.presenter.report(),
       frameQueue: this.frameQueue?.report(),
       output: [this.canvas?.width, this.canvas?.height],
       internal: [this.target?.width, this.target?.height],
@@ -672,6 +748,7 @@ export class WebGPUBackend {
     this.removeMrtPipelineKey?.();
     this.compute?.dispose();
     this.fsr?.dispose();
+    this.fg?.dispose();this.presenter?.reset();
     this.motion?.dispose();
     this.swarmMotion?.dispose();
     this.passes?.dispose();

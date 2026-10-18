@@ -1,0 +1,195 @@
+{
+  "date": "2026-10-18T23:08:57.112Z",
+  "bundle": "experimental/0.6.0-fsr31.1/main.mod.js",
+  "sha256": "0aaed20d4795417ea26df4ae6d1f6b27a9d7f9c294eac3bb4efd880cffcf9e11",
+  "results": [
+    {
+      "label": "jitter-profile-100",
+      "args": [
+        "scripts/profile-jitter-100.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 176639,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-profile-100.log"
+    },
+    {
+      "label": "jitter-performance-report",
+      "args": [
+        "scripts/report-jitter-performance.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 97,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-performance-report.log"
+    },
+    {
+      "label": "fg-temporal-presentation",
+      "args": [
+        "scripts/verify-framegen-live.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 37987,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-fg-temporal-presentation.log"
+    },
+    {
+      "label": "jitter-final-720",
+      "args": [
+        "scripts/verify-jitter.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 60288,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-final-720.log"
+    },
+    {
+      "label": "jitter-regions-1280x720",
+      "args": [
+        "scripts/jitter-regions.mjs",
+        "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-final-720"
+      ],
+      "exitCode": 0,
+      "durationMs": 7328,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-regions-1280x720.log"
+    },
+    {
+      "label": "jitter-flicker-1280x720",
+      "args": [
+        "scripts/jitter-flicker.mjs",
+        "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-final-720"
+      ],
+      "exitCode": 0,
+      "durationMs": 9199,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-flicker-1280x720.log"
+    },
+    {
+      "label": "jitter-final-1920x1080",
+      "args": [
+        "scripts/verify-jitter.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 90213,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-final-1920x1080.log"
+    },
+    {
+      "label": "jitter-regions-1920x1080",
+      "args": [
+        "scripts/jitter-regions.mjs",
+        "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-final-1920x1080"
+      ],
+      "exitCode": 0,
+      "durationMs": 13792,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-regions-1920x1080.log"
+    },
+    {
+      "label": "jitter-flicker-1920x1080",
+      "args": [
+        "scripts/jitter-flicker.mjs",
+        "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-final-1920x1080"
+      ],
+      "exitCode": 0,
+      "durationMs": 19578,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-flicker-1920x1080.log"
+    },
+    {
+      "label": "jitter-final-2560x1440",
+      "args": [
+        "scripts/verify-jitter.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 131825,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-final-2560x1440.log"
+    },
+    {
+      "label": "jitter-regions-2560x1440",
+      "args": [
+        "scripts/jitter-regions.mjs",
+        "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-final-2560x1440"
+      ],
+      "exitCode": 0,
+      "durationMs": 24366,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-regions-2560x1440.log"
+    },
+    {
+      "label": "jitter-flicker-2560x1440",
+      "args": [
+        "scripts/jitter-flicker.mjs",
+        "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-final-2560x1440"
+      ],
+      "exitCode": 0,
+      "durationMs": 32134,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-flicker-2560x1440.log"
+    },
+    {
+      "label": "jitter-final-3840x2160",
+      "args": [
+        "scripts/verify-jitter.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 243640,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-final-3840x2160.log"
+    },
+    {
+      "label": "jitter-regions-3840x2160",
+      "args": [
+        "scripts/jitter-regions.mjs",
+        "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-final-3840x2160"
+      ],
+      "exitCode": 0,
+      "durationMs": 53734,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-regions-3840x2160.log"
+    },
+    {
+      "label": "jitter-flicker-3840x2160",
+      "args": [
+        "scripts/jitter-flicker.mjs",
+        "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-final-3840x2160"
+      ],
+      "exitCode": 0,
+      "durationMs": 65230,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-jitter-flicker-3840x2160.log"
+    },
+    {
+      "label": "collect-jitter",
+      "args": [
+        "scripts/collect-jitter-results.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 146,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-collect-jitter.log"
+    },
+    {
+      "label": "final-swarm-sgsr2-compute-1",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 26222,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-final-swarm-sgsr2-compute-1.log"
+    },
+    {
+      "label": "final-swarm-sgsr2-compute-100",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 30636,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-final-swarm-sgsr2-compute-100.log"
+    },
+    {
+      "label": "final-swarm-sgsr2-compute-500",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 0,
+      "durationMs": 45985,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-final-swarm-sgsr2-compute-500.log"
+    },
+    {
+      "label": "final-swarm-fsr31-1",
+      "args": [
+        "scripts/profile-swarm.mjs"
+      ],
+      "exitCode": 1,
+      "durationMs": 27971,
+      "log": "C:\\Users\\michael\\AppData\\Local\\Temp/polyshade-final-swarm-fsr31-1.log"
+    }
+  ]
+}
