@@ -65,6 +65,29 @@ test("camera cuts, resize, projection, scene, mode, frame gaps and explicit run 
   assert.equal(frame(scene,new THREE.PerspectiveCamera()),false);
 });
 
+test('smooth acceleration/braking FOV changes retain history and actual previous projection', () => {
+  const state = new TemporalState(THREE), camera = new THREE.PerspectiveCamera(70, 16/9, .5, 10000), scene = new THREE.Scene();
+  let now = 100;
+  const frame = () => {
+    state.begin(scene,camera,640,360,1280,720,{upscaleJitter:true},now);
+    now += 16; const valid=state.valid; state.commit(); state.restoreCamera(); return valid;
+  };
+  assert.equal(frame(), false);
+  for (const direction of [1,-1]) for (let i=0;i<30;i++) {
+    const previous=state.previousProjection.clone();
+    camera.fov += direction*.5; camera.updateProjectionMatrix();
+    state.begin(scene,camera,640,360,1280,720,{upscaleJitter:true},now); now+=16;
+    assert.equal(state.valid,true,'continuous perspective zoom must remain reprojectable');
+    assert.ok(state.previousProjection.equals(previous));
+    assert.ok(state.previousInverseProjection.equals(previous.clone().invert()));
+    state.commit();state.restoreCamera();
+  }
+  assert.equal(state.resets,1);assert.equal(state.sequence,61);
+  camera.fov=40;camera.updateProjectionMatrix();assert.equal(frame(),false,'abrupt projection cut resets');
+  camera.near=1;camera.updateProjectionMatrix();assert.equal(frame(),false,'depth convention changes reset');
+  camera.aspect=2;camera.updateProjectionMatrix();assert.equal(frame(),false,'aspect changes reset');
+});
+
 test("a WebGL-only device cannot select an enhanced rendering backend", () => {
   const capabilities={webgl2:true,halfFloat:true,features:{depthTexture:true}};
   const s={upscaling:"auto",upscaleQuality:"quality",renderScale:1.25};
