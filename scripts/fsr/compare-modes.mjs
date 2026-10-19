@@ -7,6 +7,8 @@ const output = `${process.env.TEMP}/polyshade-fsr31-matched`;
 await mkdir(output, {recursive:true});
 const {browser,page,errors} = await openUpscalingHarness();
 const report = {method:'Same frozen game scene/camera/materials, Golden Hour, clouds and motion blur disabled; 32 completed frames per mode.',cases:[]};
+const scales=(process.env.POLYSHADE_COMPARE_SGSR_SCALES??'0.5').split(',').map(Number);
+const cases=[['native',1],...scales.map(scale=>['sgsr2-compute',scale]),['fsr31',.5]];
 try {
   await page.evaluate(() => {
     window.__freezeGame = true;
@@ -19,7 +21,7 @@ try {
     style.textContent = '*{visibility:hidden!important}#polyshade-webgpu{visibility:visible!important}';
     document.head.append(style);
   });
-  for (const [mode,scale] of [['native',1],['sgsr2-compute',.5],['fsr31',.5]]) {
+  for (const [mode,scale] of cases) {
     console.log('Matched scene',mode,scale);
     await page.evaluate(({mode,scale}) => {
       const c=window.__controller,s=c.getSettings();
@@ -40,16 +42,18 @@ try {
       return g.frames>=window.__matchedBefore+32 && g.temporal.sequence>=32;
     },undefined,{timeout:90000,polling:50});
     await page.evaluate(async()=>{await window.__controller.backends.gpu.device.queue.onSubmittedWorkDone();});
-    await page.screenshot({path:`${output}/${mode}.png`});
-    report.cases.push(await page.evaluate(()=>{
+    const caseName=mode==='sgsr2-compute'?`sgsr2-${Math.round(scale*100)}`:mode;
+    await page.screenshot({path:`${output}/${caseName}.png`});
+    report.cases.push(await page.evaluate(({caseName,scale})=>{
       const g=window.__controller.backends.gpu;
-      return {mode:g.selection.backend,output:g.report().output,history:g.temporal.report()};
-    }));
+      return {name:caseName,mode:g.selection.backend,scale,output:g.report().output,history:g.temporal.report()};
+    },{caseName,scale}));
   }
   assert.deepEqual(errors,[]);
   const ref=PNG.sync.read(await readFile(`${output}/native.png`));
   report.pixels=[];
-  for(const mode of ['native','sgsr2-compute','fsr31']) {
+  for(const item of report.cases) {
+    const mode=item.name;
     const img=PNG.sync.read(await readFile(`${output}/${mode}.png`));
     const mean=[0,0,0],refMean=[0,0,0];let error=0;
     assert.equal(img.width,ref.width);assert.equal(img.height,ref.height);

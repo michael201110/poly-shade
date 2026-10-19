@@ -1,10 +1,12 @@
 # FSR 3.1 WebGPU integration — experimental work in progress
 
-Branch: `experiment/fsr31-webgpu`. Base: `d76c056`, PolyShade 0.5.6.
-Experimental source version: `0.6.0-fsr31.1`. PML latest remains **0.5.6**.
+The FSR implementation and its frame-generation features have been merged into
+`main`. The original port was based on `d76c056` (PolyShade 0.5.6).
+Historical experimental source versions: `.0` and `.1`. The current preview is
+`0.6.0-fsr31.2`; the stable PML manifest remains **0.5.6**.
 Historical release bundles are untouched. The original SR preview is
-`0.6.0-fsr31.0`; the next experimental snapshot adds the official analytical FG
-pipeline and temporal stability corrections. See the separate
+`0.6.0-fsr31.0`; `.1` added the official analytical FG pipeline and temporal
+stability corrections. See the separate
 [FG report](frame-generation.md) and [shimmer audit](temporal-jitter-stability.md)
 for current qualification and measured limitations.
 
@@ -171,6 +173,10 @@ invalidation. The `.1` candidate additionally corrects false static velocity,
 SGSR2 geometry-footprint rejection and transparent reactive-mask coverage.
 
 ## Current experimental qualification (`0.6.0-fsr31.1`)
+
+The `.2` preview adds no rendering code changes. Current-source SGSR2 4K60
+measurements and the matched 4K FSR comparison are recorded in
+[the 4K60 verification](verification/4k60-sgsr2-main.md).
 
 - Official optical flow and frame interpolation are implemented, with numerical
   translated-image midpoint fixtures, real/generated presentation, lifecycle,

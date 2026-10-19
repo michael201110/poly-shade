@@ -194,6 +194,7 @@ moving-swarm results are recorded with the candidate qualification.
 | PolyShade 0.5.6 stable | Existing Native/SGSR2 paths; this experimental FG is absent. |
 | PolyShade 0.6.0-fsr31.0 | Historical SR preview, no FG; immutable. |
 | PolyShade 0.6.0-fsr31.1 alone | Ordinary PolyTrack with optional SR/FG; no PolyBot requirement. |
+| PolyShade 0.6.0-fsr31.2 alone | Same optional SR/FG preview; current-source SGSR2 meets 4K60 on the tested T500 with FG off. |
 | `.1` with PolyBot bridge 0.1.51 | Optional packed swarm API v1, shared renderer/depth/lighting and independent render-only velocity. 1/100/500-car regression is separate from normal gameplay. |
 | PolyBot without PolyShade | Its existing native fallback remains available; this change does not edit PolyBot or its protocol. |
 | PolyCam | Uses the source camera as before. The mirror owns jitter; the gameplay/PolyCam camera is never jittered. Transform/projection cuts invalidate history. This is an integration contract, not a claim that every PolyCam mode has a dedicated visual fixture. |
