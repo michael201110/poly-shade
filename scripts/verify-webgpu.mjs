@@ -98,6 +98,22 @@ try {
     glFrames,
     "Main WebGL renderer does not draw while WebGPU is active",
   );
+  await configure({ upscaling:"native", upscaleDebugView:"final" });
+  await page.waitForTimeout(400);
+  report.nativeRetirement = await page.evaluate(() => {
+    const g=window.__controller.backends.gpu;
+    return {resources:g.resources.report(),history:g.compute.previousHistory,
+      queue:g.frameQueue.report(),dispatches:g.compute.dispatches};
+  });
+  assert.ok(report.nativeRetirement.resources.every(r=>!r.name.startsWith('sgsr-')),
+    'Native retires unused full-output reconstruction targets');
+  assert.equal(report.nativeRetirement.history,null,'no destroyed history remains bound');
+  assert.ok(report.nativeRetirement.queue.peak<=2,'GPU admission remains bounded');
+  await configure({});
+  await page.waitForFunction(previous=>{
+    const g=window.__controller.backends.gpu;
+    return g.compute.dispatches>previous&&g.temporal.valid;
+  },report.nativeRetirement.dispatches);
   for (const view of [
     "static-velocity",
     "car-velocity",

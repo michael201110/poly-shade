@@ -218,6 +218,8 @@ export class RenderController {
       if (gpu) {
         const changed = gpu !== this.metricsGPU || gpu.frames !== this.metricsGPUFrame;
         this.metricsGPU = gpu; this.metricsGPUFrame = gpu.frames;
+        // A simulation RAF that reuses the last enhanced image is not a new
+        // rendered frame. Keep diagnostics honest under GPU backpressure.
         if (!changed || gpu.frames === 0) return;
       }
       this.renderCount += 1;

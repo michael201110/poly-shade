@@ -220,6 +220,7 @@ export class WebGPUBackend {
   }
   render(source, sourceCamera, settings, logical) {
     if (!this.ready || this.disposed) return false;
+    if (!this.frameQueue.available()) return this.warmFrames >= 4;
     const requestedSettings = settings;
     if (settings.postEnabled === false) {
       if (this.noPostSource !== settings) {

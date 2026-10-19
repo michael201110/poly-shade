@@ -25,6 +25,9 @@ const motionBlurOverride=process.env.POLYSHADE_PROFILE_MOTION_BLUR==='0'?false:n
 const frameGeneration=process.env.POLYSHADE_FRAME_GENERATION==='1';
 const frameGenerationPacing=process.env.POLYSHADE_FG_PACING??'smooth';
 const forceFG=frameGeneration&&process.env.POLYSHADE_FG_FORCE==='1';
+const featureOverrides=process.env.POLYSHADE_EXPERIMENT_OVERRIDES?JSON.parse(process.env.POLYSHADE_EXPERIMENT_OVERRIDES):{};
+const csmMaxFar=Number(process.env.POLYSHADE_CSM_MAX_FAR??0);
+const lightweight=process.env.POLYSHADE_LIGHTWEIGHT==='1';
 const bundle = process.env.POLYSHADE_BUNDLE ?? await currentBundlePath();
 await mkdir(output, { recursive: true });
 const hardware = () => {
@@ -32,7 +35,7 @@ const hardware = () => {
   catch { return null; }
 };
 const report = { label, date:new Date().toISOString(), bundle, noMod, hotDisable, headed:process.env.POLYSHADE_HEADED === '1',
-  sha256:createHash('sha256').update(await readFile(bundle)).digest('hex'), profiling, queueProbe, frameLimit,frameGeneration,forceFG,
+  sha256:createHash('sha256').update(await readFile(bundle)).digest('hex'), profiling, queueProbe, frameLimit,frameGeneration,forceFG,featureOverrides,csmMaxFar,lightweight,
   method:'Ordinary Summer 1 simulation; trusted keyboard acceleration and alternating left/right steering; no fixed-camera RAF loop. Input-to-render is an event delivery/next render proxy, NOT input-to-photon or a subjective feel measurement. Queue completion is asynchronous diagnostic-only and never awaited by rendering.',
   ram:{total:totalmem(),free:freemem()}, hardwareBefore:hardware(), cases:[] };
 const { browser, page, errors } = await openUpscalingHarness({ freezeSupport:false, polyshade:!noMod });
@@ -41,7 +44,7 @@ const cdp = await page.context().newCDPSession(page);
 await cdp.send('Performance.enable');
 try {
   if(hotDisable)await page.keyboard.press('Home');
-  await page.evaluate(({queueProbe,frameLimit,profiling}) => {
+  await page.evaluate(({queueProbe,frameLimit,profiling,lightweight,csmMaxFar}) => {
     const d = window.__gameplay = { active:false, times:{}, frames:[], rendered:[], presented:[],input:[], longTasks:[], queue:[], queuePending:0, queuePeak:0, allocations:{}, originals:[] };
     const tick = t => { if(d.active && d.lastRAF) d.frames.push(t-d.lastRAF); d.lastRAF=t; requestAnimationFrame(tick); };
     requestAnimationFrame(tick);
@@ -85,6 +88,7 @@ try {
     d.instrumentGpu = g => {
     if(!g || seen.has(g))return;
     seen.add(g);
+    if(csmMaxFar>0&&g.scene?.sun?.shadow?.shadowNode)g.scene.sun.shadow.shadowNode.maxFar=csmMaxFar;
     if(frameLimit){const render=g.render;let pending=0;g.render=function(...args){
       if(pending>=frameLimit)return this.warmFrames>=4;
       const before=this.frames,result=render.apply(this,args);
@@ -92,6 +96,7 @@ try {
       return result;
     };}
     wrap(g,'render','rendererCPU',{frame:true});
+    if(lightweight)return;
     if(g.presenter){const present=g.presenter.presented;g.presenter.presented=function(kind,now){
       if(d.active)d.presented.push({kind,at:performance.now()});return present.call(this,kind,now);
     };}
@@ -121,7 +126,7 @@ try {
     g.profiler.sampleInterval=1;
     };
     d.instrumentGpu(c?.backends?.gpu);
-  },{queueProbe,frameLimit,profiling});
+  },{queueProbe,frameLimit,profiling,lightweight,csmMaxFar});
 
   for(const resolution of resolutions) {
     const [width,height] = resolution.split('x').map(Number);
