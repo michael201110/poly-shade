@@ -215,3 +215,16 @@ dispatch dimensions; the first diagnostic had a harness mismatch and its
 invalid output and timings are excluded. The corrected captures were taken at
 different temporal history phases, so they are not used as a per-pixel
 equivalence result. No production shader or workgroup setting changed.
+
+### Native 4K moving-gameplay recheck
+
+A fresh 15-second Native 3840x2160 run with all cinematic effects and ordinary
+driving rendered 688 frames in 15.086 seconds (**45.60 FPS**). Render intervals
+were 17.6 ms median, 33.8 ms p95, and 35.3 ms p99; the T500 sampled at 98-100%
+GPU utilization. A separate timestamped run measured **25.56 ms** total GPU
+work median (30.61 ms p95); timestamps lowered effective throughput to 37.41
+FPS and are not the live-FPS result. The largest timestamped passes were grade
+at **13.89 ms median / 18.48 ms p95**, scene at 4.33 / 5.24 ms, and finish at
+1.97 / 2.29 ms. This confirms Native 4K is still GPU-bound, with grading and
+scene rendering the main targets. The current 4K60 objective remains unmet on
+the Native path; the near-60 result applies to SGSR2 output reconstruction.
