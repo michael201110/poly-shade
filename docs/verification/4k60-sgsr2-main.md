@@ -205,6 +205,13 @@ utilization sampled at 100%. SGSR2 remains the usable 4K-output performance
 path on this adapter; FSR remains a visual-quality option when its lower rate
 is acceptable.
 
+A 60-second SGSR2 50% follow-up rendered 3,619 frames in 60.370 seconds
+(**59.947 FPS**) at 3840x2160 output with all cinematic effects enabled. The
+render-interval median/p95/p99 were 16.68 / 18.70 / 20.20 ms, with a 31.70 ms
+maximum; sampled GPU utilization ranged from 82% to 93%, and no renderer errors
+were reported. This sustains near-refresh-rate 4K output but does not strictly
+prove a clean 60.000 FPS with no missed refreshes.
+
 An additional SGSR2 upscale workgroup experiment compared 16x16 with 8x32 at
 3840x2160 output and 50% internal scale, using the same shader equations and
 source-sample order. The corrected 8x32 dispatch measured **3.277 ms** upscale
