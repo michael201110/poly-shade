@@ -98,3 +98,27 @@ to 4.33 ms median, but total GPU work rose to 47.64 ms median and measured
 throughput fell to 19.73 FPS. The prototype was discarded. The per-pixel cache
 load and workgroup synchronization outweighed the avoided filtered texture
 samples on Turing; no visual-quality claim is made for this prototype.
+
+### Follow-up shader micro-profiles
+
+Two additional exact-output candidates were time-boxed. A direct scalar
+reciprocal-depth expression replaced the full `viewPosition` call in the
+motion-blur rejection test. Its decision mask matched the original for every
+tested tap in a live 4K drive, but a controlled repeat did not improve timing:
+both baseline and candidate measured 25.428 ms total GPU median and 13.304 ms
+grade median; effective live throughput was 37.87 versus 37.30 FPS. One earlier
+short sample looked substantially faster, but that result did not reproduce and
+was rejected. The production shader remains unchanged.
+
+The four fixed lens-flare iterations were also explicitly expanded while
+preserving their equations and accumulation order. On a matched 12-second live
+drive, total GPU median changed from 17.105 to 16.974 ms (-0.131 ms); grade
+median changed from 5.112 to 4.981 ms (-0.131 ms); effective throughput changed
+from 45.53 to 45.65 FPS (+0.12). This is below the 1 ms priority threshold and
+was rejected. Disabling lens flare diagnostically reduced one short sample's
+grade median by 1.51 ms, but changes the image and was not adopted.
+
+The follow-up confirms the remaining work is architectural: native 4K remains
+below 60 FPS, while SGSR2 at 53% continues to be the only tested full-effects
+4K-output path near 60 FPS. No training, replay, or renderer fidelity behavior
+was changed by these profiling trials.
