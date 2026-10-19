@@ -149,3 +149,13 @@ from 1.245 to 1.114 ms (-0.131 ms), while upscale median rose from 2.753 to
 effective live throughput moved from 59.94 to 59.87 FPS. This single short
 profile did not show an end-to-end benefit; the existing 16x16 conversion tile
 remains unchanged.
+
+### Latest long-run confirmation
+
+Fresh 30-second, unprofiled live runs on the current pinned `.3` bundle measured
+59.824 FPS at 55% (1,844 rendered frames in 30.82 seconds; 2112x1188 internal)
+and 59.930 FPS at 53% (1,837 frames in 30.65 seconds; 2035x1145 internal).
+Both kept the cinematic effects enabled and reported no browser or GPU errors.
+The earlier 53% run at 59.991 FPS remains the best measured result. The small
+shortfall varies across runs, and the workgroup experiments above did not
+produce a repeatable improvement.
