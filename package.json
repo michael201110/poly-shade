@@ -1,6 +1,6 @@
 {
   "name": "poly-shade",
-  "version": "0.6.0-fsr31.5",
+  "version": "0.6.0-fsr31.6",
   "private": true,
   "type": "module",
   "scripts": {

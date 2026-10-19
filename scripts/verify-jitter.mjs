@@ -11,17 +11,49 @@ await mkdir(directory,{recursive:true});
 const {browser,page,errors}=await openUpscalingHarness();
 const report={label,date:new Date().toISOString(),headed:process.env.POLYSHADE_HEADED==='1',
   temporalClockFPS:Number(process.env.JITTER_FPS??60),axis:process.env.JITTER_AXIS??'both',raw:process.env.JITTER_RAW==='1',
+  phaseMultiplier:Number(process.env.JITTER_PHASE_MULTIPLIER??1),
+  jitterPattern:process.env.JITTER_PATTERN??'halton',
+  minLerp:process.env.JITTER_MIN_LERP==null?null:Number(process.env.JITTER_MIN_LERP),
   note:'Logical temporal time-step test; readback/encoding wall time is excluded. This does not claim monitor scan-out at the configured time step.',
   bundle:process.env.POLYSHADE_BUNDLE,sha256:createHash('sha256').update(await readFile(process.env.POLYSHADE_BUNDLE)).digest('hex'),cases:[]};
 try {
-  await page.evaluate(({fps,axis,probes,objectMotion})=>{
+  await page.evaluate(({fps,axis,probes,objectMotion,phaseMultiplier,jitterPattern,minLerp,minLerpEnabled})=>{
     window.__freezeGame=true;
     const c=window.__controller,g=c.backends.gpu;
+    const state=window.__jitterTest={};
+    state.minLerp=minLerp;
+    if(minLerpEnabled){
+      const reconstruct=g.compute.reconstruct;
+      g.compute.reconstruct=function(...args){
+        const result=reconstruct.apply(this,args);
+        this.floats[12]=state.minLerp;
+        this.device.queue.writeBuffer(this.uniform,0,this.params);
+        return result;
+      };
+    }
     if(!objectMotion)g.motion.render=()=>{}; // Frozen-object diagnostic only.
-    const state=window.__jitterTest={scene:c.activeScene,camera:c.camera,clock:1000,sourceFrames:0,reference:null,fps};
+    Object.assign(state,{scene:c.activeScene,camera:c.camera,clock:1000,sourceFrames:0,reference:null,fps});
     const begin=g.temporal.begin.bind(g.temporal);
     g.temporal.begin=(...args)=>{
       args[7]=state.clock;begin(...args);
+      if(args[6]?.backend==='sgsr2-compute'&&(phaseMultiplier!==1||jitterPattern!=='halton')){
+        const t=g.temporal,cam=t.camera;
+        t.phaseCount=Math.max(1,Math.ceil(t.phaseCount*phaseMultiplier));
+        t.jitterIndex=t.sequence%t.phaseCount+1;
+        const halton=(index,base)=>{let value=0,fraction=1;while(index>0){fraction/=base;value+=fraction*(index%base);index=Math.floor(index/base);}return value;};
+        const fract=value=>value-Math.floor(value),n=t.jitterIndex;
+        t.jitter.set(jitterPattern==='r2'?fract(0.5+n*0.7548776662466927)-0.5:
+          jitterPattern==='hammersley'?(n-0.5)/t.phaseCount-0.5:halton(n,2)-0.5,
+          jitterPattern==='r2'?fract(0.5+n*0.5698402909980532)-0.5:halton(n,3)-0.5);
+        cam.projectionMatrix.copy(t.projection);
+        cam.projectionMatrix.elements[8]-=2*t.jitter.x/t.width;
+        cam.projectionMatrix.elements[9]+=(cam.coordinateSystem===2001?2:-2)*t.jitter.y/t.height;
+        cam.projectionMatrixInverse.copy(cam.projectionMatrix).invert();
+        t.currentJitteredVP.multiplyMatrices(cam.projectionMatrix,cam.matrixWorldInverse);
+        t.inverseJitteredVP.copy(t.currentJitteredVP).invert();
+        t.jitterUV.set(t.jitter.x/t.width,t.jitter.y/t.height,t.previousJitter.x/t.width,t.previousJitter.y/t.height);
+        t.clipToPrevious.multiplyMatrices(t.previousJitteredVP,t.inverseJitteredVP);
+      }
       if(axis!=='both') {
         // Test-only axis isolation: restore the base before reapplying the
         // selected sample, updating all derived matrices consistently.
@@ -132,22 +164,33 @@ try {
         projectionChangedDuringDraw:state.projectionChangedDuringDraw,rasterJitter:state.rasterJitter,temporal:g.temporal.report(),sourceFrames:state.sourceFrames};
     };
     state.probes=probes;
-  },{fps:Number(process.env.JITTER_FPS??60),axis:process.env.JITTER_AXIS??'both',probes:process.env.JITTER_PROBES==='1',objectMotion:process.env.JITTER_OBJECT_MOTION!=='0'});
+  },{fps:Number(process.env.JITTER_FPS??60),axis:process.env.JITTER_AXIS??'both',probes:process.env.JITTER_PROBES==='1',
+    objectMotion:process.env.JITTER_OBJECT_MOTION!=='0',phaseMultiplier:Number(process.env.JITTER_PHASE_MULTIPLIER??1),
+    jitterPattern:process.env.JITTER_PATTERN??'halton',minLerp:process.env.JITTER_MIN_LERP==null?null:Number(process.env.JITTER_MIN_LERP),
+    minLerpEnabled:process.env.JITTER_MIN_LERP!=null||process.env.JITTER_MIN_LERP_VALUES!=null});
   const scales=(process.env.JITTER_SCALES??'1,.77,.67,.59,.5').split(',').map(Number);
   const modes=(process.env.JITTER_MODES??'native,sgsr2-compute,fsr31').split(',');
-  for(const mode of modes)for(const scale of mode==='native'?[1]:scales) {
-    const name=mode+'-'+Math.round(scale*100);console.log('JITTER',name);
-    await page.evaluate(({mode,scale,raw,isolate,filters,sharpen})=>{
+  const minLerpValues=process.env.JITTER_MIN_LERP_VALUES?.split(',').map(Number)??
+    [process.env.JITTER_MIN_LERP==null?null:Number(process.env.JITTER_MIN_LERP)];
+  const sharpenModes=new Set((process.env.JITTER_SHARPEN_MODES??'').split(',').filter(Boolean));
+  for(const minLerp of minLerpValues)for(const mode of modes)for(const scale of mode==='native'?[1]:scales) {
+    const minLerpSuffix=minLerpValues.length>1&&mode!=='native'?`-minlerp${String(minLerp).replace('.','')}`:'';
+    const name=mode+'-'+Math.round(scale*100)+minLerpSuffix;console.log('JITTER',name);
+    await page.evaluate(({mode,scale,raw,isolate,filters,sharpen,sharpenMode,jitterSettingPattern,minLerp})=>{
+      window.__jitterTest.minLerp=minLerp;
       const c=window.__controller,s=c.getSettings();s.overrides={upscaling:mode,upscaleQuality:'custom',upscaleCustomScale:scale,
+        ...(jitterSettingPattern?{sgsr2JitterPattern:jitterSettingPattern}:{}),
         motionBlurEnabled:false,cloudsEnabled:false,
         ...(isolate?{aoEnabled:false,bloomEnabled:false,sunRaysEnabled:false,
           volumetricEnabled:false,atmosphereEnabled:false,lensFlareEnabled:false,shadowQuality:'off'}:{}),
         ...(!filters?{fxaaEnabled:false,sharpenEnabled:false}:{}),
         // JITTER_SHARPEN is optional and lets this verifier measure the output sharpener.
-        ...(sharpen>0?{sharpenEnabled:true,sharpenStrength:sharpen}:{}),frameGeneration:false,
+        ...(sharpen>0&&sharpenMode?{sharpenEnabled:true,sharpenStrength:sharpen}:{}),frameGeneration:false,
         upscaleDebugView:raw?'low-resolution':'final'};
       c.notifySettingsChanged();window.__jitterTest.reference=null;
-    },{mode,scale,raw:process.env.JITTER_RAW==='1',isolate:process.env.JITTER_EFFECTS==='isolated',filters:process.env.JITTER_FILTERS!=='0',sharpen:Number(process.env.JITTER_SHARPEN??0)});
+    },{mode,scale,raw:process.env.JITTER_RAW==='1',isolate:process.env.JITTER_EFFECTS==='isolated',filters:process.env.JITTER_FILTERS!=='0',
+      sharpen:Number(process.env.JITTER_SHARPEN??0),sharpenMode:!sharpenModes.size||sharpenModes.has(mode),
+      jitterSettingPattern:process.env.JITTER_SETTING_PATTERN??null,minLerp});
     await page.evaluate(async mode=>{for(let i=0;window.__controller.backends.gpu.selection?.backend!==mode;i++){
       if(i>400)throw Error('Requested upscaler did not initialize');await window.__jitterTest.render();
     }},mode);

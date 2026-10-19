@@ -276,7 +276,7 @@ try {
   });
   const t = report.temporal;
   assert.ok(
-    Math.abs(t.minLerp - 0.3) < 1e-6,
+    Math.abs(t.minLerp - 0.5) < 1e-6,
     "stationary history strength is preserved",
   );
   assert.ok(

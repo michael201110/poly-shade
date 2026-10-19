@@ -98,7 +98,7 @@ export class SGSR2Compute {
         temporal.jitter.y,
         1,
         1 / Math.max(temporal.projection.elements[0], 1e-5),
-        temporal.stillFrames > 5 ? 0.3 : 0,
+        temporal.stillFrames > 5 ? 0.5 : 0,
       ],
       4,
     );

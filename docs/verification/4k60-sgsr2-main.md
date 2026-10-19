@@ -326,6 +326,59 @@ sharpening to **8.46** at 0.04, **9.33** at 0.08, and **12.18** at 0.16. The
 existing sharpener remains optional; the measured clarity gain is accompanied
 by increased shimmer, so it is not enabled by default.
 
+### Additional image-quality candidates (2026-10-19)
+
+Several candidate changes were tested after the comparison above. The R2
+jitter sequence and sharpening remain unselected; the stationary-history
+blend was adopted after a matched sweep.
+
+First, an R2-style low-discrepancy projection-jitter sequence was compared with
+the existing 32-phase Halton 2/3 sequence. On the matched 4K frozen-scene
+fixture, mean edge-luminance SD was 1.52 versus 1.62 display codes (about 6%
+lower), and the maximum frame RMSE from its first phase was 0.497 versus 0.558.
+However, p99 edge SD was 7.89 versus 7.36 (about 7% higher), and temporal-mean
+RGB MAE against Native was 1.0664 versus 1.0648. These small, conflicting
+changes do not establish a visual-quality win. Extending Halton to 64 phases
+was worse in its single frozen-scene capture: mean/p99 edge SD 2.01/9.96 versus
+the recorded 32-phase result of 1.66/7.37.
+
+The R2 candidate also held near-refresh moving performance: 59.91 FPS over
+60.85 seconds, with 18.4/19.8 ms p95/p99 render intervals and no renderer
+errors. Halton measured 59.94 FPS over 60.11 seconds with 18.6/19.6 ms. This
+confirms no meaningful throughput change, not an image-quality improvement.
+The source experiment was reverted; shipped SGSR2 continues to use Halton.
+
+Second, 0.04 output sharpening completed a full-effects 4K moving run at 59.91
+FPS over 60.12 seconds, with 18.5/19.7 ms p95/p99 intervals and no renderer
+errors. At 50% scale, its stationary edge-flicker p99 was 8.46 versus 7.37
+without sharpening. At 58% scale, 0.02 sharpening did not improve the
+Native-relative temporal-mean MAE in two captures of the same fixture (1.0517
+versus 1.0508 without sharpening), while 0.04 raised stationary p99 to 10.33.
+Sharpening therefore remains an optional user control rather than a default
+quality fix.
+
+Third, the SGSR2 history-clamp blend used after more than five stationary camera
+frames was tuned from 0.30 to 0.50. A same-session 4K/50% static sweep measured
+mean/p95/p99 edge-luminance SD of **1.69/4.62/7.48** at 0.30,
+**1.62/4.42/7.22** at 0.40, and **1.57/4.30/6.97** at 0.50. Maximum frame
+RMSE from the first phase fell from **0.587** to **0.549** at 0.50. Temporal-
+mean RGB MAE against Native rose from **1.067** at 0.30 to **1.080** at 0.50,
+an increase of 0.013 display codes. The 0.50 setting gives the strongest
+measured stationary shimmer reduction for that small static-image difference.
+
+The source-built 0.50 candidate rendered **3,605 frames in 60.13 seconds** at
+4K output / 50% SGSR2 (**59.95 FPS**); p95/p99 render intervals were
+**18.4/19.5 ms**, with no renderer errors. The matched 0.30 control measured
+59.94 FPS and 18.6/19.6 ms. The change adds no GPU pass and applies only when
+the camera has remained still; moving-camera frames retain the original
+clamp behavior. This tuning is included in `0.6.0-fsr31.6`.
+
+These tests narrow future quality work to the reconstruction itself: simple
+jitter-cycle changes and output sharpening did not improve Native similarity
+without a measured temporal tradeoff. Candidate captures and raw metrics are
+stored under `%TEMP%/polyshade-jitter-oct19-*` and
+`%TEMP%/polyshade-performance/oct19-*` on the profiling machine.
+
 The 60% scale ceiling check averaged **59.167 FPS** over 60 seconds, with
 18.7 ms p95 and 32.4 ms p99 render intervals and no renderer errors. Its
 single-frame Native-relative MAE was 1.413, only 0.008 lower than the 58%
