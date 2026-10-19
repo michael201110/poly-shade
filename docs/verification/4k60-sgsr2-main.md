@@ -186,3 +186,32 @@ live profiles varied in other passes, so they do not establish a total-frame
 win. The trial also required a second history texture and a larger uniform
 block. I did not retain it: the tested evidence did not prove a speedup, and a
 pixel-by-pixel history comparison was not completed.
+
+### Current-source FSR/SGSR recheck and tile candidate (2026-10-19)
+
+I repeated the comparison with the current pinned `.3` bundle at 3840x2160.
+The frozen-scene capture again used Native, SGSR2 at 50%, and FSR 3.1 at 50%,
+with Golden Hour on, clouds and motion blur off, and 32 settled frames per
+mode. Mean absolute RGB error against Native was **1.456** display codes for
+SGSR2 and **0.299** for FSR. This confirms FSR's closer still-image match; it
+does not establish superior temporal quality while driving.
+
+I also ran separate 15-second moving-gameplay profiles at 3840x2160 with the
+same scene, T500, full cinematic effects, 50% internal scale, and frame
+timestamps disabled. SGSR2 rendered 905 frames in 15.091 seconds (**59.968
+FPS**); its render-interval p95 was 18.3 ms. FSR rendered 446 frames in 15.856
+seconds (**28.128 FPS**) and its render-interval p95 was 48.9 ms while GPU
+utilization sampled at 100%. SGSR2 remains the usable 4K-output performance
+path on this adapter; FSR remains a visual-quality option when its lower rate
+is acceptable.
+
+An additional SGSR2 upscale workgroup experiment compared 16x16 with 8x32 at
+3840x2160 output and 50% internal scale, using the same shader equations and
+source-sample order. The corrected 8x32 dispatch measured **3.277 ms** upscale
+median / **3.473 ms** p95, unchanged from 16x16; total GPU median changed from
+8.126 to 8.192 ms (+0.066 ms). The candidate was discarded. Its workgroup
+geometry required matching the output tile origin and extent as well as the
+dispatch dimensions; the first diagnostic had a harness mismatch and its
+invalid output and timings are excluded. The corrected captures were taken at
+different temporal history phases, so they are not used as a per-pixel
+equivalence result. No production shader or workgroup setting changed.
