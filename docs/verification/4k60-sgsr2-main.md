@@ -122,3 +122,23 @@ The follow-up confirms the remaining work is architectural: native 4K remains
 below 60 FPS, while SGSR2 at 53% continues to be the only tested full-effects
 4K-output path near 60 FPS. No training, replay, or renderer fidelity behavior
 was changed by these profiling trials.
+
+### SGSR2 upscale workgroup sweep at 53%
+
+At 3840x2160 output with the cinematic effects enabled, the current 16x16
+upscale tile measured 2.753 ms median / 2.949 ms p95 for SGSR2 upscale, and
+9.503 ms median total GPU work. Exact-math tile variants produced:
+
+| Upscale tile | Upscale median | Delta | Total GPU median | Effective live FPS |
+|---|---:|---:|---:|---:|
+| 16x16 (current) | 2.753 ms | — | 9.503 ms | 59.94 |
+| 8x8 | 3.146 ms | +0.393 ms | 10.158 ms | 59.85 |
+| 16x8 | 3.080 ms | +0.328 ms | 11.338 ms | 59.88 |
+| 32x8 | 2.949 ms | +0.197 ms | 9.699 ms | 59.98 |
+
+A second prototype removed the decoded source workgroup cache and sampled the
+packed source texture directly. Upscale median and p95 were unchanged at 2.753
+and 2.949 ms; total median was 9.896 ms. The small whole-frame differences are
+within live-run variance and do not establish a win. The 16x16 cache remains in
+place; no tile variant was adopted. These timestamped profiles confirm 53%
+still sustains about 60 FPS, but this work did not raise the resolution scale.
