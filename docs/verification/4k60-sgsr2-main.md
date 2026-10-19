@@ -235,3 +235,24 @@ at **13.89 ms median / 18.48 ms p95**, scene at 4.33 / 5.24 ms, and finish at
 1.97 / 2.29 ms. This confirms Native 4K is still GPU-bound, with grading and
 scene rendering the main targets. The current 4K60 objective remains unmet on
 the Native path; the near-60 result applies to SGSR2 output reconstruction.
+
+### Native grade depth reuse (`0.6.0-fsr31.4`)
+
+The grade shader now carries the center pixel's reconstructed view position and
+depth out of motion blur and reuses them for atmosphere, lens flare and
+volumetrics. This removes repeated center-depth loads and inverse-projection
+work when motion blur is active. Tap positions, rejection tests, colors and
+their arithmetic are unchanged. A 4K GPU comparison with a nonzero synthetic
+motion field compared **66,355,200 bytes** between the previous grade shader
+and `.4`; all bytes matched exactly.
+
+Paired timestamped 4K driving profiles showed a large grade-pass reduction:
+baseline `.3` was 13.11 ms median / 18.35 ms p95; `.4` was 3.08 ms / 9.57 ms.
+Total GPU median changed from 25.49 to 14.16 ms, while total p95 changed from
+30.80 to 21.95 ms. Timestamping slows gameplay, so separate 20-second
+unprofiled runs are the end-to-end comparison: `.3` rendered 928 frames at
+44.70 FPS; `.4` rendered 930 at 44.55 FPS. Render-interval p95 improved from
+34.2 to 33.7 ms, but the average rate did not improve in this pair. The
+optimization is retained because it is bit-identical and substantially
+reduces the measured grade cost; it does not yet meet 4K60, and the next work
+must address remaining frame-time stalls and scene rendering.

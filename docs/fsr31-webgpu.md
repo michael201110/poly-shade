@@ -3,7 +3,7 @@
 The FSR implementation and its frame-generation features have been merged into
 `main`. The original port was based on `d76c056` (PolyShade 0.5.6).
 Historical experimental source versions: `.0` and `.1`. The current preview is
-`0.6.0-fsr31.3`; the stable PML manifest remains **0.5.6**.
+`0.6.0-fsr31.4`; the stable PML manifest remains **0.5.6**.
 Historical release bundles are untouched. The original SR preview is
 `0.6.0-fsr31.0`; `.1` added the official analytical FG pipeline and temporal
 stability corrections. See the separate

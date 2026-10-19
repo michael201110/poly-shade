@@ -26,7 +26,7 @@ fallback handling, movement fixes and temporal edge-shimmer corrections. See
 T500 measurements](docs/frame-generation.md), and
 [temporal stability notes](docs/temporal-jitter-stability.md).
 
-[Install the pinned preview](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.6.0-fsr31.3/experimental/).
+[Install the pinned preview](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.6.0-fsr31.4/experimental/).
 This includes the movement/history fixes and temporal edge-shimmer corrections.
 FG does not deliver 4K/60 on the tested T500; leave it off when ordinary
 rendering already reaches 60 FPS. The default stable root manifest remains on

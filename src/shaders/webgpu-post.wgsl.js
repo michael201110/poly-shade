@@ -21,7 +21,8 @@ struct Vertex { @builtin(position) position:vec4f,@location(0) uv:vec2f };
  let xy=vec2f(f32((id<<1u)&2u),f32(id&2u));var out:Vertex;out.position=vec4f(xy*2.-1.,0,1);out.uv=vec2f(xy.x,1.-xy.y);return out;
 }
 fn D(uv:vec2f)->f32{return textureLoad(depth,clamp(vec2i(uv*vec2f(textureDimensions(depth))),vec2i(0),vec2i(textureDimensions(depth))-1),0);}
-fn viewPosition(uv:vec2f)->vec3f{let size=vec2f(textureDimensions(depth));let pixel=clamp(floor(uv*size),vec2f(0),size-1.);let center=(pixel+.5)/size;let q=p.inverseProjection*vec4f(center*vec2f(2,-2)+vec2f(-1,1),D(center),1);return q.xyz/max(q.w,1./65000.);}
+fn viewData(uv:vec2f)->vec4f{let size=vec2f(textureDimensions(depth));let pixel=clamp(floor(uv*size),vec2f(0),size-1.);let center=(pixel+.5)/size;let z=D(center);let q=p.inverseProjection*vec4f(center*vec2f(2,-2)+vec2f(-1,1),z,1);return vec4f(q.xyz/max(q.w,1./65000.),z);}
+fn viewPosition(uv:vec2f)->vec3f{return viewData(uv).xyz;}
 fn previousDepth(clip:vec4f)->f32{let q=p.previousInverseProjection*clip;return clamp(-q.z/max(q.w,1e-6),0.,65000.);}
 fn sampleColor(uv:vec2f)->vec3f{return textureSampleLevel(inputColor,linearSampler,uv,0).rgb;}
 fn shoulder(c:vec3f)->vec3f{return clamp((c*(2.51*c+.03))/(c*(2.43*c+.59)+.14),vec3f(0),vec3f(1));}
@@ -107,29 +108,30 @@ fn sunlit(pos:vec3f,distance:f32)->f32{
 }`;
 export const GRADE = `
 fn softenedRays(uv:vec2f)->vec3f{let t=1.1/vec2f(textureDimensions(rays));var c=textureSampleLevel(rays,linearSampler,uv,0).rgb*4.;for(var i=0;i<4;i++){let o=array<vec2f,4>(vec2f(1,0),vec2f(-1,0),vec2f(0,1),vec2f(0,-1))[i]*t;c+=textureSampleLevel(rays,linearSampler,uv+o,0).rgb;}c+=(textureSampleLevel(rays,linearSampler,uv+t,0).rgb+textureSampleLevel(rays,linearSampler,uv-t,0).rgb+textureSampleLevel(rays,linearSampler,uv+vec2f(t.x,-t.y),0).rgb+textureSampleLevel(rays,linearSampler,uv+vec2f(-t.x,t.y),0).rgb)*.5;return c/10.;}
-fn motionBlur(uv:vec2f)->vec3f{
- let center=sampleColor(uv);if(p.cfg[9].x==0.){return center;}let m=textureLoad(velocity,clamp(vec2i(uv*p.size.xy),vec2i(0),vec2i(p.size.xy)-1),0);
- var delta=m.xy*vec2f(.5,-.5)*p.cfg[9].x/max(p.cfg[9].z,1.);let pixels=length(delta*p.size.xy);if(pixels<.5){return center;}delta*=min(1.,p.cfg[9].y/max(pixels,.001));
- let count=i32(clamp(ceil(min(pixels,p.cfg[9].y)*.5),4.,16.));var sum=center;var total=1.;let inverse=1./max(-viewPosition(uv).z,.0001);let t=1./p.size.xy;
+struct MotionResult{color:vec3f,position:vec3f,depth:f32,valid:f32};
+fn motionBlur(uv:vec2f)->MotionResult{
+ let center=sampleColor(uv);if(p.cfg[9].x==0.){return MotionResult(center,vec3f(0),0.,0.);}let m=textureLoad(velocity,clamp(vec2i(uv*p.size.xy),vec2i(0),vec2i(p.size.xy)-1),0);
+ var delta=m.xy*vec2f(.5,-.5)*p.cfg[9].x/max(p.cfg[9].z,1.);let pixels=length(delta*p.size.xy);if(pixels<.5){return MotionResult(center,vec3f(0),0.,0.);}delta*=min(1.,p.cfg[9].y/max(pixels,.001));
+ let count=i32(clamp(ceil(min(pixels,p.cfg[9].y)*.5),4.,16.));var sum=center;var total=1.;let data=viewData(uv);let position=data.xyz;let depthValue=data.w;let inverse=1./max(-position.z,.0001);let t=1./p.size.xy;
  let slope=vec2f(1./max(-viewPosition(uv+vec2f(t.x,0)).z,.0001)-inverse,1./max(-viewPosition(uv+vec2f(0,t.y)).z,.0001)-inverse);let tolerance=max(inverse*.025,dot(abs(slope),vec2f(.75)));
  for(var i=0;i<16;i++){if(i>=count){break;}let at=uv+delta*((f32(i)+.5)/f32(count)-.5);if(any(at<vec2f(0))||any(at>vec2f(1))){continue;}
  let other=textureLoad(velocity,clamp(vec2i(at*p.size.xy),vec2i(0),vec2i(p.size.xy)-1),0);if((other.z>.5)!=(m.z>.5)){continue;}
- if(abs(1./max(-viewPosition(at).z,.0001)-inverse-dot(slope,(at-uv)*p.size.xy))>tolerance){continue;}sum+=sampleColor(at);total+=1.;}return mix(center,sum/total,smoothstep(.5,1.5,pixels));
+ if(abs(1./max(-viewPosition(at).z,.0001)-inverse-dot(slope,(at-uv)*p.size.xy))>tolerance){continue;}sum+=sampleColor(at);total+=1.;}return MotionResult(mix(center,sum/total,smoothstep(.5,1.5,pixels)),position,depthValue,1.);
 }
-fn lens(uv:vec2f)->vec3f{
+fn lens(uv:vec2f,motion:MotionResult)->vec3f{
  if(p.cfg[8].x<=0.){return vec3f(0);}let mask=textureLoad(sunVisibility,vec2i(0),0).rgb;let visible=clamp(mask.r+mask.g*.2,0.,1.)*mix(mask.b,1.,.18)*p.sunUV.w;
  if(visible<=0.){return vec3f(0);}
- let delta=(uv-p.sunUV.xy)*vec2f(p.sunUV.z,1);let r=length(delta);let sky=select(0.,1.,D(uv)>.999999);var f=p.sunColor.rgb*(exp(-r*r/.00042)*.62+exp(-r*r/.0035)*4.*mask.b*(1.-mask.b)*.055)*sky;
+ let delta=(uv-p.sunUV.xy)*vec2f(p.sunUV.z,1);let r=length(delta);var lensDepth=motion.depth;if(motion.valid==0.){lensDepth=D(uv);}let sky=select(0.,1.,lensDepth>.999999);var f=p.sunColor.rgb*(exp(-r*r/.00042)*.62+exp(-r*r/.0035)*4.*mask.b*(1.-mask.b)*.055)*sky;
  for(var i=0;i<4;i++){let axis=array<f32,4>(.22,.63,1.12,1.64)[i];let radius=array<f32,4>(.010,.027,.051,.016)[i];let weight=array<f32,4>(.37,.30,.15,.24)[i];let center=p.sunUV.xy+(vec2f(.5)-p.sunUV.xy)*axis;let d=length((uv-center)*vec2f(p.sunUV.z,1));let width=.0025+radius*.11;let rd=(vec3f(d-radius)+vec3f(-.65,0,.65)*p.cfg[8].z*radius*.14)/width;let ring=exp(-rd*rd);let core=(1.-smoothstep(radius*.2,radius*.9,d))*.08;f+=(mix(p.sunColor.rgb*vec3f(.72,.8,.9)*dot(ring,vec3f(.333)),ring,p.cfg[8].z*.62)+p.sunColor.rgb*core)*p.cfg[8].y*weight;}
  f+=p.sunColor.rgb*exp(-abs(delta.x)*8.-delta.y*delta.y/.000008)*p.cfg[8].w*.2*sky;return f*p.cfg[8].x*visible;
 }
 @fragment fn fragment(v:Vertex)->@location(0) vec4f{
- let uv=v.uv;var c=motionBlur(uv);
+ let uv=v.uv;let motion=motionBlur(uv);var c=motion.color;
  if(p.cfg[4].w>.5){c*=clamp(textureSampleLevel(ao,linearSampler,uv,0).r,.55,1.);}
- if(p.cfg[7].y>0.&&D(uv)<.999999){let pos=viewPosition(uv);let direction=normalize((p.cameraWorld*vec4f(normalize(pos),0)).xyz);let haze=(1.-exp(-max(length(pos)-p.cfg[7].z,0.)*p.cfg[7].y*.0015))*(.5+.5*pow(1.-abs(direction.y),2.));let tint=mix(p.horizon.rgb,p.sunColor.rgb,max(dot(direction,p.sunDirection.xyz),0.)*p.cfg[7].w);c=mix(c,tint,clamp(haze,0.,.5));}
+ if(p.cfg[7].y>0.){var atmosphereDepth=motion.depth;if(motion.valid==0.){atmosphereDepth=D(uv);}if(atmosphereDepth<.999999){var pos=motion.position;if(motion.valid==0.){pos=viewPosition(uv);}let direction=normalize((p.cameraWorld*vec4f(normalize(pos),0)).xyz);let haze=(1.-exp(-max(length(pos)-p.cfg[7].z,0.)*p.cfg[7].y*.0015))*(.5+.5*pow(1.-abs(direction.y),2.));let tint=mix(p.horizon.rgb,p.sunColor.rgb,max(dot(direction,p.sunDirection.xyz),0.)*p.cfg[7].w);c=mix(c,tint,clamp(haze,0.,.5));}}
  var shafts=vec3f(0);if(p.cfg[5].x!=0.&&p.sunUV.w>0.){shafts=softenedRays(uv)*p.cfg[5].x;}
- c+=textureSampleLevel(bloom,linearSampler,uv,0).rgb*p.cfg[4].y+shafts+lens(uv);
- if(p.cfg[6].x>0.&&p.sunUV.w>0.){let z=min(length(viewPosition(uv)),p.cfg[7].x)/p.cfg[7].x;let texel=.65/vec2f(textureDimensions(volume));var sum=vec3f(0);var total=0.;for(var i=0;i<5;i++){let at=uv+array<vec2f,5>(vec2f(0),vec2f(1,0),vec2f(-1,0),vec2f(0,1),vec2f(0,-1))[i]*texel;let sample=textureSampleLevel(volume,linearSampler,at,0);let weight=select(1.,4.,i==0)*exp(-abs(sample.a-z)*p.cfg[7].x*.7);sum+=sample.rgb*weight;total+=weight;}c+=sum/max(total,.0001)*p.cfg[6].x;}
+ c+=textureSampleLevel(bloom,linearSampler,uv,0).rgb*p.cfg[4].y+shafts+lens(uv,motion);
+ if(p.cfg[6].x>0.&&p.sunUV.w>0.){var surface=motion.position;if(motion.valid==0.){surface=viewPosition(uv);}let z=min(length(surface),p.cfg[7].x)/p.cfg[7].x;let texel=.65/vec2f(textureDimensions(volume));var sum=vec3f(0);var total=0.;for(var i=0;i<5;i++){let at=uv+array<vec2f,5>(vec2f(0),vec2f(1,0),vec2f(-1,0),vec2f(0,1),vec2f(0,-1))[i]*texel;let sample=textureSampleLevel(volume,linearSampler,at,0);let weight=select(1.,4.,i==0)*exp(-abs(sample.a-z)*p.cfg[7].x*.7);sum+=sample.rgb*weight;total+=weight;}c+=sum/max(total,.0001)*p.cfg[6].x;}
  if(p.cfg[11].x>.5){c*=vec3f(1.+p.cfg[1].x,1.+p.cfg[1].y,1.-p.cfg[1].x);let l=dot(c,vec3f(.2126,.7152,.0722));let sat=max(max(c.r,c.g),c.b)-min(min(c.r,c.g),c.b);c=mix(vec3f(l),c,p.cfg[0].z+p.cfg[0].w*(1.-clamp(sat/max(l,.01),0.,1.)));c+=p.cfg[1].z*pow(1.-clamp(l,0.,1.),3.);c=max(c-p.cfg[2].x,vec3f(0))/max(p.cfg[2].y,.001);let pivot=max(dot(c,vec3f(.2126,.7152,.0722)),.001);c*=pow(pivot/.18,p.cfg[0].y-1.);c/=1.+p.cfg[1].w*max(c-1.,vec3f(0));}
  c=shoulder(max(c,vec3f(0))*p.cfg[0].x);if(p.cfg[11].x>.5){c*=1.-p.cfg[2].z*smoothstep(p.cfg[2].w,1.,length(uv-.5)*1.4142);}return vec4f(c,1);
 }`;
