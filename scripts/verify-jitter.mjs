@@ -137,15 +137,17 @@ try {
   const modes=(process.env.JITTER_MODES??'native,sgsr2-compute,fsr31').split(',');
   for(const mode of modes)for(const scale of mode==='native'?[1]:scales) {
     const name=mode+'-'+Math.round(scale*100);console.log('JITTER',name);
-    await page.evaluate(({mode,scale,raw,isolate,filters})=>{
+    await page.evaluate(({mode,scale,raw,isolate,filters,sharpen})=>{
       const c=window.__controller,s=c.getSettings();s.overrides={upscaling:mode,upscaleQuality:'custom',upscaleCustomScale:scale,
         motionBlurEnabled:false,cloudsEnabled:false,
         ...(isolate?{aoEnabled:false,bloomEnabled:false,sunRaysEnabled:false,
           volumetricEnabled:false,atmosphereEnabled:false,lensFlareEnabled:false,shadowQuality:'off'}:{}),
-        ...(!filters?{fxaaEnabled:false,sharpenEnabled:false}:{}),frameGeneration:false,
+        ...(!filters?{fxaaEnabled:false,sharpenEnabled:false}:{}),
+        // JITTER_SHARPEN is optional and lets this verifier measure the output sharpener.
+        ...(sharpen>0?{sharpenEnabled:true,sharpenStrength:sharpen}:{}),frameGeneration:false,
         upscaleDebugView:raw?'low-resolution':'final'};
       c.notifySettingsChanged();window.__jitterTest.reference=null;
-    },{mode,scale,raw:process.env.JITTER_RAW==='1',isolate:process.env.JITTER_EFFECTS==='isolated',filters:process.env.JITTER_FILTERS!=='0'});
+    },{mode,scale,raw:process.env.JITTER_RAW==='1',isolate:process.env.JITTER_EFFECTS==='isolated',filters:process.env.JITTER_FILTERS!=='0',sharpen:Number(process.env.JITTER_SHARPEN??0)});
     await page.evaluate(async mode=>{for(let i=0;window.__controller.backends.gpu.selection?.backend!==mode;i++){
       if(i>400)throw Error('Requested upscaler did not initialize');await window.__jitterTest.render();
     }},mode);

@@ -267,3 +267,61 @@ unprofiled runs are the end-to-end comparison: `.3` rendered 928 frames at
 optimization is retained because it is bit-identical and substantially
 reduces the measured grade cost; it does not yet meet 4K60, and the next work
 must address remaining frame-time stalls and scene rendering.
+
+### Current source quality and frame-generation comparison (2026-10-19)
+
+The current `0.6.0-fsr31.5` bundle was measured in headed Edge 155.0.4283.62
+on the T500 at 3840x2160 output, Summer 1 moving gameplay, 50% internal
+resolution, and with the same full-effects configuration. SGSR2 averaged
+**59.99 FPS** (render-interval p95/p99 18.6/19.7 ms); FSR 3.1 averaged
+**28.12 FPS** (p95/p99 49.2/49.9 ms). Both reported zero renderer errors.
+This reproduces the prior conclusion on the current bundle: FSR is not a
+4K60 replacement for SGSR2 on this adapter.
+
+For image comparison, Native, SGSR2 50/57/58%, and FSR 50% were captured from
+the same frozen 4K scene after 32 completed frames, with Golden Hour active,
+clouds and motion blur disabled. Single-frame RGB MAE versus Native was
+**1.449** for SGSR2 50%, **1.422** at 57%, **1.419** at 58%, and **0.299** for
+FSR 50%. A separate full temporal cycle measured stationary edge-luminance
+flicker mean/p99 as **1.655/7.369** for SGSR2 50%, **1.903/9.751** for SGSR2
+57%, and **0.719/3.421** for FSR 50%. These are test-scene image diagnostics,
+not a universal perceptual score; the FSR result is materially closer to the
+Native still and has less measured stationary edge flicker, but its gameplay
+rate is much lower.
+
+SGSR2 scale was raised incrementally with full-effects, moving 4K gameplay
+captures of 60 seconds each. At 56/57/58%, it averaged **59.931/59.941/59.915
+FPS**, with no renderer errors. Their render-interval p95/p99 were
+18.4/19.6, 18.5/19.8, and 18.6/19.9 ms. The T500 reached 98-99% sampled
+utilization near the end of each run. While the measured stationary
+displacement remained below 0.002 output pixels, edge-flicker p99 was higher
+than at 50%. The MAE reduction from 50 to 58% was only about 2%, despite
+roughly 35% more internal pixels. This is not enough evidence to raise the
+default scale; the 50% performance setting is retained pending a more useful
+quality change.
+
+Frame generation was also enabled for matched 15-second moving runs. With FSR
+50%, it submitted 27.82 FPS, generated only 7 frames in the profile window,
+and the presenter ended paused after a suspension; its own report recorded
+about 29 real FPS and 28.7 submitted presentations per second. It therefore
+did not turn FSR into a 60-FPS path. SGSR2 remained at 59.98 FPS and generated
+no frames, as expected at a 60-Hz presentation cadence. These results are
+canvas submissions, not measured physical display scan-out.
+
+A 10-second asynchronous GPU timestamp profile on current FSR 50% measured
+34.67 ms total GPU time (p95 35.98 ms), with 28.44 ms in FSR reconstruction.
+The largest reconstruction kernels were the shading pyramid at 14.48 ms and
+accumulation at 8.59 ms; the next passes were grade at 2.42 ms, FSR reactivity
+preparation at 1.97 ms, and FSR input preparation at 1.84 ms. Timestamp
+collection perturbs throughput, so these timings identify where FSR spends
+GPU work and are not the 28.12-FPS gameplay measurement. The shading pyramid
+and accumulation passes are the primary optimization targets if FSR is revisited.
+
+A separate SGSR2 50% output-sharpening A/B used the same 4K scene. Strength
+0.08 reduced sampled edge MAE against Native from 10.57 to 9.17 display codes;
+strength 0.16 reduced it to 8.96. The 0.08 option retained **59.965 FPS** in a
+60-second full-effects drive with zero renderer errors (p95/p99 frame intervals
+18.4/19.7 ms). However, stationary edge-flicker p99 rose from **7.37** without
+sharpening to **8.46** at 0.04, **9.33** at 0.08, and **12.18** at 0.16. The
+existing sharpener remains optional; the measured clarity gain is accompanied
+by increased shimmer, so it is not enabled by default.
