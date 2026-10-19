@@ -16,20 +16,21 @@ Select **0.5.6 / latest**, move the mod to Loaded, and reload the game. The pane
 
 PML's [sharing format](https://wiki.polymodloader.com/sharing-your-mod/) uses the repository root as the install URL, rather than the JavaScript file or release directory. The root manifest maps 0.6.3 to `0.5.6/version.json` and `0.5.6/main.mod.js`; historical bundles are preserved.
 
-## Experimental FSR development
+## Experimental upscaling and frame generation
 
-FSR 3.1 SR development is on `experiment/fsr31-webgpu`, with a separate opt-in
-`experimental/` PML manifest. Stable latest and historical release bundles are
-preserved. See [port status, movement fixes and verification](docs/fsr31-webgpu.md).
-The experimental preview adds the official analytical AMD optical-flow/frame-generation
-pipeline (off by default), with bounded presentation, diagnostics and fallback.
-See [implementation and T500 measurements](docs/frame-generation.md).
+FSR 3.1 SR and AMD optical-flow/frame generation are integrated in this
+repository's `main` branch. The FSR path remains opt-in, and frame generation is
+off by default. The pinned preview includes bounded presentation, diagnostics,
+fallback handling, movement fixes and temporal edge-shimmer corrections. See
+[FSR port status](docs/fsr31-webgpu.md), [frame-generation implementation and
+T500 measurements](docs/frame-generation.md), and
+[temporal stability notes](docs/temporal-jitter-stability.md).
 
 [Install the pinned preview](https://cdn.polymodloader.com/gh/michael201110/poly-shade/v0.6.0-fsr31.1/experimental/).
-This includes the movement/history fixes plus
-[temporal edge-shimmer corrections](docs/temporal-jitter-stability.md).
+This includes the movement/history fixes and temporal edge-shimmer corrections.
 FG does not deliver 4K/60 on the tested T500; leave it off when ordinary
-rendering already reaches 60 FPS. Stable latest remains 0.5.6.
+rendering already reaches 60 FPS. The default stable root manifest remains on
+0.5.6 until a stable release is promoted.
 
 ## What's changed in 0.5.6
 
