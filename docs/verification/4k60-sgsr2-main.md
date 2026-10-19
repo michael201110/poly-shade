@@ -159,3 +159,30 @@ Both kept the cinematic effects enabled and reported no browser or GPU errors.
 The earlier 53% run at 59.991 FPS remains the best measured result. The small
 shortfall varies across runs, and the workgroup experiments above did not
 produce a repeatable improvement.
+
+### Frame admission depth trial
+
+The normal frame-admission limit is two submissions. Raising it to three
+produced one 60-second diagnostic run at 60.003 FPS, but the same diagnostic
+bundle later measured 59.985 FPS over 30 seconds and the packaged candidate
+measured 59.814 FPS over 60 seconds. The two-frame baseline at 55% measured
+59.824 FPS over 30 seconds. A four-frame queue measured 59.963 FPS over 60
+seconds. These runs do not show a repeatable gain above 60.
+
+The 12-second queue tests reduced skipped submissions (17 at limit two, 7 at
+limit three, and 4 at limit four), but input-to-submit p95 increased from 20.8
+ms at limit two to 23.0 ms at limit three; queue-completion p95 reached 44 ms
+at limit four. The queue-depth change was not retained because its throughput
+gain was inconsistent and it adds latency. The shipped limit remains two.
+
+### Geometry-history fusion trial
+
+A preview fused SGSR2's separate geometry-history draw into its conversion
+compute pass using two storage textures so the current frame never aliases the
+previous-frame input. WebGPU validation passed. At 55%, the separate pass was
+0.262 ms median; after fusion, conversion rose from 1.245 to 1.507 ms while the
+geometry pass disappeared. Those component deltas cancel, and the two short
+live profiles varied in other passes, so they do not establish a total-frame
+win. The trial also required a second history texture and a larger uniform
+block. I did not retain it: the tested evidence did not prove a speedup, and a
+pixel-by-pixel history comparison was not completed.
