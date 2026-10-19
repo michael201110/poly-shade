@@ -142,3 +142,10 @@ and 2.949 ms; total median was 9.896 ms. The small whole-frame differences are
 within live-run variance and do not establish a win. The 16x16 cache remains in
 place; no tile variant was adopted. These timestamped profiles confirm 53%
 still sustains about 60 FPS, but this work did not raise the resolution scale.
+
+A 32x8 conversion-only tile was also measured at 53%. Conversion median fell
+from 1.245 to 1.114 ms (-0.131 ms), while upscale median rose from 2.753 to
+2.884 ms (+0.131 ms). Total GPU median increased from 9.503 to 10.551 ms and
+effective live throughput moved from 59.94 to 59.87 FPS. This single short
+profile did not show an end-to-end benefit; the existing 16x16 conversion tile
+remains unchanged.
