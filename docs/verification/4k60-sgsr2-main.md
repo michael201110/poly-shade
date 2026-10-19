@@ -55,3 +55,35 @@ Reports and captures are retained under the local `%TEMP%` directories
 `polyshade-performance/4k-main-sgsr50-pass-profile`, and
 `polyshade-fsr31-matched`. These machine-local raw artifacts are not part of the
 repository.
+
+## Follow-up optimization (`0.6.0-fsr31.3`)
+
+The SGSR2 conversion shader now dispatches 16x16 workgroups instead of 8x8.
+Each output pixel performs the same shader arithmetic and stores the same
+values; only the number of invocations per dispatched workgroup changes.
+Matched performance profiles at 3840x2160 measured conversion median time:
+
+| Render scale | 8x8 | 16x16 | Change |
+|---:|---:|---:|---:|
+| 50% | 1.376 ms | 0.983 ms | -28.6% |
+| 67% | 2.687 ms | 2.032 ms | -24.4% |
+
+At 67%, total GPU time changed from 15.73 to 14.35 ms median and 16.58 to
+14.94 ms p95. Effective rendered rate in the unprofiled 10-second check was
+57.03 FPS, so 67% still misses 60. At 53% with the 16x16 conversion tile, the
+built `.3` bundle submitted 1,844 frames in 30.74 seconds (59.991 FPS); p95 and
+p99 render intervals were 18.9 and 20.0 ms. At 55%, the 30.75-second run was
+59.58 FPS, so 53% is the higher tested scale that stays closest to 60 over a
+longer run. The built-in Performance scale remains 50% for more margin.
+
+Native 4K with all cinematic settings enabled was also measured: 36.84 FPS over
+10.88 seconds. GPU total was 25.49 ms median / 29.75 ms p95; the grade pass was
+13.43 ms median, dominated by motion blur. Disabling motion blur for diagnosis
+reduced grade to 4.65 ms and total GPU time to 16.65 ms, but still produced only
+49.78 FPS and is not an acceptable quality change. Native 4K/60 is therefore
+not yet achieved; the 4K60 claim applies to 4K output reconstructed with SGSR2.
+
+A diagnostic exact-tap unrolled motion-blur variant reduced grade median to
+2.62 ms in one timestamp profile, but p95 reached 20.97 ms and unprofiled
+native throughput remained about 37 FPS. It was not adopted because it failed
+to improve the end-to-end result reliably.

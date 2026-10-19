@@ -3,7 +3,7 @@
 The FSR implementation and its frame-generation features have been merged into
 `main`. The original port was based on `d76c056` (PolyShade 0.5.6).
 Historical experimental source versions: `.0` and `.1`. The current preview is
-`0.6.0-fsr31.2`; the stable PML manifest remains **0.5.6**.
+`0.6.0-fsr31.3`; the stable PML manifest remains **0.5.6**.
 Historical release bundles are untouched. The original SR preview is
 `0.6.0-fsr31.0`; `.1` added the official analytical FG pipeline and temporal
 stability corrections. See the separate
@@ -177,6 +177,12 @@ SGSR2 geometry-footprint rejection and transparent reactive-mask coverage.
 The `.2` preview adds no rendering code changes. Current-source SGSR2 4K60
 measurements and the matched 4K FSR comparison are recorded in
 [the 4K60 verification](verification/4k60-sgsr2-main.md).
+
+The `.3` preview uses 16x16 conversion workgroups instead of 8x8. Per-pixel
+shader math is unchanged. On the T500 this reduced the SGSR2 conversion pass by
+24% at 67% render scale; 4K at 53% scale sustained 59.96 submitted FPS for
+30 seconds with cinematic effects enabled. Full-resolution Native remains below
+60 FPS and is being investigated separately.
 
 - Official optical flow and frame interpolation are implemented, with numerical
   translated-image midpoint fixtures, real/generated presentation, lifecycle,

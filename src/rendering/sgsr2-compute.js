@@ -148,7 +148,7 @@ export class SGSR2Compute {
       });
       pass.setPipeline(pipeline);
       pass.setBindGroup(0, group);
-      const groupSize = name === "upscale" ? 16 : 8;
+      const groupSize = 16;
       pass.dispatchWorkgroups(
         Math.ceil(x / groupSize),
         Math.ceil(y / groupSize),
@@ -163,7 +163,7 @@ export class SGSR2Compute {
     this.rejection = rejection;
     this.converted = converted;
     this.workgroups = {
-      convert: [Math.ceil(w / 8), Math.ceil(h / 8), 1],
+      convert: [Math.ceil(w / 16), Math.ceil(h / 16), 1],
       upscale: [Math.ceil(ow / 16), Math.ceil(oh / 16), 1],
     };
     return output;

@@ -55,7 +55,7 @@ fn rejectHistory(uv:vec2f,v:vec4f)->f32{
  let reject=p.valid==0u||outside||!compatible||(!car&&moving>0.5)||v.z>2.5;
  return select(0.0,1.0,reject);
 }
-@compute @workgroup_size(8,8,1)
+@compute @workgroup_size(16,16,1)
 fn main(@builtin(global_invocation_id) id:vec3u){
  if(any(id.xy>=p.renderSize)){return;}
  let at=vec2i(id.xy);let uv=(vec2f(id.xy)+0.5)*p.renderRcp;

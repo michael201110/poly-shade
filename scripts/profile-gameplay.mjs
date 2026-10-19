@@ -135,11 +135,11 @@ try {
       const native=scale===1&&!temporalAt100;
       const name = `${resolution}-${noMod?'game-only':hotDisable?'hot-disabled':native?'native':`${temporalMode==='fsr31'?'fsr':'sgsr'}${Math.round(scale*100)}`}${frameGeneration?'-fg':''}`;
       console.log(`${label}: ${name}`);
-      if(!noMod&&!hotDisable) await page.evaluate(({scale,native,profiling,temporalMode,frameGeneration,frameGenerationPacing,forceFG,motionBlurOverride})=>{
+      if(!noMod&&!hotDisable) await page.evaluate(({scale,native,profiling,temporalMode,frameGeneration,frameGenerationPacing,forceFG,motionBlurOverride,featureOverrides})=>{
         // Isolated diagnostic only. Product validation clamps the floor to >=25.
         const c=window.__controller,s=c.getSettings();s.preset='cinematic';s.overrides={upscaling:native?'native':temporalMode,upscaleQuality:'custom',upscaleCustomScale:scale,debugProfile:profiling,frameGeneration,frameGenerationPacing,fgMinimumFPS:forceFG?1:25,
-          ...(motionBlurOverride===null?{}:{motionBlurEnabled:motionBlurOverride})};c.notifySettingsChanged();
-      },{scale,native,profiling,temporalMode,frameGeneration,frameGenerationPacing,forceFG,motionBlurOverride});
+          ...(motionBlurOverride===null?{}:{motionBlurEnabled:motionBlurOverride}),...featureOverrides};c.notifySettingsChanged();
+      },{scale,native,profiling,temporalMode,frameGeneration,frameGenerationPacing,forceFG,motionBlurOverride,featureOverrides});
       if(temporalMode==='fsr31' && !native) await page.waitForFunction(()=>{
         const g=window.__controller?.backends.gpu;
         if(g?.fsrFailure)throw Error(g.fsrFailure);
