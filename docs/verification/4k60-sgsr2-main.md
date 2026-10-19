@@ -325,3 +325,10 @@ strength 0.16 reduced it to 8.96. The 0.08 option retained **59.965 FPS** in a
 sharpening to **8.46** at 0.04, **9.33** at 0.08, and **12.18** at 0.16. The
 existing sharpener remains optional; the measured clarity gain is accompanied
 by increased shimmer, so it is not enabled by default.
+
+The 60% scale ceiling check averaged **59.167 FPS** over 60 seconds, with
+18.7 ms p95 and 32.4 ms p99 render intervals and no renderer errors. Its
+single-frame Native-relative MAE was 1.413, only 0.008 lower than the 58%
+result, while p99 frame interval increased by over 12 ms. The 60% candidate is
+therefore rejected for the 4K60 path; 58% is the highest scale in this sweep
+that maintained a near-refresh frame distribution.
