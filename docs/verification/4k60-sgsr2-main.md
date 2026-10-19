@@ -87,3 +87,14 @@ A diagnostic exact-tap unrolled motion-blur variant reduced grade median to
 2.62 ms in one timestamp profile, but p95 reached 20.97 ms and unprofiled
 native throughput remained about 37 FPS. It was not adopted because it failed
 to improve the end-to-end result reliably.
+
+### Shared-memory motion-blur cache trial
+
+A compute prototype cached a 42x42 RGBA16F source-color tile in 16-bit
+workgroup storage, then applied the same per-pixel tap counts, tap positions,
+depth rejection, velocity rejection and accumulation order. At 3840x2160, its
+cache pass cost 32.05 ms median / 43.71 ms p95. The following grade pass fell
+to 4.33 ms median, but total GPU work rose to 47.64 ms median and measured
+throughput fell to 19.73 FPS. The prototype was discarded. The per-pixel cache
+load and workgroup synchronization outweighed the avoided filtered texture
+samples on Turing; no visual-quality claim is made for this prototype.
