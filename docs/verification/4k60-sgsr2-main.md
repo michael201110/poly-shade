@@ -1,5 +1,16 @@
 # 4K60 SGSR2 result on main
 
+## Current .5 sustained moving run
+
+PolyShade 0.6.0-fsr31.5 completed a 60.28-second moving Summer 1 run on the NVIDIA T500 at 3840x2160 output with SGSR2 Compute at 50% internal scale (1920x1080). Golden Hour/cinematic post effects, AO, bloom, sun rays, motion blur, clouds and FXAA were enabled; frame generation was off. This profile did not collect GPU timestamps, so the reported frame rate is not slowed by per-pass queries.
+
+- 3,616 rendered frames; effective rate **59.984 FPS**.
+- Render interval: median 16.7 ms, p95 18.3 ms, p99 19.3 ms, maximum 28.5 ms.
+- Zero renderer errors; sampled T500 utilization during the run was 79-92% (62% after the run).
+
+This verifies approximately 4K60 output through the existing high-quality SGSR2 path. Native 4K remains slower; its current .5 result is recorded separately in the [performance report](../0.6.0-fsr31.5-performance.md). SGSR2 is not pixel-identical to Native: the frozen-scene comparison below measured 1.45255 mean absolute RGB display-code error. No rendering-quality reductions were introduced to obtain this result; the .5 production change is the exact-output haze gate described in the version report.
+
+
 ## Comparison
 
 FSR 3.1 and SGSR2 were compared from the same current-source build, on the same
